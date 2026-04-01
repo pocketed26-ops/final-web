@@ -1,7 +1,15 @@
 "use client";
 
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+function offsetXToViewportCenter(el: HTMLElement): number {
+  gsap.set(el, { x: 0, scale: 1 });
+  const rect = el.getBoundingClientRect();
+  return window.innerWidth / 2 - (rect.left + rect.width / 2);
+}
 
 const SVG_WIDTH = 1200;
 const SVG_HEIGHT = 320;
@@ -32,6 +40,12 @@ function createWavePath(fillTop: number, phase: number) {
 }
 
 export default function Home() {
+  const scrollStageRef = useRef<HTMLElement>(null);
+  const pinInnerRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const heroCopyRef = useRef<HTMLDivElement>(null);
+  const phoneWrapRef = useRef<HTMLDivElement>(null);
+
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -81,43 +95,232 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (showLoader) {
+      return;
+    }
+
+    let ctx: gsap.Context | undefined;
+    let removeResize: (() => void) | undefined;
+    let rafId = 0;
+
+    const setup = () => {
+      const stage = scrollStageRef.current;
+      const pinInner = pinInnerRef.current;
+      const nav = navRef.current;
+      const heroCopy = heroCopyRef.current;
+      const phone = phoneWrapRef.current;
+      if (!stage || !pinInner || !nav || !heroCopy || !phone) {
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "manual";
+      }
+      window.scrollTo(0, 0);
+
+      gsap.set(phone, { x: 0, y: 0, scale: 1, transformOrigin: "50% 50%" });
+      gsap.set(nav, { autoAlpha: 1, scale: 1 });
+      gsap.set(heroCopy, { autoAlpha: 1, scale: 1 });
+
+      ctx = gsap.context(() => {
+        const mm = gsap.matchMedia();
+
+        mm.add("(min-width: 768px)", () => {
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: stage,
+                pin: pinInner,
+                pinType: "fixed",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.75,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+                onUpdate(self) {
+                  const done = self.progress >= 0.985;
+                  nav.toggleAttribute("inert", done);
+                  heroCopy.toggleAttribute("inert", done);
+                  if (done) {
+                    nav.style.visibility = "hidden";
+                    heroCopy.style.visibility = "hidden";
+                  } else {
+                    nav.style.removeProperty("visibility");
+                    heroCopy.style.removeProperty("visibility");
+                  }
+                },
+              },
+            })
+            .to(
+              nav,
+              {
+                autoAlpha: 0,
+                ease: "none",
+                duration: 0.3,
+              },
+              0,
+            )
+            .to(
+              heroCopy,
+              {
+                autoAlpha: 0,
+                ease: "none",
+                duration: 0.3,
+              },
+              0,
+            )
+            .fromTo(
+              phone,
+              { x: 0, scale: 1 },
+              {
+                x: () => offsetXToViewportCenter(phone),
+                scale: 1.34,
+                transformOrigin: "50% 50%",
+                ease: "none",
+                duration: 0.42,
+              },
+              0.12,
+            );
+        });
+
+        mm.add("(max-width: 767px)", () => {
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: stage,
+                pin: pinInner,
+                pinType: "fixed",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.75,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+                onUpdate(self) {
+                  const done = self.progress >= 0.985;
+                  nav.toggleAttribute("inert", done);
+                  heroCopy.toggleAttribute("inert", done);
+                  if (done) {
+                    nav.style.visibility = "hidden";
+                    heroCopy.style.visibility = "hidden";
+                  } else {
+                    nav.style.removeProperty("visibility");
+                    heroCopy.style.removeProperty("visibility");
+                  }
+                },
+              },
+            })
+            .to(nav, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
+            .to(heroCopy, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
+            .fromTo(
+              phone,
+              { scale: 1, y: 0 },
+              {
+                scale: 1.28,
+                y: -28,
+                transformOrigin: "50% 50%",
+                ease: "none",
+                duration: 0.42,
+              },
+              0.12,
+            );
+        });
+      }, stage);
+
+      const onResize = () => {
+        ScrollTrigger.refresh();
+      };
+      window.addEventListener("resize", onResize);
+      removeResize = () => window.removeEventListener("resize", onResize);
+
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        ScrollTrigger.refresh();
+      });
+    };
+
+    rafId = requestAnimationFrame(() => {
+      requestAnimationFrame(setup);
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      removeResize?.();
+      ctx?.revert();
+    };
+  }, [showLoader]);
+
   const fillTop = SVG_HEIGHT - (progress / 100) * SVG_HEIGHT;
   const wavePath = useMemo(() => createWavePath(fillTop, phase), [fillTop, phase]);
 
   return (
     <div className="site-shell">
       <main className="main-content" aria-hidden={showLoader}>
-        <header className="top-nav">
-          <div className="nav-shell">
-            <a className="nav-brand" href="#" aria-label="PocketEd home">
-              <Image src="/nav-logo.png" alt="PocketEd logo" width={86} height={18} priority />
-            </a>
-            <nav className="nav-menu" aria-label="Main navigation">
-              <a href="#">Home</a>
-              <a href="#">About</a>
-              <a href="#">Courses</a>
-              <a href="#">Contact</a>
-            </nav>
-          </div>
-        </header>
+        <section
+          ref={scrollStageRef}
+          className="relative h-[min(300vh,2600px)] w-full"
+        >
+          <div
+            ref={pinInnerRef}
+            className="pin-scene relative z-0 flex flex-col bg-[var(--background)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
+          >
+            <header
+              ref={navRef}
+              className="top-nav relative z-10 shrink-0 px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.9rem,2vw,1.4rem)] will-change-[opacity,transform]"
+            >
+              <div className="nav-shell">
+                <a className="nav-brand" href="#" aria-label="PocketEd home">
+                  <Image src="/nav-logo.png" alt="PocketEd logo" width={86} height={18} priority />
+                </a>
+                <nav className="nav-menu" aria-label="Main navigation">
+                  <a href="#">Home</a>
+                  <a href="#">About</a>
+                  <a href="#">Courses</a>
+                  <a href="#">Contact</a>
+                </nav>
+              </div>
+            </header>
 
-        <section className="hero-section">
-          <div className="hero-copy">
-            <h1>
-              <span className="hero-primary">Learn Smarter.</span>
-              <span className="hero-accent">Achieve More.</span>
-            </h1>
-            <p>
-              All your classes, exams, and video courses in one powerful learning
-              app designed for students.
-            </p>
-            <button type="button" className="hero-cta">
-              start now
-            </button>
-          </div>
+            <section className="hero-section relative z-10 mx-auto grid w-full max-w-[1240px] min-h-0 flex-1 grid-cols-1 place-content-center items-center gap-y-8 overflow-visible px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.75rem,3vh,2rem)] pb-[clamp(2.75rem,9vh,6rem)] text-center md:grid-cols-[minmax(0,1fr)_420px] md:items-center md:gap-x-[clamp(2rem,5vw,5.5rem)] md:gap-y-0 md:place-content-center md:text-left">
+              <div
+                ref={heroCopyRef}
+                className="relative z-10 justify-self-center text-left will-change-[opacity,transform] md:justify-self-start"
+              >
+                <h1 className="m-0 flex flex-col text-[clamp(2.2rem,10.8vw,5.45rem)] font-bold leading-[0.98] tracking-[-0.03em] md:text-[clamp(2.45rem,7.2vw,5.45rem)]">
+                  <span className="text-[var(--primary-blue)]">Learn Smarter.</span>
+                  <span className="mt-[0.2rem] text-[var(--primary-yellow)]">Achieve More.</span>
+                </h1>
+                <p className="mx-auto mt-[0.85rem] max-w-[35rem] text-[clamp(0.95rem,1.7vw,1.5rem)] leading-[1.34] text-[#242424] md:mx-0 max-[640px]:text-[0.98rem] max-[640px]:leading-[1.42]">
+                  All your classes, exams, and video courses in one powerful learning
+                  app designed for students.
+                </p>
+                <button
+                  type="button"
+                  className="mt-[1rem] inline-flex h-[48px] min-w-[220px] items-center justify-center rounded-[14px] border-[3px] border-[var(--primary-blue)] bg-white px-6 text-[1.65rem] font-semibold lowercase leading-none text-[var(--primary-blue)] shadow-[0_2px_8px_rgba(1,74,172,0.07)] max-[880px]:h-[44px] max-[880px]:min-w-[200px] max-[880px]:text-[1.45rem] max-[640px]:h-[42px] max-[640px]:min-w-[180px] max-[640px]:px-5 max-[640px]:text-[1.3rem]"
+                >
+                  start now
+                </button>
+              </div>
 
-          <div className="hero-device" aria-hidden="true">
-            <Image src="/mobile.png" alt="PocketEd mobile interface" width={330} height={551} priority />
+              <div
+                ref={phoneWrapRef}
+                className="relative z-50 flex items-center justify-center justify-self-center overflow-visible p-[clamp(0.75rem,2.5vw,2.5rem)] will-change-transform md:justify-end md:justify-self-end"
+                aria-hidden="true"
+              >
+                <div className="phone-mock">
+                  <Image
+                    src="/mobile.png"
+                    alt="PocketEd mobile interface"
+                    width={1000}
+                    height={1035}
+                    className="h-auto w-[250px] max-w-none"
+                    priority
+                  />
+                </div>
+              </div>
+            </section>
           </div>
         </section>
       </main>
