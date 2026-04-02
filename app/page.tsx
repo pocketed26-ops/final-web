@@ -3,13 +3,24 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 const PHONE_SCROLL_START = 0.12;
 const PHONE_SCROLL_DURATION = 0.42;
 const PHONE_SCROLL_END = PHONE_SCROLL_START + PHONE_SCROLL_DURATION;
-/** Extra timeline after phone settles so scroll progress doesn’t end exactly when the phone tween ends. */
-const SCROLL_PAD_AFTER_PHONE = 2;
+// These durations are tied to scroll progress (`scrub: 0.75`), so increasing them makes
+// feature animations take longer along the scroll-linked timeline.
+// Tuned so Feature 4 is still after Feature 3, but appears sooner.
+const FEATURE_ONE_SCROLL_DURATION = 6;
+const FEATURE_TWO_SCROLL_DURATION = 6;
+const FEATURE_THREE_SCROLL_DURATION = 6;
+const FEATURE_FOUR_SCROLL_DURATION = 1;
+/** Extra timeline after phone + feature settle so scroll progress doesn’t end abruptly. */
+const SCROLL_PAD_AFTER_PHONE = () =>
+  Math.max(
+    0,
+    2 - FEATURE_ONE_SCROLL_DURATION - FEATURE_TWO_SCROLL_DURATION - FEATURE_THREE_SCROLL_DURATION - FEATURE_FOUR_SCROLL_DURATION,
+  );
 
 /** Align transform-group x so the *phone mock* (not the whole group bbox) lands in viewport center. */
 function offsetXToViewportCenterPhoneScreen(group: HTMLElement, phoneMock: HTMLElement): number {
@@ -17,6 +28,13 @@ function offsetXToViewportCenterPhoneScreen(group: HTMLElement, phoneMock: HTMLE
   const rect = phoneMock.getBoundingClientRect();
   const phoneCx = rect.left + rect.width / 2;
   return window.innerWidth / 2 - phoneCx;
+}
+
+/** Shift the feature left so it sits under the phone (same horizontal band); phone stays on top via z-index. */
+function offsetXFeatureBehindPhone(phoneMock: HTMLElement, phoneMove: HTMLElement): number {
+  const gapRaw = window.getComputedStyle(phoneMove).columnGap || window.getComputedStyle(phoneMove).gap;
+  const gap = Number.parseFloat(gapRaw) || 12;
+  return -(phoneMock.offsetWidth + gap);
 }
 
 const SVG_WIDTH = 1200;
@@ -54,6 +72,10 @@ export default function Home() {
   const heroCopyRef = useRef<HTMLDivElement>(null);
   const phoneMoveRef = useRef<HTMLDivElement>(null);
   const phoneMockRef = useRef<HTMLDivElement>(null);
+  const featureOneRef = useRef<HTMLDivElement>(null);
+  const featureTwoRef = useRef<HTMLDivElement>(null);
+  const featureThreeRef = useRef<HTMLDivElement>(null);
+  const featureFourRef = useRef<HTMLDivElement>(null);
 
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState(0);
@@ -104,14 +126,14 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (showLoader) {
       return;
     }
 
     let ctx: gsap.Context | undefined;
     let removeResize: (() => void) | undefined;
-    let rafId = 0;
+    let refreshRafId = 0;
 
     const setup = () => {
       const stage = scrollStageRef.current;
@@ -120,6 +142,10 @@ export default function Home() {
       const heroCopy = heroCopyRef.current;
       const phone = phoneMoveRef.current;
       const phoneMock = phoneMockRef.current;
+      const featureOne = featureOneRef.current;
+      const featureTwo = featureTwoRef.current;
+      const featureThree = featureThreeRef.current;
+      const featureFour = featureFourRef.current;
       if (!stage || !pinInner || !nav || !heroCopy || !phone || !phoneMock) {
         return;
       }
@@ -138,6 +164,54 @@ export default function Home() {
         const mm = gsap.matchMedia();
 
         mm.add("(min-width: 768px)", () => {
+          if (featureOne) {
+            gsap.set(featureOne, {
+              x: () => {
+                const mock = phoneMockRef.current;
+                const move = phoneMoveRef.current;
+                return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+              },
+              autoAlpha: 0,
+              transformOrigin: "0% 50%",
+            });
+          }
+
+          if (featureTwo) {
+            gsap.set(featureTwo, {
+              x: () => {
+                const mock = phoneMockRef.current;
+                const move = phoneMoveRef.current;
+                return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+              },
+              autoAlpha: 0,
+              transformOrigin: "0% 50%",
+            });
+          }
+
+          if (featureThree) {
+            gsap.set(featureThree, {
+              x: () => {
+                const mock = phoneMockRef.current;
+                const move = phoneMoveRef.current;
+                return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+              },
+              autoAlpha: 0,
+              transformOrigin: "0% 50%",
+            });
+          }
+
+          if (featureFour) {
+            gsap.set(featureFour, {
+              x: () => {
+                const mock = phoneMockRef.current;
+                const move = phoneMoveRef.current;
+                return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+              },
+              autoAlpha: 0,
+              transformOrigin: "0% 50%",
+            });
+          }
+
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: stage,
@@ -180,8 +254,104 @@ export default function Home() {
                 duration: PHONE_SCROLL_DURATION,
               },
               PHONE_SCROLL_START,
-            )
-            .to({}, { duration: SCROLL_PAD_AFTER_PHONE, ease: "none" }, PHONE_SCROLL_END);
+            );
+
+          if (featureOne) {
+            tl.fromTo(
+              featureOne,
+              {
+                x: () => {
+                  const mock = phoneMockRef.current;
+                  const move = phoneMoveRef.current;
+                  return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                },
+                autoAlpha: 0,
+              },
+              {
+                x: 0,
+                autoAlpha: 1,
+                ease: "none",
+                duration: FEATURE_ONE_SCROLL_DURATION,
+              },
+              PHONE_SCROLL_END,
+            );
+          }
+
+          if (featureTwo) {
+            tl.fromTo(
+              featureTwo,
+              {
+                x: () => {
+                  const mock = phoneMockRef.current;
+                  const move = phoneMoveRef.current;
+                  return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                },
+                autoAlpha: 0,
+              },
+              {
+                x: 0,
+                autoAlpha: 1,
+                ease: "none",
+                duration: FEATURE_TWO_SCROLL_DURATION,
+              },
+              PHONE_SCROLL_END + FEATURE_ONE_SCROLL_DURATION,
+            );
+          }
+
+          if (featureThree) {
+            tl.fromTo(
+              featureThree,
+              {
+                x: () => {
+                  const mock = phoneMockRef.current;
+                  const move = phoneMoveRef.current;
+                  return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                },
+                autoAlpha: 0,
+              },
+              {
+                x: 0,
+                autoAlpha: 1,
+                ease: "none",
+                duration: FEATURE_THREE_SCROLL_DURATION,
+              },
+              PHONE_SCROLL_END + FEATURE_ONE_SCROLL_DURATION + FEATURE_TWO_SCROLL_DURATION,
+            );
+          }
+
+          if (featureFour) {
+            tl.fromTo(
+              featureFour,
+              {
+                x: () => {
+                  const mock = phoneMockRef.current;
+                  const move = phoneMoveRef.current;
+                  return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                },
+                autoAlpha: 0,
+              },
+              {
+                x: 0,
+                autoAlpha: 1,
+                ease: "none",
+                duration: FEATURE_FOUR_SCROLL_DURATION,
+              },
+              PHONE_SCROLL_END +
+                FEATURE_ONE_SCROLL_DURATION +
+                FEATURE_TWO_SCROLL_DURATION +
+                FEATURE_THREE_SCROLL_DURATION,
+            );
+          }
+
+          tl.to(
+            {},
+            { duration: SCROLL_PAD_AFTER_PHONE(), ease: "none" },
+            PHONE_SCROLL_END +
+              FEATURE_ONE_SCROLL_DURATION +
+              FEATURE_TWO_SCROLL_DURATION +
+              FEATURE_THREE_SCROLL_DURATION +
+              FEATURE_FOUR_SCROLL_DURATION,
+          );
         });
 
         mm.add("(max-width: 767px)", () => {
@@ -224,7 +394,7 @@ export default function Home() {
               },
               PHONE_SCROLL_START,
             )
-            .to({}, { duration: SCROLL_PAD_AFTER_PHONE, ease: "none" }, PHONE_SCROLL_END);
+            .to({}, { duration: SCROLL_PAD_AFTER_PHONE(), ease: "none" }, PHONE_SCROLL_END);
         });
       }, stage);
 
@@ -234,18 +404,16 @@ export default function Home() {
       window.addEventListener("resize", onResize);
       removeResize = () => window.removeEventListener("resize", onResize);
 
-      requestAnimationFrame(() => {
+      refreshRafId = requestAnimationFrame(() => {
         window.scrollTo(0, 0);
         ScrollTrigger.refresh();
       });
     };
 
-    rafId = requestAnimationFrame(() => {
-      requestAnimationFrame(setup);
-    });
+    setup();
 
     return () => {
-      cancelAnimationFrame(rafId);
+      cancelAnimationFrame(refreshRafId);
       removeResize?.();
       ctx?.revert();
     };
@@ -309,9 +477,9 @@ export default function Home() {
               >
                 <div
                   ref={phoneMoveRef}
-                  className="relative inline-flex flex-col items-center will-change-transform md:flex-row md:items-start"
+                  className="relative isolate inline-flex flex-col items-center will-change-transform md:flex-row md:items-start md:gap-[clamp(0.6rem,1.6vw,1.15rem)]"
                 >
-                  <div ref={phoneMockRef} className="phone-mock shrink-0">
+                  <div ref={phoneMockRef} className="phone-mock relative z-20 shrink-0">
                     <Image
                       src="/mobile.png"
                       alt="PocketEd mobile interface"
@@ -320,6 +488,105 @@ export default function Home() {
                       className="h-auto w-[clamp(200px,46vw,222px)] max-w-none md:w-[clamp(214px,22vw,236px)]"
                       priority
                     />
+                  </div>
+                  <div className="hidden flex-col gap-25 md:flex md:pt-[clamp(1rem,3vh,2rem)] md:shrink-0">
+                    <div
+                      ref={featureOneRef}
+                      className="feature-one-panel pointer-events-none relative z-0 flex max-w-xs w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                    >
+                      <div className="shrink-0">
+                        <Image
+                          src="/feature1.png"
+                          alt=""
+                          width={80}
+                          height={80}
+                          className="h-20 w-20 object-contain"
+                          aria-hidden
+                        />
+                      </div>
+                      <div className="flex min-w-0 flex-col gap-1">
+                        <h2 className="m-0 text-[13px] font-bold leading-tight tracking-[-0.02em] text-[#141414]">
+                          Numerical skills
+                        </h2>
+                        <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
+                          Work with interest, budgets, and real numbers—plan expenses, compare options, and
+                          use ratios and percentages with confidence.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      ref={featureTwoRef}
+                      className="feature-two-panel  pointer-events-none ml-[25px] relative z-0 flex max-w-xs w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                    >
+                      <div className="shrink-0">
+                        <Image
+                          src="/feature2.png"
+                          alt=""
+                          width={80}
+                          height={80}
+                          className="h-20 w-20 object-contain"
+                          aria-hidden
+                        />
+                      </div>
+                      <div className="flex min-w-0 flex-col gap-1">
+                        <h2 className="m-0 text-[13px] font-bold leading-tight tracking-[-0.02em] text-[#141414]">
+                          Clear CTA
+                        </h2>
+                        <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
+                          Get a clear next step with guided actions—start lessons, track progress, and keep
+                          moving forward.
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      ref={featureThreeRef}
+                      className="feature-three-panel pointer-events-none relative z-0 flex max-w-xs w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                    >
+                      <div className="shrink-0">
+                        <Image
+                          src="/feature3.png"
+                          alt=""
+                          width={80}
+                          height={80}
+                          className="h-20 w-20 object-contain"
+                          aria-hidden
+                        />
+                      </div>
+                      <div className="flex min-w-0 flex-col gap-1">
+                        <h2 className="m-0 text-[13px] font-bold leading-tight tracking-[-0.02em] text-[#141414]">
+                          Entrepreneurial mindset
+                        </h2>
+                        <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
+                          Spot business opportunities, understand risk vs reward, and manage side projects with
+                          confidence.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      ref={featureFourRef}
+                      className="feature-four-panel pointer-events-none relative z-0 flex max-w-xs w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                    >
+                      <div className="shrink-0">
+                        <Image
+                          src="/feature4.png"
+                          alt=""
+                          width={80}
+                          height={80}
+                          className="h-20 w-20 object-contain"
+                          aria-hidden
+                        />
+                      </div>
+                      <div className="flex min-w-0 flex-col gap-1">
+                        <h2 className="m-0 text-[13px] font-bold leading-tight tracking-[-0.02em] text-[#141414]">
+                          Balanced decisions
+                        </h2>
+                        <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
+                          Weigh trade-offs and choose the best next step with clarity and confidence.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
