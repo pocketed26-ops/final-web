@@ -16,7 +16,7 @@
 
 /* Document scrolls on <html> only; body must not become a second scroll container */
 html {
-  overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: auto;
 }
 
@@ -25,7 +25,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), "Avenir Next", "Segoe UI", sans-serif;
   margin: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: hidden;
   min-height: 100%;
 }
@@ -44,24 +44,31 @@ body {
 .pin-scene {
   box-sizing: border-box;
   width: 100%;
-  min-height: 100dvh;
-  height: 100dvh;
+  /* Taller than one viewport so the hero + phone breathe; scroll stays on <html> only. */
+  min-height: max(100dvh, 920px);
   max-height: none;
-  overflow: visible !important;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+  padding-top: calc(env(safe-area-inset-top, 0px) + clamp(0.2rem, 0.9vh, 0.55rem));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(1.15rem, 3.5vh, 2.5rem));
 }
 
 .site-shell {
   min-height: 100vh;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: visible;
   color: var(--primary-blue);
 }
 
 /* Hero grid: never create its own scroll area (avoids a bar beside the phone) */
 .hero-section {
-  overflow-x: hidden;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  overflow-x: clip;
   overflow-y: visible;
+  overscroll-behavior-y: none;
 }
 
 /* Phone mockup asset often includes a scrollbar in the screenshot — trim right edge of screen area */
@@ -82,7 +89,8 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  overflow: visible;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .top-nav {
@@ -258,7 +266,8 @@ body {
  * Placed last so it wins over Tailwind and component rules.
  */
 html.no-scrollbar {
-  scrollbar-gutter: auto;
+  /* Avoid reserving a gutter that looks like a thin extra vertical strip next to content */
+  scrollbar-gutter: unset;
 }
 
 html.no-scrollbar,

@@ -27,7 +27,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} no-scrollbar antialiased`}
     >
-      <body className="min-h-full overflow-x-hidden overflow-y-visible bg-[var(--background)] antialiased">
+      <body className="min-h-full overflow-x-hidden overflow-y-hidden bg-[var(--background)] antialiased">
         <div className="site-root">{children}</div>
       </body>
     </html>

@@ -5,10 +5,18 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-function offsetXToViewportCenter(el: HTMLElement): number {
-  gsap.set(el, { x: 0, scale: 1 });
-  const rect = el.getBoundingClientRect();
-  return window.innerWidth / 2 - (rect.left + rect.width / 2);
+const PHONE_SCROLL_START = 0.12;
+const PHONE_SCROLL_DURATION = 0.42;
+const PHONE_SCROLL_END = PHONE_SCROLL_START + PHONE_SCROLL_DURATION;
+/** Extra timeline after phone settles so scroll progress doesn’t end exactly when the phone tween ends. */
+const SCROLL_PAD_AFTER_PHONE = 2;
+
+/** Align transform-group x so the *phone mock* (not the whole group bbox) lands in viewport center. */
+function offsetXToViewportCenterPhoneScreen(group: HTMLElement, phoneMock: HTMLElement): number {
+  gsap.set(group, { x: 0, scale: 1 });
+  const rect = phoneMock.getBoundingClientRect();
+  const phoneCx = rect.left + rect.width / 2;
+  return window.innerWidth / 2 - phoneCx;
 }
 
 const SVG_WIDTH = 1200;
@@ -44,7 +52,8 @@ export default function Home() {
   const pinInnerRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const heroCopyRef = useRef<HTMLDivElement>(null);
-  const phoneWrapRef = useRef<HTMLDivElement>(null);
+  const phoneMoveRef = useRef<HTMLDivElement>(null);
+  const phoneMockRef = useRef<HTMLDivElement>(null);
 
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState(0);
@@ -109,8 +118,9 @@ export default function Home() {
       const pinInner = pinInnerRef.current;
       const nav = navRef.current;
       const heroCopy = heroCopyRef.current;
-      const phone = phoneWrapRef.current;
-      if (!stage || !pinInner || !nav || !heroCopy || !phone) {
+      const phone = phoneMoveRef.current;
+      const phoneMock = phoneMockRef.current;
+      if (!stage || !pinInner || !nav || !heroCopy || !phone || !phoneMock) {
         return;
       }
 
@@ -124,108 +134,97 @@ export default function Home() {
       gsap.set(phone, { x: 0, y: 0, scale: 1, transformOrigin: "50% 50%" });
       gsap.set(nav, { autoAlpha: 1, scale: 1 });
       gsap.set(heroCopy, { autoAlpha: 1, scale: 1 });
-
       ctx = gsap.context(() => {
         const mm = gsap.matchMedia();
 
         mm.add("(min-width: 768px)", () => {
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: stage,
-                pin: pinInner,
-                pinType: "fixed",
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 0.75,
-                anticipatePin: 1,
-                invalidateOnRefresh: true,
-                onUpdate(self) {
-                  const done = self.progress >= 0.985;
-                  nav.toggleAttribute("inert", done);
-                  heroCopy.toggleAttribute("inert", done);
-                  if (done) {
-                    nav.style.visibility = "hidden";
-                    heroCopy.style.visibility = "hidden";
-                  } else {
-                    nav.style.removeProperty("visibility");
-                    heroCopy.style.removeProperty("visibility");
-                  }
-                },
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: stage,
+              pin: pinInner,
+              pinType: "fixed",
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 0.75,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              onUpdate(self) {
+                const done = self.progress >= 0.985;
+                nav.toggleAttribute("inert", done);
+                heroCopy.toggleAttribute("inert", done);
+                if (done) {
+                  nav.style.visibility = "hidden";
+                  heroCopy.style.visibility = "hidden";
+                } else {
+                  nav.style.removeProperty("visibility");
+                  heroCopy.style.removeProperty("visibility");
+                }
               },
-            })
-            .to(
-              nav,
-              {
-                autoAlpha: 0,
-                ease: "none",
-                duration: 0.3,
-              },
-              0,
-            )
-            .to(
-              heroCopy,
-              {
-                autoAlpha: 0,
-                ease: "none",
-                duration: 0.3,
-              },
-              0,
-            )
+            },
+          });
+
+          tl.to(nav, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
+            .to(heroCopy, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
             .fromTo(
               phone,
               { x: 0, scale: 1 },
               {
-                x: () => offsetXToViewportCenter(phone),
-                scale: 1.34,
+                x: () => {
+                  const group = phoneMoveRef.current;
+                  const mock = phoneMockRef.current;
+                  return group && mock ? offsetXToViewportCenterPhoneScreen(group, mock) : 0;
+                },
+                scale: 1.26,
                 transformOrigin: "50% 50%",
                 ease: "none",
-                duration: 0.42,
+                duration: PHONE_SCROLL_DURATION,
               },
-              0.12,
-            );
+              PHONE_SCROLL_START,
+            )
+            .to({}, { duration: SCROLL_PAD_AFTER_PHONE, ease: "none" }, PHONE_SCROLL_END);
         });
 
         mm.add("(max-width: 767px)", () => {
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: stage,
-                pin: pinInner,
-                pinType: "fixed",
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 0.75,
-                anticipatePin: 1,
-                invalidateOnRefresh: true,
-                onUpdate(self) {
-                  const done = self.progress >= 0.985;
-                  nav.toggleAttribute("inert", done);
-                  heroCopy.toggleAttribute("inert", done);
-                  if (done) {
-                    nav.style.visibility = "hidden";
-                    heroCopy.style.visibility = "hidden";
-                  } else {
-                    nav.style.removeProperty("visibility");
-                    heroCopy.style.removeProperty("visibility");
-                  }
-                },
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: stage,
+              pin: pinInner,
+              pinType: "fixed",
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 0.75,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              onUpdate(self) {
+                const done = self.progress >= 0.985;
+                nav.toggleAttribute("inert", done);
+                heroCopy.toggleAttribute("inert", done);
+                if (done) {
+                  nav.style.visibility = "hidden";
+                  heroCopy.style.visibility = "hidden";
+                } else {
+                  nav.style.removeProperty("visibility");
+                  heroCopy.style.removeProperty("visibility");
+                }
               },
-            })
-            .to(nav, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
+            },
+          });
+
+          tl.to(nav, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
             .to(heroCopy, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
             .fromTo(
               phone,
               { scale: 1, y: 0 },
               {
-                scale: 1.28,
-                y: -28,
-                transformOrigin: "50% 50%",
+                scale: 1.18,
+                y: -4,
+                transformOrigin: "50% 55%",
                 ease: "none",
-                duration: 0.42,
+                duration: PHONE_SCROLL_DURATION,
               },
-              0.12,
-            );
+              PHONE_SCROLL_START,
+            )
+            .to({}, { duration: SCROLL_PAD_AFTER_PHONE, ease: "none" }, PHONE_SCROLL_END);
         });
       }, stage);
 
@@ -264,11 +263,11 @@ export default function Home() {
         >
           <div
             ref={pinInnerRef}
-            className="pin-scene relative z-0 flex flex-col bg-[var(--background)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
+            className="pin-scene relative z-0 flex flex-col bg-[var(--background)]"
           >
             <header
               ref={navRef}
-              className="top-nav relative z-10 shrink-0 px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.9rem,2vw,1.4rem)] will-change-[opacity,transform]"
+              className="top-nav relative z-10 shrink-0 px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.35rem,1vw,0.65rem)] will-change-[opacity,transform]"
             >
               <div className="nav-shell">
                 <a className="nav-brand" href="#" aria-label="PocketEd home">
@@ -283,10 +282,10 @@ export default function Home() {
               </div>
             </header>
 
-            <section className="hero-section relative z-10 mx-auto grid w-full max-w-[1240px] min-h-0 flex-1 grid-cols-1 place-content-center items-center gap-y-8 overflow-visible px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.75rem,3vh,2rem)] pb-[clamp(2.75rem,9vh,6rem)] text-center md:grid-cols-[minmax(0,1fr)_420px] md:items-center md:gap-x-[clamp(2rem,5vw,5.5rem)] md:gap-y-0 md:place-content-center md:text-left">
+            <section className="hero-section relative z-10 mx-auto grid min-h-0 w-full max-w-[1240px] grid-cols-1 place-content-start items-start justify-items-center gap-y-8 overflow-visible px-[clamp(1rem,3.2vw,2.6rem)] pt-0 pb-[clamp(3rem,10vh,6.5rem)] text-center md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:items-start md:gap-x-[clamp(2rem,5vw,5.5rem)] md:gap-y-0 md:place-content-start md:text-left md:justify-items-stretch">
               <div
                 ref={heroCopyRef}
-                className="relative z-10 justify-self-center text-left will-change-[opacity,transform] md:justify-self-start"
+                className="relative z-10 justify-self-center text-left will-change-[opacity,transform] md:justify-self-start md:pt-[clamp(0.75rem,2.5vw,2.5rem)]"
               >
                 <h1 className="m-0 flex flex-col text-[clamp(2.2rem,10.8vw,5.45rem)] font-bold leading-[0.98] tracking-[-0.03em] md:text-[clamp(2.45rem,7.2vw,5.45rem)]">
                   <span className="text-[var(--primary-blue)]">Learn Smarter.</span>
@@ -305,19 +304,23 @@ export default function Home() {
               </div>
 
               <div
-                ref={phoneWrapRef}
-                className="relative z-50 flex items-center justify-center justify-self-center overflow-visible p-[clamp(0.75rem,2.5vw,2.5rem)] will-change-transform md:justify-end md:justify-self-end"
+                className="relative z-50 flex w-full max-md:max-w-[420px] items-center justify-center justify-self-center overflow-visible p-[clamp(0.75rem,2.5vw,2.5rem)] md:w-auto md:justify-self-center"
                 aria-hidden="true"
               >
-                <div className="phone-mock">
-                  <Image
-                    src="/mobile.png"
-                    alt="PocketEd mobile interface"
-                    width={1000}
-                    height={1035}
-                    className="h-auto w-[250px] max-w-none"
-                    priority
-                  />
+                <div
+                  ref={phoneMoveRef}
+                  className="relative inline-flex flex-col items-center will-change-transform md:flex-row md:items-start"
+                >
+                  <div ref={phoneMockRef} className="phone-mock shrink-0">
+                    <Image
+                      src="/mobile.png"
+                      alt="PocketEd mobile interface"
+                      width={1000}
+                      height={1035}
+                      className="h-auto w-[clamp(200px,46vw,222px)] max-w-none md:w-[clamp(214px,22vw,236px)]"
+                      priority
+                    />
+                  </div>
                 </div>
               </div>
             </section>
