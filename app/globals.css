@@ -71,6 +71,18 @@ body {
   overscroll-behavior-y: none;
 }
 
+@media (min-width: 768px) {
+  /* Feature columns sit beside the phone and can extend past the grid cell; clip only on small screens. */
+  .hero-section {
+    overflow-x: visible;
+  }
+
+  .main-content,
+  .site-shell {
+    overflow-x: visible;
+  }
+}
+
 /* Phone mockup asset often includes a scrollbar in the screenshot — trim right edge of screen area */
 .phone-mock {
   overflow: hidden;

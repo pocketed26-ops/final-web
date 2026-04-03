@@ -10,17 +10,26 @@ const PHONE_SCROLL_DURATION = 0.42;
 const PHONE_SCROLL_END = PHONE_SCROLL_START + PHONE_SCROLL_DURATION;
 // These durations are tied to scroll progress (`scrub: 0.75`), so increasing them makes
 // feature animations take longer along the scroll-linked timeline.
-// Tuned so Feature 4 is still after Feature 3, but appears sooner.
-const FEATURE_ONE_SCROLL_DURATION = 6;
-const FEATURE_TWO_SCROLL_DURATION = 6;
-const FEATURE_THREE_SCROLL_DURATION = 6;
-const FEATURE_FOUR_SCROLL_DURATION = 1;
+// Six segments: three right (slide out right), then three left (slide out left).
+const FEATURE_SCROLL_SEGMENT = 6;
+/** Right column (numerical → CTA → mindset), then left column (mirrored), same duration each. */
+const FEATURE_RIGHT_ONE_SCROLL_DURATION = FEATURE_SCROLL_SEGMENT;
+const FEATURE_RIGHT_TWO_SCROLL_DURATION = FEATURE_SCROLL_SEGMENT;
+const FEATURE_RIGHT_THREE_SCROLL_DURATION = FEATURE_SCROLL_SEGMENT;
+const FEATURE_LEFT_ONE_SCROLL_DURATION = FEATURE_SCROLL_SEGMENT;
+const FEATURE_LEFT_TWO_SCROLL_DURATION = FEATURE_SCROLL_SEGMENT;
+const FEATURE_LEFT_THREE_SCROLL_DURATION = FEATURE_SCROLL_SEGMENT;
+
+const TOTAL_FEATURE_SCROLL_DURATION =
+  FEATURE_RIGHT_ONE_SCROLL_DURATION +
+  FEATURE_RIGHT_TWO_SCROLL_DURATION +
+  FEATURE_RIGHT_THREE_SCROLL_DURATION +
+  FEATURE_LEFT_ONE_SCROLL_DURATION +
+  FEATURE_LEFT_TWO_SCROLL_DURATION +
+  FEATURE_LEFT_THREE_SCROLL_DURATION;
+
 /** Extra timeline after phone + feature settle so scroll progress doesn’t end abruptly. */
-const SCROLL_PAD_AFTER_PHONE = () =>
-  Math.max(
-    0,
-    2 - FEATURE_ONE_SCROLL_DURATION - FEATURE_TWO_SCROLL_DURATION - FEATURE_THREE_SCROLL_DURATION - FEATURE_FOUR_SCROLL_DURATION,
-  );
+const SCROLL_PAD_AFTER_PHONE = () => Math.max(0, 2 - TOTAL_FEATURE_SCROLL_DURATION);
 
 /** Align transform-group x so the *phone mock* (not the whole group bbox) lands in viewport center. */
 function offsetXToViewportCenterPhoneScreen(group: HTMLElement, phoneMock: HTMLElement): number {
@@ -30,11 +39,37 @@ function offsetXToViewportCenterPhoneScreen(group: HTMLElement, phoneMock: HTMLE
   return window.innerWidth / 2 - phoneCx;
 }
 
-/** Shift the feature left so it sits under the phone (same horizontal band); phone stays on top via z-index. */
-function offsetXFeatureBehindPhone(phoneMock: HTMLElement, phoneMove: HTMLElement): number {
+/** Panels are wider than the phone (icon + copy); tuck by full panel width so no text peeks past the bezel. */
+function featureExtraTuckBehindPhone(featureEl: HTMLElement | null | undefined, phoneMock: HTMLElement): number {
+  if (!featureEl) {
+    return 96;
+  }
+  const panelW = featureEl.offsetWidth;
+  const phoneW = phoneMock.offsetWidth;
+  const overlap = panelW - phoneW;
+  return Math.max(0, overlap) + 16;
+}
+
+/** Right column: shift x negative so the block sits under the phone; slides out to the right. */
+function offsetXFeatureBehindPhoneRight(
+  phoneMock: HTMLElement,
+  phoneMove: HTMLElement,
+  featureEl: HTMLElement | null | undefined,
+): number {
   const gapRaw = window.getComputedStyle(phoneMove).columnGap || window.getComputedStyle(phoneMove).gap;
   const gap = Number.parseFloat(gapRaw) || 12;
-  return -(phoneMock.offsetWidth + gap);
+  return -(phoneMock.offsetWidth + gap + featureExtraTuckBehindPhone(featureEl, phoneMock));
+}
+
+/** Left column: shift x positive so the block sits under the phone; slides out to the left. */
+function offsetXFeatureBehindPhoneLeft(
+  phoneMock: HTMLElement,
+  phoneMove: HTMLElement,
+  featureEl: HTMLElement | null | undefined,
+): number {
+  const gapRaw = window.getComputedStyle(phoneMove).columnGap || window.getComputedStyle(phoneMove).gap;
+  const gap = Number.parseFloat(gapRaw) || 12;
+  return phoneMock.offsetWidth + gap + featureExtraTuckBehindPhone(featureEl, phoneMock);
 }
 
 const SVG_WIDTH = 1200;
@@ -72,10 +107,12 @@ export default function Home() {
   const heroCopyRef = useRef<HTMLDivElement>(null);
   const phoneMoveRef = useRef<HTMLDivElement>(null);
   const phoneMockRef = useRef<HTMLDivElement>(null);
-  const featureOneRef = useRef<HTMLDivElement>(null);
-  const featureTwoRef = useRef<HTMLDivElement>(null);
-  const featureThreeRef = useRef<HTMLDivElement>(null);
-  const featureFourRef = useRef<HTMLDivElement>(null);
+  const featureRightOneRef = useRef<HTMLDivElement>(null);
+  const featureRightTwoRef = useRef<HTMLDivElement>(null);
+  const featureRightThreeRef = useRef<HTMLDivElement>(null);
+  const featureLeftOneRef = useRef<HTMLDivElement>(null);
+  const featureLeftTwoRef = useRef<HTMLDivElement>(null);
+  const featureLeftThreeRef = useRef<HTMLDivElement>(null);
 
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState(0);
@@ -142,10 +179,12 @@ export default function Home() {
       const heroCopy = heroCopyRef.current;
       const phone = phoneMoveRef.current;
       const phoneMock = phoneMockRef.current;
-      const featureOne = featureOneRef.current;
-      const featureTwo = featureTwoRef.current;
-      const featureThree = featureThreeRef.current;
-      const featureFour = featureFourRef.current;
+      const featureRightOne = featureRightOneRef.current;
+      const featureRightTwo = featureRightTwoRef.current;
+      const featureRightThree = featureRightThreeRef.current;
+      const featureLeftOne = featureLeftOneRef.current;
+      const featureLeftTwo = featureLeftTwoRef.current;
+      const featureLeftThree = featureLeftThreeRef.current;
       if (!stage || !pinInner || !nav || !heroCopy || !phone || !phoneMock) {
         return;
       }
@@ -164,51 +203,75 @@ export default function Home() {
         const mm = gsap.matchMedia();
 
         mm.add("(min-width: 768px)", () => {
-          if (featureOne) {
-            gsap.set(featureOne, {
+          if (featureRightOne) {
+            gsap.set(featureRightOne, {
               x: () => {
                 const mock = phoneMockRef.current;
                 const move = phoneMoveRef.current;
-                return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                return mock && move ? offsetXFeatureBehindPhoneRight(mock, move, featureRightOne) : -280;
               },
               autoAlpha: 0,
               transformOrigin: "0% 50%",
             });
           }
 
-          if (featureTwo) {
-            gsap.set(featureTwo, {
+          if (featureRightTwo) {
+            gsap.set(featureRightTwo, {
               x: () => {
                 const mock = phoneMockRef.current;
                 const move = phoneMoveRef.current;
-                return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                return mock && move ? offsetXFeatureBehindPhoneRight(mock, move, featureRightTwo) : -280;
               },
               autoAlpha: 0,
               transformOrigin: "0% 50%",
             });
           }
 
-          if (featureThree) {
-            gsap.set(featureThree, {
+          if (featureRightThree) {
+            gsap.set(featureRightThree, {
               x: () => {
                 const mock = phoneMockRef.current;
                 const move = phoneMoveRef.current;
-                return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                return mock && move ? offsetXFeatureBehindPhoneRight(mock, move, featureRightThree) : -280;
               },
               autoAlpha: 0,
               transformOrigin: "0% 50%",
             });
           }
 
-          if (featureFour) {
-            gsap.set(featureFour, {
+          if (featureLeftOne) {
+            gsap.set(featureLeftOne, {
               x: () => {
                 const mock = phoneMockRef.current;
                 const move = phoneMoveRef.current;
-                return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                return mock && move ? offsetXFeatureBehindPhoneLeft(mock, move, featureLeftOne) : 280;
               },
               autoAlpha: 0,
-              transformOrigin: "0% 50%",
+              transformOrigin: "100% 50%",
+            });
+          }
+
+          if (featureLeftTwo) {
+            gsap.set(featureLeftTwo, {
+              x: () => {
+                const mock = phoneMockRef.current;
+                const move = phoneMoveRef.current;
+                return mock && move ? offsetXFeatureBehindPhoneLeft(mock, move, featureLeftTwo) : 280;
+              },
+              autoAlpha: 0,
+              transformOrigin: "100% 50%",
+            });
+          }
+
+          if (featureLeftThree) {
+            gsap.set(featureLeftThree, {
+              x: () => {
+                const mock = phoneMockRef.current;
+                const move = phoneMoveRef.current;
+                return mock && move ? offsetXFeatureBehindPhoneLeft(mock, move, featureLeftThree) : 280;
+              },
+              autoAlpha: 0,
+              transformOrigin: "100% 50%",
             });
           }
 
@@ -256,14 +319,21 @@ export default function Home() {
               PHONE_SCROLL_START,
             );
 
-          if (featureOne) {
+          const tRight1 = PHONE_SCROLL_END;
+          const tRight2 = tRight1 + FEATURE_RIGHT_ONE_SCROLL_DURATION;
+          const tRight3 = tRight2 + FEATURE_RIGHT_TWO_SCROLL_DURATION;
+          const tLeft1 = tRight3 + FEATURE_RIGHT_THREE_SCROLL_DURATION;
+          const tLeft2 = tLeft1 + FEATURE_LEFT_ONE_SCROLL_DURATION;
+          const tLeft3 = tLeft2 + FEATURE_LEFT_TWO_SCROLL_DURATION;
+
+          if (featureRightOne) {
             tl.fromTo(
-              featureOne,
+              featureRightOne,
               {
                 x: () => {
                   const mock = phoneMockRef.current;
                   const move = phoneMoveRef.current;
-                  return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                  return mock && move ? offsetXFeatureBehindPhoneRight(mock, move, featureRightOne) : -280;
                 },
                 autoAlpha: 0,
               },
@@ -271,20 +341,20 @@ export default function Home() {
                 x: 0,
                 autoAlpha: 1,
                 ease: "none",
-                duration: FEATURE_ONE_SCROLL_DURATION,
+                duration: FEATURE_RIGHT_ONE_SCROLL_DURATION,
               },
-              PHONE_SCROLL_END,
+              tRight1,
             );
           }
 
-          if (featureTwo) {
+          if (featureRightTwo) {
             tl.fromTo(
-              featureTwo,
+              featureRightTwo,
               {
                 x: () => {
                   const mock = phoneMockRef.current;
                   const move = phoneMoveRef.current;
-                  return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                  return mock && move ? offsetXFeatureBehindPhoneRight(mock, move, featureRightTwo) : -280;
                 },
                 autoAlpha: 0,
               },
@@ -292,20 +362,20 @@ export default function Home() {
                 x: 0,
                 autoAlpha: 1,
                 ease: "none",
-                duration: FEATURE_TWO_SCROLL_DURATION,
+                duration: FEATURE_RIGHT_TWO_SCROLL_DURATION,
               },
-              PHONE_SCROLL_END + FEATURE_ONE_SCROLL_DURATION,
+              tRight2,
             );
           }
 
-          if (featureThree) {
+          if (featureRightThree) {
             tl.fromTo(
-              featureThree,
+              featureRightThree,
               {
                 x: () => {
                   const mock = phoneMockRef.current;
                   const move = phoneMoveRef.current;
-                  return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                  return mock && move ? offsetXFeatureBehindPhoneRight(mock, move, featureRightThree) : -280;
                 },
                 autoAlpha: 0,
               },
@@ -313,20 +383,20 @@ export default function Home() {
                 x: 0,
                 autoAlpha: 1,
                 ease: "none",
-                duration: FEATURE_THREE_SCROLL_DURATION,
+                duration: FEATURE_RIGHT_THREE_SCROLL_DURATION,
               },
-              PHONE_SCROLL_END + FEATURE_ONE_SCROLL_DURATION + FEATURE_TWO_SCROLL_DURATION,
+              tRight3,
             );
           }
 
-          if (featureFour) {
+          if (featureLeftOne) {
             tl.fromTo(
-              featureFour,
+              featureLeftOne,
               {
                 x: () => {
                   const mock = phoneMockRef.current;
                   const move = phoneMoveRef.current;
-                  return mock && move ? offsetXFeatureBehindPhone(mock, move) : -160;
+                  return mock && move ? offsetXFeatureBehindPhoneLeft(mock, move, featureLeftOne) : 280;
                 },
                 autoAlpha: 0,
               },
@@ -334,23 +404,58 @@ export default function Home() {
                 x: 0,
                 autoAlpha: 1,
                 ease: "none",
-                duration: FEATURE_FOUR_SCROLL_DURATION,
+                duration: FEATURE_LEFT_ONE_SCROLL_DURATION,
               },
-              PHONE_SCROLL_END +
-                FEATURE_ONE_SCROLL_DURATION +
-                FEATURE_TWO_SCROLL_DURATION +
-                FEATURE_THREE_SCROLL_DURATION,
+              tLeft1,
+            );
+          }
+
+          if (featureLeftTwo) {
+            tl.fromTo(
+              featureLeftTwo,
+              {
+                x: () => {
+                  const mock = phoneMockRef.current;
+                  const move = phoneMoveRef.current;
+                  return mock && move ? offsetXFeatureBehindPhoneLeft(mock, move, featureLeftTwo) : 280;
+                },
+                autoAlpha: 0,
+              },
+              {
+                x: 0,
+                autoAlpha: 1,
+                ease: "none",
+                duration: FEATURE_LEFT_TWO_SCROLL_DURATION,
+              },
+              tLeft2,
+            );
+          }
+
+          if (featureLeftThree) {
+            tl.fromTo(
+              featureLeftThree,
+              {
+                x: () => {
+                  const mock = phoneMockRef.current;
+                  const move = phoneMoveRef.current;
+                  return mock && move ? offsetXFeatureBehindPhoneLeft(mock, move, featureLeftThree) : 280;
+                },
+                autoAlpha: 0,
+              },
+              {
+                x: 0,
+                autoAlpha: 1,
+                ease: "none",
+                duration: FEATURE_LEFT_THREE_SCROLL_DURATION,
+              },
+              tLeft3,
             );
           }
 
           tl.to(
             {},
             { duration: SCROLL_PAD_AFTER_PHONE(), ease: "none" },
-            PHONE_SCROLL_END +
-              FEATURE_ONE_SCROLL_DURATION +
-              FEATURE_TWO_SCROLL_DURATION +
-              FEATURE_THREE_SCROLL_DURATION +
-              FEATURE_FOUR_SCROLL_DURATION,
+            PHONE_SCROLL_END + TOTAL_FEATURE_SCROLL_DURATION,
           );
         });
 
@@ -450,10 +555,10 @@ export default function Home() {
               </div>
             </header>
 
-            <section className="hero-section relative z-10 mx-auto grid min-h-0 w-full max-w-[1240px] grid-cols-1 place-content-start items-start justify-items-center gap-y-8 overflow-visible px-[clamp(1rem,3.2vw,2.6rem)] pt-0 pb-[clamp(3rem,10vh,6.5rem)] text-center md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:items-start md:gap-x-[clamp(2rem,5vw,5.5rem)] md:gap-y-0 md:place-content-start md:text-left md:justify-items-stretch">
+            <section className="hero-section relative z-10 mx-auto grid min-h-0 w-full max-w-[1240px] grid-cols-1 place-content-start items-start justify-items-center gap-y-8 px-[clamp(1rem,3.2vw,2.6rem)] pt-0 pb-[clamp(3rem,10vh,6.5rem)] text-center md:grid-cols-[minmax(0,1fr)_minmax(0,560px)] md:items-start md:gap-x-[clamp(2rem,5vw,5.5rem)] md:gap-y-0 md:place-content-start md:text-left md:justify-items-stretch">
               <div
                 ref={heroCopyRef}
-                className="relative z-10 justify-self-center text-left will-change-[opacity,transform] md:justify-self-start md:pt-[clamp(0.75rem,2.5vw,2.5rem)]"
+                className="relative z-20 justify-self-center text-left will-change-[opacity,transform] md:justify-self-start md:pt-[clamp(0.75rem,2.5vw,2.5rem)]"
               >
                 <h1 className="m-0 flex flex-col text-[clamp(2.2rem,10.8vw,5.45rem)] font-bold leading-[0.98] tracking-[-0.03em] md:text-[clamp(2.45rem,7.2vw,5.45rem)]">
                   <span className="text-[var(--primary-blue)]">Learn Smarter.</span>
@@ -472,13 +577,87 @@ export default function Home() {
               </div>
 
               <div
-                className="relative z-50 flex w-full max-md:max-w-[420px] items-center justify-center justify-self-center overflow-visible p-[clamp(0.75rem,2.5vw,2.5rem)] md:w-auto md:justify-self-center"
+                className="relative z-10 flex w-full max-md:max-w-[420px] items-center justify-center justify-self-center overflow-visible p-[clamp(0.75rem,2.5vw,2.5rem)] md:w-auto md:justify-self-end"
                 aria-hidden="true"
               >
                 <div
                   ref={phoneMoveRef}
                   className="relative isolate inline-flex flex-col items-center will-change-transform md:flex-row md:items-start md:gap-[clamp(0.6rem,1.6vw,1.15rem)]"
                 >
+                  <div className="hidden flex-col gap-[4.5rem] md:absolute md:right-full md:mr-[clamp(0.6rem,1.6vw,1.15rem)] md:top-0 md:flex md:pt-[clamp(1rem,3vh,2rem)] md:w-[22rem] md:items-end">
+                    <div
+                      ref={featureLeftOneRef}
+                      className="feature-left-one-panel pointer-events-none relative z-0 flex max-w-[20rem] w-auto shrink-0 md:pointer-events-auto md:flex-row md:items-center md:gap-3 md:text-right"
+                    >
+                      <div className="flex min-w-0 flex-col gap-1 md:order-1">
+                        <h2 className="m-0 text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-[#141414]">
+                          Smart habits
+                        </h2>
+                        <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
+                          Track spending and saving, set up financial routines, understand spending triggers.
+                        </p>
+                      </div>
+                      <div className="shrink-0 md:order-2">
+                        <Image
+                          src="/feature4.png"
+                          alt=""
+                          width={80}
+                          height={80}
+                          className="h-24  w-24 object-contain"
+                          aria-hidden
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      ref={featureLeftTwoRef}
+                      className="feature-left-two-panel pointer-events-none relative z-0 mr-[25px] flex max-w-[20rem] w-auto shrink-0 md:pointer-events-auto md:flex-row md:items-center md:gap-3 md:text-right"
+                    >
+                      <div className="flex min-w-0 flex-col gap-1 md:order-1">
+                        <h2 className="m-0 text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-[#141414]">
+                          Financial foundations
+                        </h2>
+                        <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
+                          Learn money management basics—savings, investments, credit—and build financial literacy.
+                        </p>
+                      </div>
+                      <div className="shrink-0 md:order-2">
+                        <Image
+                          src="/feature5.png"
+                          alt=""
+                          width={80}
+                          height={80}
+                          className="h-24 w-24 object-contain"
+                          aria-hidden
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      ref={featureLeftThreeRef}
+                      className="feature-left-three-panel pointer-events-none relative z-0 flex max-w-[20rem] w-auto shrink-0 md:pointer-events-auto md:flex-row md:items-center md:gap-3 md:text-right"
+                    >
+                      <div className="flex min-w-0 flex-col gap-1 md:order-1">
+                        <h2 className="m-0 text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-[#141414]">
+                          Critical thinking
+                        </h2>
+                        <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
+                          Compare financial products, avoid scams, evaluate needs vs. wants, and plan for goals.
+                        </p>
+                      </div>
+                      <div className="shrink-0 md:order-2">
+                        <Image
+                          src="/feature6.png"
+                          alt=""
+                          width={80}
+                          height={80}
+                          className="h-26 w-26 object-contain"
+                          aria-hidden
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   <div ref={phoneMockRef} className="phone-mock relative z-20 shrink-0">
                     <Image
                       src="/mobile.png"
@@ -489,10 +668,11 @@ export default function Home() {
                       priority
                     />
                   </div>
-                  <div className="hidden flex-col gap-25 md:flex md:pt-[clamp(1rem,3vh,2rem)] md:shrink-0">
+
+                  <div className="hidden flex-col gap-[6rem] md:absolute md:left-full md:ml-[clamp(0.6rem,1.6vw,1.15rem)] md:top-0 md:flex md:pt-[clamp(1rem,3vh,2rem)] md:w-[22rem] md:items-start">
                     <div
-                      ref={featureOneRef}
-                      className="feature-one-panel pointer-events-none relative z-0 flex max-w-xs w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                      ref={featureRightOneRef}
+                      className="feature-right-one-panel  pointer-events-none relative z-0 flex max-w-[20rem] w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
                     >
                       <div className="shrink-0">
                         <Image
@@ -504,20 +684,20 @@ export default function Home() {
                           aria-hidden
                         />
                       </div>
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <h2 className="m-0 text-[13px] font-bold leading-tight tracking-[-0.02em] text-[#141414]">
-                          Numerical skills
+                      <div className="flex flex-col gap-1">
+                        <h2 className="m-0 text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-[#141414]">
+                          Numerical
                         </h2>
                         <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
-                          Work with interest, budgets, and real numbers—plan expenses, compare options, and
-                          use ratios and percentages with confidence.
+                          Understand interest rates and loans, budget using real numbers, plan expenses with
+                          accuracy, and use ratios and percentages.
                         </p>
                       </div>
                     </div>
 
                     <div
-                      ref={featureTwoRef}
-                      className="feature-two-panel  pointer-events-none ml-[25px] relative z-0 flex max-w-xs w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                      ref={featureRightTwoRef}
+                      className="feature-right-two-panel pointer-events-none ml-[25px] relative z-0 flex max-w-[20rem] w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
                     >
                       <div className="shrink-0">
                         <Image
@@ -530,7 +710,7 @@ export default function Home() {
                         />
                       </div>
                       <div className="flex min-w-0 flex-col gap-1">
-                        <h2 className="m-0 text-[13px] font-bold leading-tight tracking-[-0.02em] text-[#141414]">
+                        <h2 className="m-0 text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-[#141414]">
                           Clear CTA
                         </h2>
                         <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
@@ -539,9 +719,10 @@ export default function Home() {
                         </p>
                       </div>
                     </div>
+
                     <div
-                      ref={featureThreeRef}
-                      className="feature-three-panel pointer-events-none relative z-0 flex max-w-xs w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                      ref={featureRightThreeRef}
+                      className="feature-right-three-panel pointer-events-none relative z-0 flex max-w-[20rem] w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
                     >
                       <div className="shrink-0">
                         <Image
@@ -554,36 +735,12 @@ export default function Home() {
                         />
                       </div>
                       <div className="flex min-w-0 flex-col gap-1">
-                        <h2 className="m-0 text-[13px] font-bold leading-tight tracking-[-0.02em] text-[#141414]">
+                        <h2 className="m-0 text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-[#141414]">
                           Entrepreneurial mindset
                         </h2>
                         <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
-                          Spot business opportunities, understand risk vs reward, and manage side projects with
-                          confidence.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div
-                      ref={featureFourRef}
-                      className="feature-four-panel pointer-events-none relative z-0 flex max-w-xs w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
-                    >
-                      <div className="shrink-0">
-                        <Image
-                          src="/feature4.png"
-                          alt=""
-                          width={80}
-                          height={80}
-                          className="h-20 w-20 object-contain"
-                          aria-hidden
-                        />
-                      </div>
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <h2 className="m-0 text-[13px] font-bold leading-tight tracking-[-0.02em] text-[#141414]">
-                          Balanced decisions
-                        </h2>
-                        <p className="m-0 text-[10px] leading-snug text-[#5a5a5a]">
-                          Weigh trade-offs and choose the best next step with clarity and confidence.
+                          Spot business opportunities, understand risk vs. reward, innovate for income, and
+                          manage side projects.
                         </p>
                       </div>
                     </div>
