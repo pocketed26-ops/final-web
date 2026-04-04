@@ -28,8 +28,8 @@ const TOTAL_FEATURE_SCROLL_DURATION =
   FEATURE_LEFT_TWO_SCROLL_DURATION +
   FEATURE_LEFT_THREE_SCROLL_DURATION;
 
-/** Extra timeline after phone + feature settle so scroll progress doesn’t end abruptly. */
-const SCROLL_PAD_AFTER_PHONE = () => Math.max(0, 2 - TOTAL_FEATURE_SCROLL_DURATION);
+const ZOOM_SCROLL_DURATION = 5;
+const VIDEO_SCROLL_DURATION = 20;
 
 /** Align transform-group x so the *phone mock* (not the whole group bbox) lands in viewport center. */
 function offsetXToViewportCenterPhoneScreen(group: HTMLElement, phoneMock: HTMLElement): number {
@@ -113,6 +113,9 @@ export default function Home() {
   const featureLeftOneRef = useRef<HTMLDivElement>(null);
   const featureLeftTwoRef = useRef<HTMLDivElement>(null);
   const featureLeftThreeRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const visionMissionOneRef = useRef<HTMLDivElement>(null);
+  const visionMissionTwoRef = useRef<HTMLDivElement>(null);
 
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState(0);
@@ -456,11 +459,66 @@ export default function Home() {
             );
           }
 
+          const tFeaturesEndDesktop = PHONE_SCROLL_END + TOTAL_FEATURE_SCROLL_DURATION;
+
+          tl.to(
+            phone,
+            {
+              scale: 140,
+              transformOrigin: "24% 68%",
+              ease: "power2.inOut",
+              duration: ZOOM_SCROLL_DURATION,
+            },
+            tFeaturesEndDesktop
+          );
+
+          const tZoomEndDesktop = tFeaturesEndDesktop + ZOOM_SCROLL_DURATION;
+
+          tl.to(
+            videoRef.current,
+            { autoAlpha: 1, ease: "power1.inOut", duration: ZOOM_SCROLL_DURATION * 0.6 },
+            tFeaturesEndDesktop + ZOOM_SCROLL_DURATION * 0.4
+          );
+
+          const tMissionInDesk = tZoomEndDesktop + VIDEO_SCROLL_DURATION * 0.15;
+          const tMissionOutDesk = tZoomEndDesktop + VIDEO_SCROLL_DURATION * 0.45;
+          const tVisionInDesk = tZoomEndDesktop + VIDEO_SCROLL_DURATION * 0.55;
+
+          tl.to(
+            visionMissionOneRef.current,
+            { autoAlpha: 1, ease: "power2.out", duration: 3 },
+            tMissionInDesk
+          );
+
+          tl.to(
+            visionMissionOneRef.current,
+            { autoAlpha: 0, ease: "power2.in", duration: 2 },
+            tMissionOutDesk
+          );
+
+          tl.to(
+            visionMissionTwoRef.current,
+            { autoAlpha: 1, ease: "power2.out", duration: 3 },
+            tVisionInDesk
+          );
+
           tl.to(
             {},
-            { duration: SCROLL_PAD_AFTER_PHONE(), ease: "none" },
-            PHONE_SCROLL_END + TOTAL_FEATURE_SCROLL_DURATION,
+            {
+              duration: VIDEO_SCROLL_DURATION,
+              ease: "none",
+              onUpdate: function () {
+                const vid = videoRef.current;
+                if (vid && vid.readyState >= 1) {
+                  vid.currentTime = this.progress() * vid.duration;
+                }
+              },
+            },
+            tZoomEndDesktop
           );
+
+          // Hold the "Our Vision" screen for a bit before unpinning to scroll the white section up
+          tl.to({}, { duration: 6 });
         });
 
         mm.add("(max-width: 767px)", () => {
@@ -503,7 +561,68 @@ export default function Home() {
               },
               PHONE_SCROLL_START,
             )
-            .to({}, { duration: SCROLL_PAD_AFTER_PHONE(), ease: "none" }, PHONE_SCROLL_END);
+            .to({}, { duration: TOTAL_FEATURE_SCROLL_DURATION, ease: "none" }, PHONE_SCROLL_END);
+
+          const tFeaturesEndMobile = PHONE_SCROLL_END + TOTAL_FEATURE_SCROLL_DURATION;
+
+          tl.to(
+            phone,
+            {
+              scale: 140,
+              transformOrigin: "24% 68%",
+              ease: "power2.inOut",
+              duration: ZOOM_SCROLL_DURATION,
+            },
+            tFeaturesEndMobile
+          );
+
+          const tZoomEndMobile = tFeaturesEndMobile + ZOOM_SCROLL_DURATION;
+
+          tl.to(
+            videoRef.current,
+            { autoAlpha: 1, ease: "power1.inOut", duration: ZOOM_SCROLL_DURATION * 0.6 },
+            tFeaturesEndMobile + ZOOM_SCROLL_DURATION * 0.4
+          );
+
+          const tMissionInMob = tZoomEndMobile + VIDEO_SCROLL_DURATION * 0.15;
+          const tMissionOutMob = tZoomEndMobile + VIDEO_SCROLL_DURATION * 0.45;
+          const tVisionInMob = tZoomEndMobile + VIDEO_SCROLL_DURATION * 0.55;
+
+          tl.to(
+            visionMissionOneRef.current,
+            { autoAlpha: 1, ease: "power2.out", duration: 3 },
+            tMissionInMob
+          );
+
+          tl.to(
+            visionMissionOneRef.current,
+            { autoAlpha: 0, ease: "power2.in", duration: 2 },
+            tMissionOutMob
+          );
+
+          tl.to(
+            visionMissionTwoRef.current,
+            { autoAlpha: 1, ease: "power2.out", duration: 3 },
+            tVisionInMob
+          );
+
+          tl.to(
+            {},
+            {
+              duration: VIDEO_SCROLL_DURATION,
+              ease: "none",
+              onUpdate: function () {
+                const vid = videoRef.current;
+                if (vid && vid.readyState >= 1) {
+                  vid.currentTime = this.progress() * vid.duration;
+                }
+              },
+            },
+            tZoomEndMobile
+          );
+
+          // Hold the "Our Vision" screen for a bit before unpinning to scroll the white section up
+          tl.to({}, { duration: 6 });
         });
       }, stage);
 
@@ -536,12 +655,40 @@ export default function Home() {
       <main className="main-content" aria-hidden={showLoader}>
         <section
           ref={scrollStageRef}
-          className="relative h-[min(800vh,6000px)] w-full"
+          className="relative h-[min(1400vh,10000px)] w-full"
         >
           <div
             ref={pinInnerRef}
             className="pin-scene relative z-0 flex flex-col bg-[var(--background)]"
           >
+            <video
+              ref={videoRef}
+              src="/new_updated_explaination_video.mp4"
+              className="pointer-events-none absolute inset-0 z-[100] h-full w-full object-cover opacity-0"
+              playsInline
+              muted
+              loop
+            />
+            <div
+              className="pointer-events-none absolute inset-0 z-[110] flex h-full w-full items-center justify-center sm:justify-end px-[5%] sm:pr-[8%] md:pr-[12%]"
+            >
+              <div className="relative w-full max-w-[480px]">
+                <div className="absolute left-0 bottom-[60%] w-full -translate-y-1/2 grid">
+                  <div ref={visionMissionOneRef} className="col-start-1 row-start-1 w-full text-white opacity-0">
+                    <h2 className="mb-3 text-[clamp(2rem,6vw,3.5rem)] font-bold tracking-tight">The Mission.</h2>
+                    <p className="text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed text-[#f4f4f4]">
+                      With only 27% of Indian adults being financially literate, a critical gap exists. Our mission is to empower the next generation with the knowledge and confidence to navigate the world of finance.
+                    </p>
+                  </div>
+                  <div ref={visionMissionTwoRef} className="col-start-1 row-start-1 w-full text-white opacity-0">
+                    <h2 className="mb-3 text-[clamp(2rem,6vw,3.5rem)] font-bold tracking-tight">Our Vision</h2>
+                    <p className="text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed text-[#f4f4f4]">
+                      To create a financially savvy generation that can build a secure future for themselves and contribute to India’s economic growth.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
             <header
               ref={navRef}
               className="top-nav relative z-10 shrink-0 px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.35rem,1vw,0.65rem)] will-change-[opacity,transform]"
@@ -753,6 +900,11 @@ export default function Home() {
               </div>
             </section>
           </div>
+        </section>
+        
+        {/* Complete White Screen Section below the pinned video */}
+        <section className="h-[150vh] w-full bg-white relative z-20">
+          {/* A completely white screen as requested. Content can be added here later. */}
         </section>
       </main>
 
