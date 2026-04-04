@@ -5,8 +5,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
-const PHONE_SCROLL_START = 0.12;
-const PHONE_SCROLL_DURATION = 0.42;
+const PHONE_SCROLL_START = 1;
+const PHONE_SCROLL_DURATION = 6;
 const PHONE_SCROLL_END = PHONE_SCROLL_START + PHONE_SCROLL_DURATION;
 // These durations are tied to scroll progress (`scrub: 0.75`), so increasing them makes
 // feature animations take longer along the scroll-linked timeline.
@@ -123,7 +123,7 @@ export default function Home() {
   useEffect(() => {
     const durationMs = 6000;
     const holdAtFullMs = 320;
-    const zoomOutMs = 2800;
+    const zoomOutMs = 900;
     const startedAt = performance.now();
     let completeTimeoutId: number | undefined;
     let hideTimeoutId: number | undefined;
@@ -200,6 +200,10 @@ export default function Home() {
       gsap.set(nav, { autoAlpha: 1, scale: 1 });
       gsap.set(heroCopy, { autoAlpha: 1, scale: 1 });
       ctx = gsap.context(() => {
+        gsap.from(nav, { autoAlpha: 0, y: -20, duration: 1.2, ease: "power3.out" });
+        gsap.from(heroCopy, { autoAlpha: 0, y: 30, duration: 1.4, ease: "power3.out", delay: 0.2 });
+        gsap.from(phone, { autoAlpha: 0, y: 40, duration: 1.6, ease: "power3.out", delay: 0.4 });
+
         const mm = gsap.matchMedia();
 
         mm.add("(min-width: 768px)", () => {
@@ -282,7 +286,7 @@ export default function Home() {
               pinType: "fixed",
               start: "top top",
               end: "bottom bottom",
-              scrub: 0.75,
+              scrub: 2,
               anticipatePin: 1,
               invalidateOnRefresh: true,
               onUpdate(self) {
@@ -300,8 +304,8 @@ export default function Home() {
             },
           });
 
-          tl.to(nav, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
-            .to(heroCopy, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
+          tl.to(nav, { autoAlpha: 0, ease: "none", duration: PHONE_SCROLL_DURATION }, PHONE_SCROLL_START)
+            .to(heroCopy, { autoAlpha: 0, ease: "none", duration: PHONE_SCROLL_DURATION }, PHONE_SCROLL_START)
             .fromTo(
               phone,
               { x: 0, scale: 1 },
@@ -467,7 +471,7 @@ export default function Home() {
               pinType: "fixed",
               start: "top top",
               end: "bottom bottom",
-              scrub: 0.75,
+              scrub: 2,
               anticipatePin: 1,
               invalidateOnRefresh: true,
               onUpdate(self) {
@@ -485,8 +489,8 @@ export default function Home() {
             },
           });
 
-          tl.to(nav, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
-            .to(heroCopy, { autoAlpha: 0, ease: "none", duration: 0.3 }, 0)
+          tl.to(nav, { autoAlpha: 0, ease: "none", duration: PHONE_SCROLL_DURATION }, PHONE_SCROLL_START)
+            .to(heroCopy, { autoAlpha: 0, ease: "none", duration: PHONE_SCROLL_DURATION }, PHONE_SCROLL_START)
             .fromTo(
               phone,
               { scale: 1, y: 0 },
@@ -532,7 +536,7 @@ export default function Home() {
       <main className="main-content" aria-hidden={showLoader}>
         <section
           ref={scrollStageRef}
-          className="relative h-[min(300vh,2600px)] w-full"
+          className="relative h-[min(800vh,6000px)] w-full"
         >
           <div
             ref={pinInnerRef}
