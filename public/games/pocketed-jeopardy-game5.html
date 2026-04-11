@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Jeopardy — Pocketed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #060F1A;
+      --card:   #0B1928;
+      --card2:  #0F2035;
+      --border: rgba(255,255,255,0.07);
+      --green:  #0FDB82;
+      --gold:   #F7CC45;
+      --muted:  #4A6485;
+      --text:   #EDF4FF;
+      /* Team colours */
+      --t0: #FF5272;
+      --t1: #0EC9D8;
+      --t2: #F7CC45;
+      --t3: #A855F7;
+      /* Category colours */
+      --c0: #0FDB82;
+      --c1: #4BAFFF;
+      --c2: #A855F7;
+      --c3: #FF8C42;
+      --c4: #0EC9D8;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      background-image: radial-gradient(ellipse 60% 30% at 50% 0%, rgba(15,219,130,0.05) 0%, transparent 60%);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ═══════════════════════════════
+       SHARED UTILS
+    ═══════════════════════════════ */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .logo-top {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--green);
+      letter-spacing: -0.3px;
+    }
+    .logo-top em { color: var(--text); font-style: normal; }
+
+    /* ═══════════════════════════════
+       SETUP PAGE
+    ═══════════════════════════════ */
+    #pg-setup {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .setup-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .setup-header .logo-top { margin-bottom: 16px; display: block; }
+
+    .setup-icon { font-size: 44px; margin-bottom: 10px; }
+    .setup-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .setup-sub { font-size: 14px; color: var(--muted); }
+
+    /* Step dots */
+    .steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .step-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--card2);
+      border: 2px solid var(--border);
+      transition: all .2s;
+    }
+    .step-dot.active { background: var(--green); border-color: var(--green); width: 28px; border-radius: 5px; }
+    .step-line { width: 40px; height: 1px; background: var(--border); }
+
+    .step-page { display: none; }
+    .step-page.active { display: block; }
+
+    .section-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .18s;
+      margin-bottom: 14px;
+    }
+    input:focus, select:focus { border-color: rgba(15,219,130,0.4); }
+
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Toggle */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .toggle-label { font-size: 13px; color: var(--text); flex: 1; }
+    .toggle-sub { font-size: 11px; color: var(--muted); display: block; }
+    .toggle {
+      position: relative;
+      width: 40px; height: 22px;
+      cursor: pointer;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--card2);
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      transition: background .2s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--green); border-color: var(--green); }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 14px; height: 14px;
+      background: white;
+      border-radius: 50%;
+      transition: transform .2s;
+    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(18px); }
+
+    /* Teams grid */
+    .teams-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .team-input-wrap {
+      position: relative;
+    }
+    .team-color-dot {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .team-input-wrap input {
+      padding-left: 30px;
+      margin-bottom: 0;
+    }
+    .team-add-btn {
+      background: transparent;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .team-add-btn:hover { border-color: var(--muted); color: var(--text); }
+    .team-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Nav buttons */
+    .setup-nav {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .btn-back {
+      flex: 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 13px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .btn-back:hover { color: var(--text); border-color: var(--muted); }
+    .btn-next-setup {
+      flex: 1;
+      background: var(--green);
+      color: #002E16;
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .btn-next-setup:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(15,219,130,0.35); }
+
+    /* ═══════════════════════════════
+       BOARD PAGE
+    ═══════════════════════════════ */
+    #pg-board {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    #pg-board.active { display: flex; }
+
+    .board-header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .board-header .logo-top { flex-shrink: 0; }
+
+    .teams-scores {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .score-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all .2s;
+    }
+    .score-chip.active-turn {
+      border-width: 2px;
+      box-shadow: 0 0 12px rgba(255,255,255,0.1);
+    }
+    .score-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+    .score-val { font-family: 'Syne', sans-serif; font-weight: 800; }
+
+    .header-btns {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn-icon {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .btn-icon:hover { color: var(--text); }
+    .btn-icon.teacher-on { color: var(--gold); border-color: rgba(247,204,69,0.35); background: rgba(247,204,69,0.08); }
+
+    .turn-bar {
+      background: var(--card2);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .turn-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+    .turn-text { font-weight: 600; }
+    .turn-sub { color: var(--muted); font-size: 12px; margin-left: 4px; }
+
+    /* Category grid */
+    .cat-grid-wrap {
+      flex: 1;
+      padding: 16px 20px 24px;
+      overflow-x: auto;
+    }
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      min-width: 560px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .cat-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: 3px solid;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+
+    .q-cell {
+      background: linear-gradient(135deg, #0B2A4A, #091E35);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--gold);
+      cursor: pointer;
+      transition: all .18s;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+    .q-cell:hover { transform: scale(1.04); box-shadow: 0 4px 20px rgba(0,0,0,0.4); filter: brightness(1.15); }
+    .q-cell.answered {
+      background: var(--card);
+      color: transparent;
+      cursor: default;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    .q-cell.answered::after { content: '✓'; color: var(--muted); font-size: 18px; opacity: 0.5; }
+
+    /* ═══════════════════════════════
+       QUESTION PAGE
+    ═══════════════════════════════ */
+    #pg-question {
+      min-height: 100vh;
+      display: none;
+      flex-direction: column;
+    }
+    #pg-question.active { display: flex; }
+
+    .q-header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .q-meta { display: flex; align-items: center; gap: 10px; }
+    .q-cat-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+    .q-pts-badge {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    /* Timer */
+    .timer-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .timer-ring {
+      position: relative;
+      width: 44px; height: 44px;
+    }
+    .timer-ring svg {
+      transform: rotate(-90deg);
+      width: 44px; height: 44px;
+    }
+    .timer-ring circle {
+      fill: none;
+      stroke-width: 3;
+    }
+    .timer-bg  { stroke: var(--card2); }
+    .timer-arc { stroke: var(--green); stroke-linecap: round; transition: stroke-dashoffset .9s linear, stroke .3s; }
+    .timer-num {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .q-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .q-text {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(18px, 3vw, 26px);
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.4;
+      margin-bottom: 36px;
+      color: var(--text);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 28px;
+    }
+    .opt-btn {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 14px;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      transition: all .18s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.4;
+    }
+    .opt-btn:hover:not(.disabled) { border-color: rgba(15,219,130,0.4); background: rgba(15,219,130,0.06); }
+    .opt-btn.selected { border-color: var(--green); background: rgba(15,219,130,0.1); }
+    .opt-btn.correct  { border-color: var(--green); background: rgba(15,219,130,0.18); color: var(--green); }
+    .opt-btn.wrong    { border-color: var(--red);   background: rgba(255,82,114,0.12);  color: var(--red); }
+    .opt-btn.disabled { cursor: default; }
+    .opt-letter {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: var(--card2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* Team answering panel */
+    .answer-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      width: 100%;
+    }
+    .answer-panel-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .answering-teams {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .team-ans-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card2);
+      border: 2px solid transparent;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s;
+      color: var(--text);
+    }
+    .team-ans-btn.selected { border-color: currentColor; }
+    .team-ans-btn .ans-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* Submit / reveal */
+    .q-footer {
+      padding: 16px 20px;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+    }
+    .btn-submit {
+      flex: 1;
+      background: var(--green);
+      color: #002E16;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(15,219,130,0.35); }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-skip {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .btn-skip:hover { color: var(--text); border-color: var(--muted); }
+
+    /* Reveal overlay */
+    .reveal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6,15,26,0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      animation: fadeIn .25s ease;
+    }
+    .reveal-overlay.hidden { display: none; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+    .reveal-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 40px 36px;
+      text-align: center;
+      max-width: 420px;
+      width: 92%;
+      animation: popIn .3s cubic-bezier(.34,1.5,.64,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .reveal-icon { font-size: 52px; margin-bottom: 12px; }
+    .reveal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .reveal-correct-text {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .reveal-answer {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--green);
+      background: rgba(15,219,130,0.1);
+      border: 1px solid rgba(15,219,130,0.2);
+      border-radius: 8px;
+      padding: 8px 16px;
+    }
+    .reveal-score-change {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 24px;
+    }
+    .reveal-score-change.pos { color: var(--green); }
+    .reveal-score-change.neg { color: var(--red); }
+    .reveal-score-change.zer { color: var(--muted); }
+    .btn-continue {
+      background: var(--green);
+      color: #002E16;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: transform .12s;
+    }
+    .btn-continue:hover { transform: translateY(-1px); }
+
+    /* ═══════════════════════════════
+       GAMEOVER PAGE
+    ═══════════════════════════════ */
+    #pg-gameover {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 48px 20px 60px;
+      text-align: center;
+    }
+    .go-icon { font-size: 56px; margin-bottom: 12px; }
+    .go-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .go-sub { font-size: 14px; color: var(--muted); margin-bottom: 36px; }
+
+    .leaderboard {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background .18s;
+    }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-row.winner { background: rgba(247,204,69,0.07); }
+    .lb-rank {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      width: 32px;
+      text-align: center;
+    }
+    .lb-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .lb-name { font-weight: 600; flex: 1; text-align: left; }
+    .lb-score {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--gold);
+    }
+    .btn-play-again {
+      background: var(--green);
+      color: #002E16;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 36px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .btn-play-again:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(15,219,130,0.35); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════
+     SETUP PAGE
+═══════════════════════════════ -->
+<div class="page active" id="pg-setup">
+  <div class="setup-header">
+    <span class="logo-top">Pocket<em>ed</em></span>
+    <div class="setup-icon">🎯</div>
+    <div class="setup-title">Finance Jeopardy</div>
+    <div class="setup-sub">Configurable financial literacy quiz · Ages 11–18</div>
+  </div>
+
+  <div class="steps" id="step-dots">
+    <div class="step-dot active" id="dot-0"></div>
+    <div class="step-line"></div>
+    <div class="step-dot" id="dot-1"></div>
+    <div class="step-line"></div>
+    <div class="step-dot" id="dot-2"></div>
+  </div>
+
+  <!-- STEP 0: Session -->
+  <div class="step-page active" id="step-0">
+    <div class="section-card">
+      <div class="section-title">🏫 Session Context</div>
+      <label>School / Organisation</label>
+      <input type="text" id="inp-school" placeholder="e.g. Oakfield Academy">
+      <div class="row2">
+        <div>
+          <label>Class / Group ID</label>
+          <input type="text" id="inp-class" placeholder="e.g. Year 10B">
+        </div>
+        <div>
+          <label>Year Group</label>
+          <select id="inp-year">
+            <option>Year 7</option><option>Year 8</option><option>Year 9</option>
+            <option selected>Year 10</option><option>Year 11</option>
+            <option>Year 12</option><option>Year 13</option>
+          </select>
+        </div>
+      </div>
+      <label>Topic</label>
+      <input type="text" id="inp-topic" value="Financial Literacy — Budgeting & Saving">
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">⚙️ Settings</div>
+      <div class="toggle-row">
+        <div class="toggle-label">
+          SEN Mode
+          <span class="toggle-sub">Disables timer and score penalties</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="inp-sen">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+      <div class="row2">
+        <div>
+          <label>Timer per question (secs)</label>
+          <input type="number" id="inp-timer" value="20" min="5" max="120">
+        </div>
+        <div>
+          <label>Point values</label>
+          <input type="text" id="inp-points" value="100, 200, 300, 400">
+        </div>
+      </div>
+    </div>
+    <div class="setup-nav">
+      <button class="btn-next-setup" onclick="goStep(1)">Next: Teams →</button>
+    </div>
+  </div>
+
+  <!-- STEP 1: Teams -->
+  <div class="step-page" id="step-1">
+    <div class="section-card">
+      <div class="section-title">👥 Teams (2–4)</div>
+      <div class="teams-grid" id="teams-grid"></div>
+      <button class="team-add-btn" id="btn-add-team" onclick="addTeam()">+ Add Team</button>
+    </div>
+    <div class="setup-nav">
+      <button class="btn-back" onclick="goStep(0)">← Back</button>
+      <button class="btn-next-setup" onclick="goStep(2)">Next: Review →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Review & Start -->
+  <div class="step-page" id="step-2">
+    <div class="section-card" id="review-card">
+      <!-- Populated by JS -->
+    </div>
+    <div class="setup-nav">
+      <button class="btn-back" onclick="goStep(1)">← Back</button>
+      <button class="btn-next-setup" onclick="startGame()">🚀 Start Game!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     BOARD PAGE
+═══════════════════════════════ -->
+<div class="page" id="pg-board">
+  <div class="board-header">
+    <div class="logo-top">Pocket<em>ed</em></div>
+    <div class="teams-scores" id="teams-scores"></div>
+    <div class="header-btns">
+      <button class="btn-icon" id="btn-teacher" onclick="toggleTeacher()">👩‍🏫 Teacher</button>
+      <button class="btn-icon" onclick="confirmReset()">↺ Reset</button>
+    </div>
+  </div>
+  <div class="turn-bar">
+    <div class="turn-dot" id="turn-dot"></div>
+    <div class="turn-text" id="turn-text">Team's turn</div>
+    <div class="turn-sub" id="turn-sub">— pick a question</div>
+  </div>
+  <div class="cat-grid-wrap">
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     QUESTION PAGE
+═══════════════════════════════ -->
+<div class="page" id="pg-question">
+  <div class="q-header">
+    <div class="q-meta">
+      <div class="q-cat-badge" id="q-cat-badge">Category</div>
+      <div class="q-pts-badge" id="q-pts-badge">£100</div>
+    </div>
+    <div class="timer-wrap" id="timer-wrap">
+      <div class="timer-ring">
+        <svg viewBox="0 0 44 44">
+          <circle class="timer-bg"  cx="22" cy="22" r="19"/>
+          <circle class="timer-arc" id="timer-arc" cx="22" cy="22" r="19"
+                  stroke-dasharray="119.4" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-num" id="timer-num">20</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-body">
+    <div class="q-text" id="q-text"></div>
+    <div class="options-grid" id="options-grid"></div>
+    <div class="answer-panel">
+      <div class="answer-panel-title">Which team is answering?</div>
+      <div class="answering-teams" id="answering-teams"></div>
+    </div>
+  </div>
+
+  <div class="q-footer">
+    <button class="btn-skip" onclick="skipQuestion()">Skip</button>
+    <button class="btn-submit" id="btn-submit" onclick="submitAnswer()" disabled>Submit Answer</button>
+  </div>
+</div>
+
+<!-- Reveal overlay (inside question page) -->
+<div class="reveal-overlay hidden" id="reveal-overlay">
+  <div class="reveal-card">
+    <div class="reveal-icon" id="rev-icon">✅</div>
+    <div class="reveal-title" id="rev-title">Correct!</div>
+    <div class="reveal-correct-text">The correct answer was:</div>
+    <div class="reveal-answer" id="rev-answer"></div>
+    <div class="reveal-score-change" id="rev-score"></div>
+    <button class="btn-continue" onclick="continueAfterReveal()">Continue →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     GAMEOVER PAGE
+═══════════════════════════════ -->
+<div class="page" id="pg-gameover">
+  <div class="go-icon">🏆</div>
+  <div class="go-title">Game Over!</div>
+  <div class="go-sub" id="go-sub">Final scores</div>
+  <div class="leaderboard" id="leaderboard"></div>
+  <button class="btn-play-again" onclick="playAgain()">Play Again</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  QUESTIONS DATA
+// ═══════════════════════════════════════════════════════════
+const QUESTIONS_DATA = {
+  'Budgeting': [
+    { q: 'In the 50:30:20 rule, what percentage of income goes to savings?', opts: ['10%','20%','30%','50%'], ans: 1 },
+    { q: 'If you earn £600/month, how much goes to "needs" using the 50:30:20 rule?', opts: ['£120','£180','£300','£420'], ans: 2 },
+    { q: 'What does "budget deficit" mean?', opts: ['Saving more than planned','Spending more than you earn','Earning more than expected','A government investment scheme'], ans: 1 },
+    { q: 'Which budgeting method assigns every pound a specific job to do?', opts: ['Zero-based budgeting','Pay-yourself-first','Envelope method','50:30:20 rule'], ans: 0 },
+  ],
+  'Saving & Investing': [
+    { q: 'What is compound interest?', opts: ['Interest paid on loans only','Earning interest on your interest','A fixed annual government payment','A type of tax on savings'], ans: 1 },
+    { q: 'What does ISA stand for?', opts: ['Interest Savings Account','Individual Savings Account','Instant Savings Account','Indexed Savings Account'], ans: 1 },
+    { q: 'If you save £10/week for 52 weeks, how much will you have saved?', opts: ['£460','£500','£520','£560'], ans: 2 },
+    { q: 'What is the general rule about investment risk vs return?', opts: ['Higher risk = lower return','Risk has no impact on returns','Higher risk = higher potential return','Only cash savings carry risk'], ans: 2 },
+  ],
+  'Banking': [
+    { q: 'What is the main difference between a debit card and a credit card?', opts: ['Debit is only for online use','Debit uses your money; credit uses borrowed money','Credit cards are always free','Debit cards charge interest'], ans: 1 },
+    { q: 'What is a bank overdraft?', opts: ['A type of savings bond','A reward loyalty scheme','Borrowing from your bank when your balance hits zero','A fixed-rate savings account'], ans: 2 },
+    { q: 'What does APR stand for on a loan?', opts: ['Annual Percentage Rate','Annual Payment Record','Approved Personal Rate','Automated Payment Request'], ans: 0 },
+    { q: 'Which UK scheme protects your savings up to £85,000 if a bank collapses?', opts: ['FCA','Bank of England guarantee','FSCS','HMRC insurance'], ans: 2 },
+  ],
+  'Tax & Pay': [
+    { q: 'What does HMRC stand for?', opts: ["His Majesty's Revenue and Customs","Her Majesty's Rates and Contributions","Home Money and Revenue Control","His Majesty's Rules and Commerce"], ans: 0 },
+    { q: 'What is the UK personal tax-free allowance (2024/25)?', opts: ['£10,000','£12,570','£15,000','£20,000'], ans: 1 },
+    { q: 'What does National Insurance help fund in the UK?', opts: ['Road infrastructure and housing','NHS, state pension, and benefits','MPs\' salaries and expenses','Military spending'], ans: 1 },
+    { q: 'What is the standard rate of VAT charged in the UK?', opts: ['5%','10%','15%','20%'], ans: 3 },
+  ],
+  'Spending Smart': [
+    { q: 'What is the key difference between a "need" and a "want"?', opts: ['There is no real difference','A need is essential; a want is optional','Wants always cost more than needs','Needs are things that feel good'], ans: 1 },
+    { q: 'What is inflation?', opts: ['A drop in prices over time','A government savings scheme','A general rise in prices over time','A type of loan penalty'], ans: 2 },
+    { q: 'What is a credit score used for?', opts: ['Measuring your daily spending','Rating how creditworthy you are to lenders','Calculating your income tax','Tracking your savings goals'], ans: 1 },
+    { q: 'What is "opportunity cost"?', opts: ['Hidden bank admin charges','The interest rate on a loan','The value of the best alternative you give up','A fee for changing bank accounts'], ans: 3 },
+  ]
+};
+
+const CATEGORIES    = Object.keys(QUESTIONS_DATA);
+const POINT_VALUES  = [100, 200, 300, 400];
+const CAT_COLORS    = ['--c0','--c1','--c2','--c3','--c4'];
+const TEAM_COLORS   = ['--t0','--t1','--t2','--t3'];
+const TEAM_HEX      = ['#FF5272','#0EC9D8','#F7CC45','#A855F7'];
+const LETTERS       = ['A','B','C','D'];
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let cfg = {
+  school: '', classId: '', year: '', topic: '',
+  senMode: false, timerSecs: 20, pointValues: [100,200,300,400]
+};
+
+let teams   = [
+  { name:'Team Red',    color: 0, score: 0 },
+  { name:'Team Teal',   color: 1, score: 0 },
+];
+let currentTeamIdx = 0;
+let answered       = new Set();   // "catIdx-ptIdx"
+let teacherMode    = false;
+let timerInterval  = null;
+let timerLeft      = 20;
+
+let activeQ        = null;   // { catIdx, ptIdx, question, points }
+let selectedOption = null;
+let answeringTeam  = null;
+let revealed       = false;
+
+// ═══════════════════════════════════════════════════════════
+//  SETUP FLOW
+// ═══════════════════════════════════════════════════════════
+let setupStep = 0;
+function goStep(n) {
+  if (n === 2) buildReview();
+  document.querySelectorAll('.step-page').forEach((p,i) => p.classList.toggle('active', i===n));
+  document.querySelectorAll('.step-dot').forEach((d,i) => d.classList.toggle('active', i===n));
+  setupStep = n;
+}
+
+// Initialise team inputs
+function initTeamsGrid() {
+  const g = document.getElementById('teams-grid');
+  g.innerHTML = '';
+  teams.forEach((t,i) => {
+    const w = document.createElement('div');
+    w.className = 'team-input-wrap';
+    const dot = document.createElement('div');
+    dot.className = 'team-color-dot';
+    dot.style.background = TEAM_HEX[t.color];
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.value = t.name;
+    inp.placeholder = `Team ${i+1} name`;
+    inp.oninput = e => { teams[i].name = e.target.value; };
+    w.appendChild(dot);
+    w.appendChild(inp);
+    g.appendChild(w);
+  });
+  document.getElementById('btn-add-team').disabled = (teams.length >= 4);
+}
+
+function addTeam() {
+  if (teams.length >= 4) return;
+  teams.push({ name:`Team ${['Red','Teal','Yellow','Purple'][teams.length]}`, color: teams.length, score: 0 });
+  initTeamsGrid();
+}
+
+function buildReview() {
+  const card = document.getElementById('review-card');
+  const senMode   = document.getElementById('inp-sen').checked;
+  const timerSecs = parseInt(document.getElementById('inp-timer').value) || 20;
+  card.innerHTML = `
+    <div class="section-title">📋 Ready to Start</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">
+      ${document.getElementById('inp-school').value || 'School'} · 
+      ${document.getElementById('inp-class').value || 'Class'} · 
+      ${document.getElementById('inp-year').value}
+    </div>
+    <div style="font-size:13px;margin-bottom:12px;"><strong>${document.getElementById('inp-topic').value}</strong></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+      ${teams.map(t=>`<div style="display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">
+        <div style="width:8px;height:8px;border-radius:50%;background:${TEAM_HEX[t.color]}"></div>${t.name}</div>`).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--muted);">
+      ${senMode ? '🟢 SEN Mode ON — no timer, no penalties' : `⏱ Timer: ${timerSecs}s per question`} · 
+      ${CATEGORIES.length} categories · ${POINT_VALUES.length * CATEGORIES.length} questions
+    </div>
+  `;
+}
+
+function startGame() {
+  cfg.school     = document.getElementById('inp-school').value;
+  cfg.classId    = document.getElementById('inp-class').value;
+  cfg.year       = document.getElementById('inp-year').value;
+  cfg.topic      = document.getElementById('inp-topic').value;
+  cfg.senMode    = document.getElementById('inp-sen').checked;
+  cfg.timerSecs  = parseInt(document.getElementById('inp-timer').value) || 20;
+
+  teams.forEach(t => { t.score = 0; });
+  answered.clear();
+  currentTeamIdx = 0;
+
+  showPage('pg-board');
+  renderBoard();
+  renderScores();
+  updateTurnBar();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BOARD
+// ═══════════════════════════════════════════════════════════
+function renderBoard() {
+  const grid = document.getElementById('cat-grid');
+  grid.innerHTML = '';
+
+  CATEGORIES.forEach((cat, ci) => {
+    const hdr = document.createElement('div');
+    hdr.className = 'cat-header';
+    hdr.style.borderTopColor = `var(${CAT_COLORS[ci]})`;
+    hdr.style.color           = `var(${CAT_COLORS[ci]})`;
+    hdr.textContent           = cat;
+    grid.appendChild(hdr);
+  });
+
+  POINT_VALUES.forEach((pts, pi) => {
+    CATEGORIES.forEach((cat, ci) => {
+      const key  = `${ci}-${pi}`;
+      const cell = document.createElement('div');
+      cell.className = 'q-cell' + (answered.has(key) ? ' answered' : '');
+      cell.textContent = answered.has(key) ? '' : `£${pts}`;
+      cell.dataset.ci  = ci;
+      cell.dataset.pi  = pi;
+      cell.onclick     = () => openQuestion(ci, pi);
+      grid.appendChild(cell);
+    });
+  });
+}
+
+function renderScores() {
+  const wrap = document.getElementById('teams-scores');
+  wrap.innerHTML = '';
+  teams.forEach((t, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'score-chip' + (i === currentTeamIdx ? ' active-turn' : '');
+    chip.style.borderColor = i === currentTeamIdx ? TEAM_HEX[t.color] : 'transparent';
+    chip.innerHTML = `
+      <div class="score-dot" style="background:${TEAM_HEX[t.color]}"></div>
+      <span>${t.name}</span>
+      <span class="score-val" style="color:${TEAM_HEX[t.color]}">£${t.score}</span>
+    `;
+    wrap.appendChild(chip);
+  });
+}
+
+function updateTurnBar() {
+  const t = teams[currentTeamIdx];
+  document.getElementById('turn-dot').style.background = TEAM_HEX[t.color];
+  document.getElementById('turn-text').textContent = t.name;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  QUESTION
+// ═══════════════════════════════════════════════════════════
+function openQuestion(ci, pi) {
+  const key = `${ci}-${pi}`;
+  if (answered.has(key)) return;
+
+  const cat = CATEGORIES[ci];
+  const q   = QUESTIONS_DATA[cat][pi];
+  const pts = POINT_VALUES[pi];
+  activeQ   = { ci, pi, cat, q, pts, key };
+  selectedOption = null;
+  answeringTeam  = currentTeamIdx;
+  revealed = false;
+
+  document.getElementById('q-cat-badge').textContent  = cat;
+  document.getElementById('q-pts-badge').textContent  = `£${pts}`;
+  document.getElementById('q-cat-badge').style.color  = `var(${CAT_COLORS[ci]})`;
+  document.getElementById('q-cat-badge').style.borderColor = `var(${CAT_COLORS[ci]})`;
+  document.getElementById('q-text').textContent       = q.q;
+
+  renderOptions(false);
+  renderAnsweringTeams();
+
+  document.getElementById('btn-submit').disabled = true;
+  document.getElementById('reveal-overlay').classList.add('hidden');
+
+  showPage('pg-question');
+  startTimer();
+}
+
+function renderOptions(showCorrect) {
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  activeQ.q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    let cls = '';
+    if (showCorrect) {
+      if (i === activeQ.q.ans) cls = ' correct';
+      else if (i === selectedOption) cls = ' wrong';
+      btn.classList.add('disabled');
+    } else if (i === selectedOption) cls = ' selected';
+    btn.className += cls;
+
+    // Teacher mode: always show correct
+    if (teacherMode && i === activeQ.q.ans && !showCorrect) {
+      btn.style.boxShadow = '0 0 0 2px rgba(15,219,130,0.4)';
+    }
+
+    btn.innerHTML = `<div class="opt-letter">${LETTERS[i]}</div>${opt}`;
+    if (!showCorrect) btn.onclick = () => selectOption(i);
+    grid.appendChild(btn);
+  });
+}
+
+function selectOption(i) {
+  selectedOption = i;
+  renderOptions(false);
+  document.getElementById('btn-submit').disabled = (answeringTeam === null);
+}
+
+function renderAnsweringTeams() {
+  const wrap = document.getElementById('answering-teams');
+  wrap.innerHTML = '';
+  teams.forEach((t, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'team-ans-btn' + (i === answeringTeam ? ' selected' : '');
+    btn.style.color = TEAM_HEX[t.color];
+    btn.innerHTML = `<div class="ans-dot" style="background:${TEAM_HEX[t.color]}"></div>${t.name}`;
+    btn.onclick = () => {
+      answeringTeam = i;
+      renderAnsweringTeams();
+      document.getElementById('btn-submit').disabled = (selectedOption === null);
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+// ─── TIMER ───
+function startTimer() {
+  stopTimer();
+  if (cfg.senMode) { document.getElementById('timer-wrap').style.opacity = '0.3'; return; }
+  document.getElementById('timer-wrap').style.opacity = '1';
+  timerLeft = cfg.timerSecs;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timerLeft--;
+    updateTimerUI();
+    if (timerLeft <= 0) { stopTimer(); timeUp(); }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function updateTimerUI() {
+  const circumference = 119.4;
+  const frac   = timerLeft / cfg.timerSecs;
+  const offset = circumference * (1 - frac);
+  const arc    = document.getElementById('timer-arc');
+  const num    = document.getElementById('timer-num');
+  arc.style.strokeDashoffset = offset;
+  arc.style.stroke = timerLeft <= 5 ? 'var(--red)' : timerLeft <= 10 ? 'var(--gold)' : 'var(--green)';
+  num.textContent  = timerLeft;
+  num.style.color  = timerLeft <= 5 ? 'var(--red)' : 'var(--text)';
+}
+
+function timeUp() {
+  // Auto-submit as wrong if not already answered
+  if (!revealed) showReveal(false, 0);
+}
+
+function submitAnswer() {
+  if (selectedOption === null || answeringTeam === null) return;
+  stopTimer();
+  const correct = (selectedOption === activeQ.q.ans);
+  const pts     = correct ? activeQ.pts : (cfg.senMode ? 0 : 0);
+  if (correct) teams[answeringTeam].score += pts;
+  showReveal(correct, pts, correct ? `+£${pts}` : '+£0');
+}
+
+function skipQuestion() {
+  stopTimer();
+  showReveal(false, 0, 'Skipped');
+}
+
+function showReveal(correct, pts, scoreText) {
+  revealed = true;
+  renderOptions(true);
+  const correctOpt = activeQ.q.opts[activeQ.q.ans];
+
+  document.getElementById('rev-icon').textContent = correct ? '✅' : selectedOption === null ? '⏭️' : '❌';
+  document.getElementById('rev-title').textContent = correct ? 'Correct!' : selectedOption === null ? 'Skipped!' : 'Not quite!';
+  document.getElementById('rev-answer').textContent = `${LETTERS[activeQ.q.ans]}. ${correctOpt}`;
+
+  const sc = document.getElementById('rev-score');
+  if (correct) {
+    sc.textContent = scoreText || `+£${pts}`;
+    sc.className   = 'reveal-score-change pos';
+    const tn = teams[answeringTeam]?.name || '';
+    document.getElementById('rev-title').textContent = `${tn} got it! ✅`;
+  } else {
+    sc.textContent = scoreText || '+£0';
+    sc.className   = 'reveal-score-change zer';
+  }
+
+  document.getElementById('reveal-overlay').classList.remove('hidden');
+}
+
+function continueAfterReveal() {
+  document.getElementById('reveal-overlay').classList.add('hidden');
+  answered.add(activeQ.key);
+  currentTeamIdx = (currentTeamIdx + 1) % teams.length;
+
+  showPage('pg-board');
+  renderBoard();
+  renderScores();
+  updateTurnBar();
+
+  // Check if all answered
+  if (answered.size >= CATEGORIES.length * POINT_VALUES.length) {
+    setTimeout(showGameOver, 800);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TEACHER MODE
+// ═══════════════════════════════════════════════════════════
+function toggleTeacher() {
+  teacherMode = !teacherMode;
+  const btn = document.getElementById('btn-teacher');
+  btn.classList.toggle('teacher-on', teacherMode);
+  if (activeQ && !revealed) renderOptions(false);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GAME OVER
+// ═══════════════════════════════════════════════════════════
+function showGameOver() {
+  const sorted = [...teams].sort((a,b) => b.score - a.score);
+  const ranks  = ['🥇','🥈','🥉','4️⃣'];
+  const winner = sorted[0].name;
+
+  document.getElementById('go-sub').textContent = `🏆 ${winner} wins!`;
+
+  const lb = document.getElementById('leaderboard');
+  lb.innerHTML = sorted.map((t, i) => `
+    <div class="lb-row${i===0?' winner':''}">
+      <div class="lb-rank">${ranks[i]}</div>
+      <div class="lb-dot" style="background:${TEAM_HEX[t.color]}"></div>
+      <div class="lb-name">${t.name}</div>
+      <div class="lb-score">£${t.score}</div>
+    </div>
+  `).join('');
+
+  showPage('pg-gameover');
+}
+
+function playAgain() {
+  teams.forEach(t => t.score = 0);
+  answered.clear();
+  currentTeamIdx = 0;
+  showPage('pg-setup');
+  goStep(0);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MISC
+// ═══════════════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function confirmReset() {
+  if (confirm('Reset the game? All scores will be lost.')) {
+    stopTimer();
+    teams.forEach(t => t.score = 0);
+    answered.clear();
+    currentTeamIdx = 0;
+    showPage('pg-board');
+    renderBoard();
+    renderScores();
+    updateTurnBar();
+  }
+}
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+  initTeamsGrid();
+});
+</script>
+</body>
+</html>

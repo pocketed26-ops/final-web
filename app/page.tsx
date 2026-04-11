@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import CircularGallery from './CircularGallery';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 const PHONE_SCROLL_START = 1;
@@ -100,6 +101,41 @@ function createWavePath(fillTop: number, phase: number) {
   return path;
 }
 
+const GAMES = [
+  {
+    id: 1,
+    title: "Interactive Section",
+    image: "/pocketed-interactive-section.png",
+    htmlSrc: "/games/pocketed-interactive-section-game1.html",
+  },
+  {
+    id: 2,
+    title: "Future Self Letter",
+    image: "/pocketed-future-self-letter.png",
+    htmlSrc: "/games/pocketed-future-self-letter-game2.html",
+  },
+  {
+    id: 3,
+    title: "Money Race",
+    image: "/pocketed-money-race.png",
+    htmlSrc: "/games/pocketed-money-race-game3.html",
+  },
+  {
+    id: 4,
+    title: "Money Moves",
+    image: "/money_move.png",
+    htmlSrc: "/games/money-moves-game-4.html",
+  },
+  {
+    id: 5,
+    title: "Jeopardy",
+    image: "/pocketed-jeopardy.png",
+    htmlSrc: "/games/pocketed-jeopardy-game5.html",
+  },
+];
+
+const INFINITE_GAMES = Array.from({ length: 40 }).flatMap((_, i) => GAMES.map(g => ({...g, uniqueId: `${g.id}-${i}`})));
+
 export default function Home() {
   const scrollStageRef = useRef<HTMLElement>(null);
   const pinInnerRef = useRef<HTMLDivElement>(null);
@@ -116,12 +152,48 @@ export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const visionMissionOneRef = useRef<HTMLDivElement>(null);
   const visionMissionTwoRef = useRef<HTMLDivElement>(null);
+  const gamesScrollRef = useRef<HTMLDivElement>(null);
+  const gamesSectionRef = useRef<HTMLElement>(null);
+  const gallerySectionRef = useRef<HTMLElement>(null);
+  const endingSectionRef = useRef<HTMLElement>(null);
+  const endingVideoRef = useRef<HTMLVideoElement>(null);
 
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
+  const [playingGame, setPlayingGame] = useState<typeof GAMES[0] | null>(null);
+
+  useEffect(() => {
+    if (!showLoader && gamesScrollRef.current) {
+      setTimeout(() => {
+        if (gamesScrollRef.current) {
+          gamesScrollRef.current.scrollLeft = (gamesScrollRef.current.scrollWidth - gamesScrollRef.current.clientWidth) / 2;
+        }
+      }, 50);
+    }
+  }, [showLoader]);
+
+  const handleGamesScroll = () => {
+    if (!gamesScrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = gamesScrollRef.current;
+    if (scrollLeft <= 50) {
+      gamesScrollRef.current.scrollLeft = scrollWidth / 2;
+    } else if (scrollLeft + clientWidth >= scrollWidth - 50) {
+      gamesScrollRef.current.scrollLeft = (scrollWidth / 2) - clientWidth;
+    }
+  };
+
+  const scrollGames = (direction: 'left' | 'right') => {
+    if (gamesScrollRef.current) {
+      const scrollAmount = window.innerWidth < 768 ? 300 : 370;
+      gamesScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   useEffect(() => {
     const durationMs = 6000;
@@ -518,7 +590,7 @@ export default function Home() {
           );
 
           // Hold the "Our Vision" screen for a bit before unpinning to scroll the white section up
-          tl.to({}, { duration: 6 });
+          tl.to({}, { duration: 1 });
         });
 
         mm.add("(max-width: 767px)", () => {
@@ -622,8 +694,74 @@ export default function Home() {
           );
 
           // Hold the "Our Vision" screen for a bit before unpinning to scroll the white section up
-          tl.to({}, { duration: 6 });
+          tl.to({}, { duration: 1 });
         });
+        if (gamesSectionRef.current) {
+          gsap.from(gamesSectionRef.current.children, {
+            scrollTrigger: {
+              trigger: gamesSectionRef.current,
+              start: "top 75%",
+              toggleActions: "play none none reverse",
+            },
+            y: 50,
+            autoAlpha: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: "power3.out",
+          });
+        }
+
+        if (gallerySectionRef.current) {
+          gsap.from(gallerySectionRef.current.children, {
+            scrollTrigger: {
+              trigger: gallerySectionRef.current,
+              start: "top 75%",
+              end: "bottom 20%",
+              toggleActions: "play reverse play reverse",
+            },
+            y: 100,
+            autoAlpha: 0,
+            duration: 1.2,
+            stagger: 0.2,
+            ease: "power3.out",
+          });
+        }
+
+        if (endingSectionRef.current && endingVideoRef.current) {
+          const video = endingVideoRef.current;
+          const videoContainer = endingSectionRef.current.querySelector('.ending-video-container');
+          const contactPanel = endingSectionRef.current.querySelector('.ending-contact-panel');
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: endingSectionRef.current,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+              onLeaveBack: () => {
+                video.pause();
+              }
+            }
+          });
+
+          tl.from(videoContainer, {
+            y: 250,
+            autoAlpha: 0,
+            duration: 1.5,
+            ease: "power3.out",
+            onComplete: () => {
+              video.play().catch(() => {});
+            }
+          });
+
+          if (contactPanel) {
+            tl.from(contactPanel, {
+              x: 100,
+              autoAlpha: 0,
+              duration: 1.2,
+              ease: "power3.out"
+            }, "+=0.5"); // Triggers roughly 2 seconds (1.5s + 0.5s) after scroll start
+          }
+        }
       }, stage);
 
       const onResize = () => {
@@ -903,8 +1041,128 @@ export default function Home() {
         </section>
         
         {/* Complete White Screen Section below the pinned video */}
-        <section className="h-[150vh] w-full bg-white relative z-20">
-          {/* A completely white screen as requested. Content can be added here later. */}
+        <section ref={gamesSectionRef} className="w-full bg-[#f9fafb] relative z-20 flex flex-col items-center pt-[15vh] pb-32 px-6 text-center">
+          <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold text-black mb-4">
+            Play. Compete. Master Money. 🎮
+          </h2>
+          <p className="text-[clamp(1rem,2vw,1.25rem)] text-[#5a5a5a] max-w-[600px] mb-12">
+            Turn financial concepts into interactive challenges and learn by playing, not just reading.
+          </p>
+
+          {/* Games Carousel */}
+          <div className="w-full max-w-6xl relative flex items-center justify-center">
+            <button 
+              onClick={() => scrollGames('left')}
+              className="hidden md:flex absolute -left-12 z-10 p-3 bg-white hover:bg-gray-50 rounded-full shadow-md text-gray-700 transition-colors"
+              aria-label="Previous games"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m15 18-6-6 6-6"/>
+              </svg>
+            </button>
+
+            <div 
+              ref={gamesScrollRef}
+              onScroll={handleGamesScroll}
+              className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide py-4 px-4 w-full"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {INFINITE_GAMES.map((game) => (
+                <div 
+                  key={game.uniqueId} 
+                  className="flex-none w-[280px] md:w-[320px] lg:w-[340px] snap-center bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-md"
+                >
+                  <div className="relative h-48 w-full">
+                    <Image src={game.image} alt={game.title} fill className="object-cover" />
+                  </div>
+                  <div className="flex items-center justify-between p-5 bg-white">
+                    <h3 className="font-bold text-lg text-gray-900 tracking-tight">{game.title}</h3>
+                    <button 
+                      onClick={() => setPlayingGame(game)}
+                      className="px-5 py-2 bg-[#e5faed] text-[#1aa053] font-bold rounded-full hover:bg-[#d1f5df] transition-colors text-sm tracking-wide"
+                    >
+                      PLAY
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button 
+              onClick={() => scrollGames('right')}
+              className="hidden md:flex absolute -right-12 z-10 p-3 bg-white hover:bg-gray-50 rounded-full shadow-md text-gray-700 transition-colors"
+              aria-label="Next games"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
+        </section>
+        
+        <section ref={gallerySectionRef} className="pt-32 pb-20 w-full max-w-full flex flex-col items-center bg-white relative z-20">
+          <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold text-black mb-4 text-center">
+            How We Teach Financial Literacy
+          </h2>
+          <p className="text-[clamp(1rem,2vw,1.25rem)] text-[#5a5a5a] max-w-[600px] mb-12 px-6 text-center">
+            Interactive lessons, real-world examples, and engaging activities that make money skills simple and practical.
+          </p>
+          <div style={{ height: '600px', position: 'relative', width: '100%' }}>
+            <CircularGallery bend={1} textColor="#ffffff" borderRadius={0.05} scrollEase={0.05} scrollSpeed={2} />
+          </div>
+        </section>
+
+        <section ref={endingSectionRef} className="w-full py-24 relative z-20 bg-white overflow-hidden">
+          <div className="w-full flex flex-col xl:flex-row items-center justify-start px-6 gap-8">
+            {/* Left side: Animation Video */}
+            <div className="ending-video-container w-full md:w-auto flex-shrink-0 flex justify-center md:justify-start overflow-hidden">
+              <video 
+                ref={endingVideoRef}
+                src="/ending_animation.mp4" 
+                loop 
+                muted 
+                playsInline 
+                className="w-[850px] max-w-full mix-blend-multiply [clip-path:inset(2px)] border-none outline-none"
+              />
+            </div>
+
+            {/* Right side: Contact & Download */}
+            <div className="ending-contact-panel flex-1 flex flex-col items-center text-center px-4 xl:pl-8 py-8">
+              <div className="flex items-center justify-center gap-4 mb-8 w-full">
+                <Image src="/pocketed_icon.png" alt="PocketEd" width={60} height={60} className="object-contain" />
+                <span className="text-5xl font-extrabold tracking-tight text-[var(--primary-blue)]">
+                  Pocket<span className="text-[var(--primary-yellow)]">Ed</span>
+                </span>
+              </div>
+              
+              <h2 className="text-4xl font-extrabold text-black mb-8">
+                Contact Us Now
+              </h2>
+              
+              <div className="relative mb-14">
+                <div className="bg-[#b2c8fb] text-black font-semibold rounded-full px-10 py-5 text-xl shadow-sm whitespace-nowrap z-10 relative">
+                  pocketed@gmail.com
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-5 items-center justify-center w-full">
+                <button className="flex items-center gap-4 bg-white border border-gray-200 rounded-2xl px-6 py-3 hover:bg-gray-50 transition-colors shadow-sm min-w-[220px]">
+                  <Image src="/google-icon.png" alt="Google Play" width={40} height={40} className="w-10 h-10 flex-shrink-0 object-contain" />
+                  <div className="flex flex-col items-start px-1">
+                    <span className="text-[11px] text-gray-500 font-medium leading-[1] mb-1">GET IT ON</span>
+                    <span className="text-[17px] font-extrabold text-black leading-[1]">Google Play</span>
+                  </div>
+                </button>
+                <button className="flex items-center gap-4 bg-white border border-gray-200 rounded-2xl px-6 py-3 hover:bg-gray-50 transition-colors shadow-sm min-w-[220px]">
+                  <Image src="/apple-icon.png" alt="App Store" width={40} height={40} className="w-10 h-10 flex-shrink-0 object-contain" />
+                  <div className="flex flex-col items-start px-1">
+                    <span className="text-[11px] text-gray-500 font-medium leading-[1] mb-1">Download on the</span>
+                    <span className="text-[17px] font-extrabold text-black leading-[1]">App Store</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
 
@@ -951,6 +1209,35 @@ export default function Home() {
           </div>
         </div>
       ) : null}
+      
+      {/* Game Player Modal */}
+      {playingGame && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8">
+          <div className="bg-white w-full h-full max-w-7xl max-h-[95vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white">
+              <h2 className="text-xl font-bold flex items-center gap-2 text-black">
+                <span className="text-purple-600">🎮</span> Now Playing
+              </h2>
+              <button 
+                onClick={() => setPlayingGame(null)} 
+                className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Close game"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 w-full relative bg-gray-50">
+              <iframe 
+                src={playingGame.htmlSrc} 
+                className="absolute inset-0 w-full h-full border-0"
+                allow="autoplay; fullscreen"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

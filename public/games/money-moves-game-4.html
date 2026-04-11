@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Money Moves — Pocketed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #07111E;
+      --card:      #0C1D33;
+      --card2:     #122540;
+      --border:    rgba(255,255,255,0.07);
+      --green:     #0FDB82;
+      --green-dim: rgba(15,219,130,0.15);
+      --red:       #FF5272;
+      --red-dim:   rgba(255,82,114,0.15);
+      --gold:      #F7CC45;
+      --muted:     #4D6A8E;
+      --text:      #EDF4FF;
+      --sq-light:  #D9EDBC;
+      --sq-dark:   #3F6B2C;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 80% 40% at 50% 0%, rgba(15,219,130,0.06) 0%, transparent 70%);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .app {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      color: var(--green);
+      letter-spacing: -0.5px;
+    }
+    .logo em { color: var(--text); font-style: normal; }
+    .badge-game {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    /* ── Topic tabs ── */
+    .topics-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 14px;
+    }
+    .topic-btn {
+      flex: 1 1 auto;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s;
+      white-space: nowrap;
+    }
+    .topic-btn:hover { color: var(--text); background: var(--card2); }
+    .topic-btn.active {
+      background: var(--card2);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    /* ── Active badge ── */
+    .topic-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .topic-badge::before { content: '✦  '; }
+
+    /* ── Stats ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .stat-value.c-gold   { color: var(--gold); }
+    .stat-value.c-green  { color: var(--green); }
+    .stat-value.c-red    { color: var(--red); }
+    .stat-value.c-white  { color: var(--text); }
+
+    /* ── Ratio live display ── */
+    .ratio-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .ratio-current { color: var(--muted); }
+    .ratio-current span { color: var(--text); font-weight: 700; }
+    .ratio-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--card2);
+      border-radius: 3px;
+      margin: 0 12px;
+      overflow: hidden;
+    }
+    .ratio-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+      border-radius: 3px;
+      transition: width .3s ease;
+    }
+    .ratio-target { color: var(--muted); }
+    .ratio-target span { color: var(--gold); font-weight: 700; }
+
+    /* ── Story ── */
+    .story {
+      background: var(--card);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 10px 10px 0;
+      border: 1px solid var(--border);
+      border-left-color: var(--gold);
+      border-left-width: 3px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: #8DACC8;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Board ── */
+    .board-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .challenge-pill {
+      position: absolute;
+      top: -12px;
+      right: 0;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+      letter-spacing: 1px;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 3px solid var(--card2);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(15,219,130,0.08);
+      aspect-ratio: 1;
+    }
+    .cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: filter .1s;
+      position: relative;
+    }
+    .cell.light { background: var(--sq-light); }
+    .cell.dark  { background: var(--sq-dark); }
+    .cell:hover { filter: brightness(1.12); }
+
+    .piece {
+      width: 72%;
+      height: 72%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: 'Syne', sans-serif;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.2);
+      animation: dropIn .18s cubic-bezier(.34,1.56,.64,1);
+      transition: transform .12s;
+    }
+    .cell:hover .piece { transform: scale(1.06); }
+    .piece.savings  {
+      background: radial-gradient(circle at 38% 35%, #3DFFAB, #0FDB82 60%, #0AAB60);
+      color: #003D1E;
+    }
+    .piece.spending {
+      background: radial-gradient(circle at 38% 35%, #FF8FAA, #FF5272 60%, #CC2850);
+      color: #3A0010;
+    }
+
+    @keyframes dropIn {
+      from { transform: scale(0) rotate(-20deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    /* ── Controls ── */
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .ctrl {
+      padding: 13px 10px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .ctrl-savings {
+      background: var(--green-dim);
+      color: var(--green);
+      border-color: rgba(15,219,130,0.25);
+    }
+    .ctrl-savings.active, .ctrl-savings:hover {
+      background: var(--green);
+      color: #002E16;
+      border-color: var(--green);
+      box-shadow: 0 4px 20px rgba(15,219,130,0.35);
+    }
+    .ctrl-spending {
+      background: var(--red-dim);
+      color: var(--red);
+      border-color: rgba(255,82,114,0.25);
+    }
+    .ctrl-spending.active, .ctrl-spending:hover {
+      background: var(--red);
+      color: #fff;
+      border-color: var(--red);
+      box-shadow: 0 4px 20px rgba(255,82,114,0.35);
+    }
+
+    /* ── Bottom row ── */
+    .bottom-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hint {
+      flex: 1;
+      font-size: 11.5px;
+      color: var(--muted);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      line-height: 1.4;
+    }
+    .hint strong { color: var(--text); }
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all .18s;
+      white-space: nowrap;
+    }
+    .btn-reset:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ── Win overlay ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7,17,30,0.88);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+      animation: fadeIn .3s ease;
+    }
+    .overlay.hidden { display: none; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .win-card {
+      background: var(--card);
+      border: 1px solid rgba(15,219,130,0.4);
+      border-radius: 20px;
+      padding: 40px 36px;
+      text-align: center;
+      max-width: 380px;
+      width: 92%;
+      box-shadow: 0 0 80px rgba(15,219,130,0.18), 0 30px 60px rgba(0,0,0,0.5);
+      animation: slideUp .3s cubic-bezier(.34,1.3,.64,1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(24px) scale(0.95); opacity: 0; }
+      to   { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .win-icon  { font-size: 54px; margin-bottom: 12px; }
+    .win-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+    .win-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .win-chips {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .win-chip {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .win-chip.c-green { color: var(--green); border-color: rgba(15,219,130,0.25); }
+    .win-chip.c-red   { color: var(--red); border-color: rgba(255,82,114,0.25); }
+    .win-chip.c-gold  { color: var(--gold); border-color: rgba(247,204,69,0.25); }
+
+    .btn-next {
+      background: var(--green);
+      color: #002E16;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 30px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .12s;
+      display: block;
+      width: 100%;
+    }
+    .btn-next:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(15,219,130,0.4);
+    }
+
+    /* ── Confetti layer ── */
+    .confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 98;
+    }
+    .confetti-canvas.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <div class="logo">Pocket<em>ed</em></div>
+    <div class="badge-game">Money Moves</div>
+  </div>
+
+  <div class="topics-wrap" id="topics"></div>
+
+  <div class="topic-badge" id="topic-badge">SAVINGS RATIO</div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Target</div>
+      <div class="stat-value c-gold" id="s-target">1 : 3</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Savings</div>
+      <div class="stat-value c-green" id="s-savings">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Spending</div>
+      <div class="stat-value c-red" id="s-spending">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Moves</div>
+      <div class="stat-value c-white" id="s-moves">0</div>
+    </div>
+  </div>
+
+  <div class="ratio-row">
+    <div class="ratio-current">Now: <span id="r-now">—</span></div>
+    <div class="ratio-bar-wrap"><div class="ratio-bar" id="r-bar" style="width:0%"></div></div>
+    <div class="ratio-target">Target: <span id="r-target">—</span></div>
+  </div>
+
+  <div class="story" id="story"></div>
+
+  <div class="board-wrap">
+    <div class="challenge-pill" id="chall-pill">Challenge 1 / 5</div>
+    <div class="board" id="board"></div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl ctrl-savings active" id="btn-sav" onclick="setMode('savings')">💰 Add Savings</button>
+    <button class="ctrl ctrl-spending" id="btn-spe" onclick="setMode('spending')">💸 Add Spending</button>
+  </div>
+
+  <div class="bottom-row">
+    <div class="hint">💡 Click a cell to place a piece. Click an existing piece to <strong>remove</strong> it. Match the target to win!</div>
+    <button class="btn-reset" onclick="resetBoard()">↺ Reset</button>
+  </div>
+
+</div>
+
+<!-- Win overlay -->
+<div class="overlay hidden" id="win-overlay">
+  <div class="win-card">
+    <div class="win-icon">🎉</div>
+    <div class="win-title">Challenge Complete!</div>
+    <div class="win-sub" id="win-sub">You achieved the target ratio!</div>
+    <div class="win-chips">
+      <div class="win-chip c-green">💰 <span id="wc-sav">0</span> Savings</div>
+      <div class="win-chip c-red">💸 <span id="wc-spe">0</span> Spending</div>
+      <div class="win-chip c-gold">🎯 <span id="wc-mov">0</span> Moves</div>
+    </div>
+    <button class="btn-next" onclick="nextChallenge()">Next Challenge →</button>
+  </div>
+</div>
+
+<canvas class="confetti-canvas hidden" id="confetti"></canvas>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+const TOPICS = {
+  'Savings Ratio': {
+    badge: 'SAVINGS RATIO',
+    challenges: [
+      { target:'1 : 3', type:'ratio', a:1, b:3, story:'💡 The 1:3 savings ratio means for every £1 you save, you spend £3 — equivalent to a 25% savings rate. Try placing 1 savings piece and 3 spending pieces (or any multiple).' },
+      { target:'1 : 4', type:'ratio', a:1, b:4, story:'💡 A 1:4 ratio means 20% savings — the "S" in the famous 50:30:20 budgeting rule. For every £1 saved, £4 is spent.' },
+      { target:'1 : 1', type:'ratio', a:1, b:1, story:'💡 Saving as much as you spend is a 50% savings rate — the goal of the "FIRE" (Financial Independence, Retire Early) movement!' },
+      { target:'2 : 3', type:'ratio', a:2, b:3, story:'💡 A 2:3 ratio means saving 40% of your income. High-income earners are often advised to aim for this level of savings.' },
+      { target:'1 : 9', type:'ratio', a:1, b:9, story:'💡 Saving 1 in every 10 pounds is the classic "10% rule" — Warren Buffett\'s recommended minimum savings rate for beginners.' },
+    ]
+  },
+  'Income Fraction': {
+    badge: 'INCOME FRACTION',
+    challenges: [
+      { target:'1/5',  type:'fraction', num:1, den:5,  story:'💡 Saving 1/5 (one-fifth) of your income means 20% goes into savings — the standard target in the 50:30:20 budgeting framework.' },
+      { target:'1/4',  type:'fraction', num:1, den:4,  story:'💡 Saving 1/4 (one-quarter) of your income = 25% savings rate. Many financial advisors recommend this as an above-average savings goal.' },
+      { target:'1/3',  type:'fraction', num:1, den:3,  story:'💡 Saving 1/3 of your income is an ambitious goal — about 33%. This level of saving can help you build an emergency fund very quickly.' },
+      { target:'2/5',  type:'fraction', num:2, den:5,  story:'💡 Saving 2/5 of your income = 40% — an excellent savings rate that puts you well ahead of the average UK saver.' },
+      { target:'1/10', type:'fraction', num:1, den:10, story:'💡 Saving 1/10 (one-tenth) of your income — 10% — is the minimum recommended by most financial experts. "Pay yourself first!"' },
+    ]
+  },
+  'Budget %': {
+    badge: 'BUDGET PERCENTAGE',
+    challenges: [
+      { target:'20%', type:'fraction', num:1, den:5,  story:'💡 The 50:30:20 rule allocates 20% of income to savings. Place 1 savings piece for every 4 spending pieces to hit this target.' },
+      { target:'10%', type:'fraction', num:1, den:10, story:'💡 Saving 10% of your income is the recommended minimum. If you earn £1,000/month, that\'s £100/month or £1,200 saved per year!' },
+      { target:'25%', type:'fraction', num:1, den:4,  story:'💡 A 25% savings rate means 1 in every 4 pounds is saved. This exceeds the 50:30:20 target and builds wealth faster.' },
+      { target:'50%', type:'fraction', num:1, den:2,  story:'💡 Saving 50% of income is the FIRE movement target — retire decades early by saving half of everything you earn.' },
+      { target:'33%', type:'fraction', num:1, den:3,  story:'💡 Saving a third (≈33%) of income is a strong goal. Place 1 savings piece for every 2 spending pieces.' },
+    ]
+  },
+  'Decimals': {
+    badge: 'DECIMALS',
+    challenges: [
+      { target:'0.20', type:'fraction', num:1, den:5,  story:'💡 A savings rate of 0.20 means 20p saved for every £1 earned. This matches the 50:30:20 rule\'s savings component.' },
+      { target:'0.25', type:'fraction', num:1, den:4,  story:'💡 A savings rate of 0.25 — save 25p of every £1 earned. Place 1 savings piece for every 3 spending pieces.' },
+      { target:'0.10', type:'fraction', num:1, den:10, story:'💡 Savings rate of 0.10 = 10p saved per £1 earned. The classic "10% rule" expressed as a decimal.' },
+      { target:'0.50', type:'fraction', num:1, den:2,  story:'💡 0.50 savings rate — half of every pound earned is saved. An equal split: 1 savings piece per 1 spending piece.' },
+      { target:'0.33', type:'fraction', num:1, den:3,  story:'💡 0.33 (recurring) = 1/3 of income saved. Place 1 savings for every 2 spending pieces to match this decimal.' },
+    ]
+  },
+  'Probability': {
+    badge: 'PROBABILITY',
+    challenges: [
+      { target:'1/6', type:'fraction', num:1, den:6, story:'💡 You make 6 purchases in a week. The probability of any one being an impulse "want" buy is 1/6. Place 1 savings piece and 5 spending pieces.' },
+      { target:'3/8', type:'fraction', num:3, den:8, story:'💡 A study found that 3 in 8 teenagers regret impulse purchases. What fraction of purchases are regretted? Build that ratio on the board.' },
+      { target:'2/7', type:'fraction', num:2, den:7, story:'💡 Over 7 days, you overspend on 2 days. What\'s the probability of overspending on any given day? Model it with pieces.' },
+      { target:'5/8', type:'fraction', num:5, den:8, story:'💡 5 out of 8 young savers hit their monthly savings goal. What fraction succeeds? Represent it — savings pieces = successes.' },
+      { target:'1/4', type:'fraction', num:1, den:4, story:'💡 The probability of an unexpected expense in any given month is 1/4. Use pieces to model this probability: 1 "surprise spend" per 3 normal months.' },
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let grid    = Array.from({length:8}, () => Array(8).fill(null));
+let mode    = 'savings';
+let moves   = 0;
+let activeTopic = 'Savings Ratio';
+let chalIdx = 0;
+let won     = false;
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+function init() {
+  renderTopicBtns();
+  loadChallenge();
+  renderBoard();
+}
+
+function renderTopicBtns() {
+  const wrap = document.getElementById('topics');
+  wrap.innerHTML = '';
+  Object.keys(TOPICS).forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'topic-btn' + (t === activeTopic ? ' active' : '');
+    b.textContent = t;
+    b.onclick = () => { activeTopic = t; chalIdx = 0; renderTopicBtns(); resetBoard(); };
+    wrap.appendChild(b);
+  });
+}
+
+function loadChallenge() {
+  const td = TOPICS[activeTopic];
+  const ch = td.challenges[chalIdx];
+  document.getElementById('topic-badge').textContent = td.badge;
+  document.getElementById('s-target').textContent   = ch.target;
+  document.getElementById('r-target').textContent   = ch.target;
+  document.getElementById('story').textContent      = ch.story;
+  document.getElementById('chall-pill').textContent = `Challenge ${chalIdx + 1} / ${td.challenges.length}`;
+  updateStats();
+}
+
+function getChal() { return TOPICS[activeTopic].challenges[chalIdx]; }
+
+// ═══════════════════════════════════════════
+//  BOARD
+// ═══════════════════════════════════════════
+function renderBoard() {
+  const el = document.getElementById('board');
+  el.innerHTML = '';
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const cell = document.createElement('div');
+      cell.className = `cell ${(r + c) % 2 === 0 ? 'light' : 'dark'}`;
+      cell.onclick = () => cellClick(r, c);
+      const p = grid[r][c];
+      if (p) {
+        const pd = document.createElement('div');
+        pd.className = `piece ${p}`;
+        pd.textContent = '£';
+        cell.appendChild(pd);
+      }
+      el.appendChild(cell);
+    }
+  }
+}
+
+function cellClick(r, c) {
+  if (won) return;
+  grid[r][c] = grid[r][c] ? null : mode;
+  moves++;
+  renderBoard();
+  updateStats();
+  checkWin();
+}
+
+// ═══════════════════════════════════════════
+//  STATS + RATIO BAR
+// ═══════════════════════════════════════════
+function updateStats() {
+  let sav = 0, spe = 0;
+  grid.forEach(row => row.forEach(v => { if (v === 'savings') sav++; else if (v === 'spending') spe++; }));
+
+  document.getElementById('s-savings').textContent  = sav;
+  document.getElementById('s-spending').textContent = spe;
+  document.getElementById('s-moves').textContent    = moves;
+
+  // Ratio bar — show savings fraction of total
+  const total = sav + spe;
+  const ch    = getChal();
+
+  // Current ratio display
+  if (total === 0) {
+    document.getElementById('r-now').textContent = '—';
+    document.getElementById('r-bar').style.width = '0%';
+  } else {
+    const frac = sav / total;
+    document.getElementById('r-now').textContent = sav + ' : ' + spe;
+
+    // Target fraction
+    let targetFrac = 0;
+    if (ch.type === 'ratio')    targetFrac = ch.a / (ch.a + ch.b);
+    if (ch.type === 'fraction') targetFrac = ch.num / ch.den;
+
+    // Bar width: how close current frac is to target (0=far, 100=exact match)
+    const proximity = targetFrac > 0 ? Math.min(1, 1 - Math.abs(frac - targetFrac) / targetFrac) : 0;
+    document.getElementById('r-bar').style.width = (proximity * 100) + '%';
+  }
+
+  return { sav, spe };
+}
+
+// ═══════════════════════════════════════════
+//  WIN CHECK
+// ═══════════════════════════════════════════
+function checkWin() {
+  let sav = 0, spe = 0;
+  grid.forEach(row => row.forEach(v => { if (v === 'savings') sav++; else if (v === 'spending') spe++; }));
+
+  if (sav === 0 || spe === 0 || sav + spe < 2) return;
+
+  const ch    = getChal();
+  const total = sav + spe;
+  let ok = false;
+
+  if (ch.type === 'ratio') {
+    // sav:spe = a:b  ⟺  sav*b === spe*a
+    ok = (sav * ch.b === spe * ch.a);
+  } else if (ch.type === 'fraction') {
+    // sav/total = num/den  ⟺  sav*den === total*num
+    ok = (sav * ch.den === total * ch.num);
+  }
+
+  if (ok) {
+    won = true;
+    setTimeout(() => showWin(sav, spe), 250);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  WIN / NEXT
+// ═══════════════════════════════════════════
+function showWin(sav, spe) {
+  const ch = getChal();
+  document.getElementById('win-sub').textContent  = `You matched the target: ${ch.target} — ${ch.story.replace('💡 ', '').split('.')[0]}`;
+  document.getElementById('wc-sav').textContent   = sav;
+  document.getElementById('wc-spe').textContent   = spe;
+  document.getElementById('wc-mov').textContent   = moves;
+  document.getElementById('win-overlay').classList.remove('hidden');
+  launchConfetti();
+}
+
+function nextChallenge() {
+  const chs = TOPICS[activeTopic].challenges;
+  chalIdx   = (chalIdx + 1) % chs.length;
+  won = false;
+  grid = Array.from({length:8}, () => Array(8).fill(null));
+  moves = 0;
+  document.getElementById('win-overlay').classList.add('hidden');
+  stopConfetti();
+  loadChallenge();
+  renderBoard();
+}
+
+function resetBoard() {
+  won = false;
+  grid = Array.from({length:8}, () => Array(8).fill(null));
+  moves = 0;
+  document.getElementById('win-overlay').classList.add('hidden');
+  stopConfetti();
+  loadChallenge();
+  renderBoard();
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btn-sav').classList.toggle('active', m === 'savings');
+  document.getElementById('btn-spe').classList.toggle('active', m === 'spending');
+}
+
+// ═══════════════════════════════════════════
+//  CONFETTI
+// ═══════════════════════════════════════════
+let confettiFrameId = null;
+function launchConfetti() {
+  const canvas = document.getElementById('confetti');
+  canvas.classList.remove('hidden');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const colors = ['#0FDB82','#F7CC45','#FF5272','#4BAFFF','#A78BFA'];
+  const pieces = Array.from({length:90}, () => ({
+    x: Math.random() * canvas.width,
+    y: -10 - Math.random() * 200,
+    w: 6 + Math.random() * 8,
+    h: 3 + Math.random() * 5,
+    rot: Math.random() * Math.PI * 2,
+    vx: (Math.random() - 0.5) * 2,
+    vy: 1.5 + Math.random() * 3,
+    vr: (Math.random() - 0.5) * 0.15,
+    color: colors[Math.floor(Math.random() * colors.length)]
+  }));
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    if (pieces.some(p => p.y < canvas.height + 20))
+      confettiFrameId = requestAnimationFrame(draw);
+    else stopConfetti();
+  }
+  draw();
+}
+function stopConfetti() {
+  if (confettiFrameId) { cancelAnimationFrame(confettiFrameId); confettiFrameId = null; }
+  const c = document.getElementById('confetti');
+  c.classList.add('hidden');
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+}
+
+init();
+</script>
+</body>
+</html>
