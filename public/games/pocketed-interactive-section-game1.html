@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PocketEd — Interactive Learning Zone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #014AAC;
+      --blue-dark:  #013480;
+      --blue-light: #E8F0FB;
+      --blue-mid:   #C2D4F5;
+      --yellow:     #FFD21F;
+      --yellow-light: #FFF8D6;
+      --yellow-dark:  #C9A300;
+      --white:      #FFFFFF;
+      --bg:         #F4F7FF;
+      --text:       #012A65;
+      --muted:      #5A78B0;
+      --border:     #D0DDEF;
+      --success:    #00A86B;
+      --success-bg: #E0F7EF;
+      --danger:     #D94040;
+      --danger-bg:  #FDEAEA;
+      --radius-sm:  8px;
+      --radius-md:  12px;
+      --radius-lg:  16px;
+      --radius-pill: 999px;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── SECTION WRAPPER ─────────────────────────── */
+    .pe-section {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    /* ─── LOGO ────────────────────────────────────── */
+    .pe-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .pe-logo-icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    .pe-logo-text {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .pe-logo-text .pocket { color: var(--blue); }
+    .pe-logo-text .ed     { color: var(--yellow-dark); }
+
+    /* ─── SECTION HEADER ─────────────────────────── */
+    .pe-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--yellow);
+      color: var(--blue-dark);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: var(--radius-pill);
+      margin-bottom: 16px;
+    }
+
+    .pe-heading {
+      font-size: clamp(26px, 4.5vw, 42px);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+
+    .pe-heading span { color: var(--yellow-dark); }
+
+    .pe-subhead {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 580px;
+      margin-bottom: 40px;
+    }
+
+    /* ─── GRADE BADGES ────────────────────────────── */
+    .grade-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .grade-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: var(--radius-pill);
+      background: var(--blue-light);
+      color: var(--blue);
+      border: 1.5px solid var(--blue-mid);
+    }
+
+    .grade-badge.active {
+      background: var(--blue);
+      color: var(--white);
+      border-color: var(--blue);
+    }
+
+    /* ─── TAB NAV ─────────────────────────────────── */
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--border);
+      background: var(--white);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .tab-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: var(--white);
+    }
+
+    /* ─── PANELS ──────────────────────────────────── */
+    .tab-panel { display: none; animation: fadeUp 0.3s ease; }
+    .tab-panel.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── CARD ────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--border);
+      padding: 28px 32px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* ─── STAT GRID ───────────────────────────────── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--blue-light);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .stat-value.yellow { color: var(--yellow-dark); }
+    .stat-value.green  { color: var(--success); }
+
+    /* ─── SLIDER ──────────────────────────────────── */
+    .slider-row { margin-bottom: 18px; }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .slider-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+    .slider-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--blue);
+      background: var(--blue-light);
+      padding: 3px 12px;
+      border-radius: var(--radius-pill);
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: var(--radius-pill);
+      background: var(--blue-mid);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--yellow);
+      cursor: pointer;
+      border: 3px solid var(--blue);
+    }
+
+    /* ─── CHART LEGEND ────────────────────────────── */
+    .chart-legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* ─── TWO COL ─────────────────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+      .card { padding: 20px; }
+    }
+
+    /* ─── BUDGET TOOL ─────────────────────────────── */
+    .budget-rule {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .budget-slice {
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .budget-slice.needs {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    .budget-slice.wants {
+      background: var(--yellow);
+      color: var(--blue-dark);
+    }
+
+    .budget-slice.savings {
+      background: var(--success);
+      color: var(--white);
+    }
+
+    .budget-slice-pct {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .budget-slice-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+
+    .budget-slice-amt {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .budget-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .budget-item-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .budget-item-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .budget-item-label { font-size: 13px; color: var(--text); flex: 1; font-weight: 500; }
+    .budget-item-amt   { font-size: 13px; font-weight: 700; color: var(--blue); min-width: 60px; text-align: right; }
+
+    .budget-input {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blue);
+      background: var(--blue-light);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      width: 90px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .budget-input:focus { border-color: var(--blue); }
+
+    .budget-warning {
+      background: var(--danger-bg);
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--danger);
+      display: none;
+    }
+
+    .budget-warning.show { display: block; }
+
+    .budget-ok {
+      background: var(--success-bg);
+      color: var(--success);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--success);
+      display: none;
+    }
+
+    .budget-ok.show { display: block; }
+
+    /* ─── GOAL / PROGRESS ─────────────────────────── */
+    .goal-presets {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .preset-btn {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+
+    .preset-btn:hover, .preset-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: var(--white);
+    }
+
+    .progress-track {
+      height: 14px;
+      background: var(--blue-light);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: var(--radius-pill);
+      background: var(--yellow);
+      transition: width 0.6s ease;
+      min-width: 0;
+    }
+
+    .timeline-badge {
+      background: var(--blue);
+      color: var(--white);
+      font-size: 26px;
+      font-weight: 800;
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      text-align: center;
+      min-width: 90px;
+      flex-shrink: 0;
+    }
+
+    .timeline-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .timeline-text strong { color: var(--blue); }
+
+    .num-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .num-label { font-size: 13px; font-weight: 500; color: var(--muted); min-width: 140px; }
+
+    .num-input {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blue);
+      background: var(--blue-light);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      width: 130px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .num-input:focus { border-color: var(--blue); }
+
+    /* ─── AGE RACE ────────────────────────────────── */
+    .race-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 580px) {
+      .race-cards { grid-template-columns: 1fr; }
+    }
+
+    .race-card {
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 2px solid var(--border);
+      background: var(--white);
+      transition: all 0.3s;
+    }
+
+    .race-card.winner {
+      border-color: var(--yellow);
+      background: var(--yellow-light);
+    }
+
+    .winner-tag {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--blue-dark);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      margin-bottom: 6px;
+    }
+
+    .race-card-age  { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+    .race-card-total { font-size: 20px; font-weight: 800; margin-bottom: 3px; }
+    .race-card-sub  { font-size: 11px; color: var(--muted); }
+    .race-card-gain { font-size: 12px; font-weight: 600; margin-top: 8px; }
+
+    /* ─── QUIZ ────────────────────────────────────── */
+    .quiz-progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .quiz-pip {
+      flex: 1;
+      height: 6px;
+      border-radius: var(--radius-pill);
+      background: var(--blue-light);
+      transition: background 0.3s;
+    }
+
+    .quiz-pip.done    { background: var(--blue); }
+    .quiz-pip.current { background: var(--yellow); }
+
+    .quiz-grade-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--yellow);
+      color: var(--blue-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      margin-bottom: 12px;
+    }
+
+    .quiz-q {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--blue);
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+
+    .quiz-context {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 500px) {
+      .quiz-options { grid-template-columns: 1fr; }
+    }
+
+    .quiz-opt {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .quiz-opt:hover { border-color: var(--blue); background: var(--blue-light); }
+
+    .quiz-opt.correct { border-color: var(--success); background: var(--success-bg); }
+    .quiz-opt.wrong   { border-color: var(--danger);  background: var(--danger-bg); }
+
+    .quiz-opt-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .quiz-opt-sub   { font-size: 11px; color: var(--muted); }
+
+    .quiz-feedback {
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.6;
+      display: none;
+      margin-bottom: 14px;
+    }
+
+    .quiz-feedback.show { display: block; }
+
+    .quiz-feedback.good {
+      background: var(--success-bg);
+      color: #006644;
+      border-left: 3px solid var(--success);
+    }
+
+    .quiz-feedback.bad {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-left: 3px solid var(--danger);
+    }
+
+    .quiz-next-btn {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 28px;
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: none;
+    }
+
+    .quiz-next-btn.show { display: inline-block; }
+    .quiz-next-btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
+
+    /* Score screen */
+    .quiz-score-screen { text-align: center; padding: 20px 0; }
+
+    .score-trophy {
+      font-size: 56px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .quiz-score-big {
+      font-size: 64px;
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .quiz-score-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--yellow-dark);
+      margin-bottom: 24px;
+    }
+
+    .quiz-result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .quiz-result-item {
+      background: var(--blue-light);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .qr-val { font-size: 22px; font-weight: 800; }
+    .qr-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; }
+
+    .restart-btn {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 11px 28px;
+      background: transparent;
+      border: 2.5px solid var(--blue);
+      color: var(--blue);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .restart-btn:hover { background: var(--blue); color: var(--white); }
+
+    /* ─── TAGLINE FOOTER ──────────────────────────── */
+    .pe-tagline {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .pe-tagline span { color: var(--blue); font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<section class="pe-section">
+
+  <!-- PocketEd Logo -->
+  <div class="pe-logo">
+    <!-- Inline SVG logo mark (blue/yellow bookmark shape) -->
+    <svg class="pe-logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 4C6 2.895 6.895 2 8 2H28C29.105 2 30 2.895 30 4V32L18 25L6 32V4Z" fill="#014AAC"/>
+      <path d="M18 2L30 12H18V2Z" fill="#FFD21F"/>
+    </svg>
+    <div class="pe-logo-text"><span class="pocket">Pocket</span><span class="ed">Ed</span></div>
+  </div>
+
+  <!-- Section Header -->
+  <div class="pe-eyebrow">✦ Interactive Learning Zone</div>
+  <h2 class="pe-heading">Learn by doing,<br><span>not just reading.</span></h2>
+  <p class="pe-subhead">These tools bring your PocketEd lessons to life. Try the calculators, solve the challenges, and test your money smartness — all tied to what you're learning in class.</p>
+
+  <!-- Grade badges -->
+  <div class="grade-strip">
+    <span class="grade-badge">Grade 6 — Money Smarties</span>
+    <span class="grade-badge">Grade 7 — Finance Explorers</span>
+    <span class="grade-badge">Grade 8 — Rupee Rockstars</span>
+  </div>
+
+  <!-- Tab Nav -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('savings', this)">
+      🐷 Piggy Bank to Power Bank
+    </button>
+    <button class="tab-btn" onclick="switchTab('budget', this)">
+      🍕 My Rupee Recipe
+    </button>
+    <button class="tab-btn" onclick="switchTab('race', this)">
+      🏁 The Early Bird Race
+    </button>
+    <button class="tab-btn" onclick="switchTab('quiz', this)">
+      🎓 Money Smarties Quiz
+    </button>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════
+       TAB 1: PIGGY BANK TO POWER BANK (Grade 6 + 8)
+  ══════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="panel-savings">
+    <div class="card">
+      <div class="card-title">Piggy Bank to Power Bank 🐷→⚡</div>
+      <div class="card-subtitle">From Grade 6 (Saving Goals) & Grade 8 (Power of Compounding) — watch how your savings grow with compound interest!</div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Balance at Age 18</div>
+          <div class="stat-value yellow" id="g-at18">₹0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Balance at Age 25</div>
+          <div class="stat-value" id="g-at25">₹0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Free Interest Earned</div>
+          <div class="stat-value green" id="g-interest">₹0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Money Multiplied By</div>
+          <div class="stat-value" id="g-mult">—</div>
+        </div>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-label">Starting amount (one-time)</span>
+          <span class="slider-val" id="g-lbl-start">₹1,000</span>
+        </div>
+        <input type="range" min="0" max="10000" step="500" value="1000" id="g-start" oninput="updateGrowth()" />
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-label">Monthly savings</span>
+          <span class="slider-val" id="g-lbl-monthly">₹500</span>
+        </div>
+        <input type="range" min="0" max="5000" step="100" value="500" id="g-monthly" oninput="updateGrowth()" />
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-label">Annual interest rate (Savings a/c ~4%, PPF ~7.1%)</span>
+          <span class="slider-val" id="g-lbl-rate">6%</span>
+        </div>
+        <input type="range" min="1" max="15" step="0.5" value="6" id="g-rate" oninput="updateGrowth()" />
+      </div>
+
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#014AAC;"></div>Total balance</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#FFD21F;"></div>Free interest earned</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#C2D4F5;"></div>Amount you deposited</div>
+      </div>
+
+      <div style="position:relative; width:100%; height:280px;">
+        <canvas id="growth-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       TAB 2: MY RUPEE RECIPE (Grade 6 — 50-30-20)
+  ══════════════════════════════════════════════ -->
+  <div class="tab-panel" id="panel-budget">
+    <div class="card">
+      <div class="card-title">My Rupee Recipe 🍕</div>
+      <div class="card-subtitle">From Grade 6 — The 50-30-20 Rule! Split your money into Needs, Wants, and Savings. Enter your pocket money and try the ₹1,000 Challenge!</div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-label">My monthly pocket money / income</span>
+          <span class="slider-val" id="b-lbl-income">₹1,000</span>
+        </div>
+        <input type="range" min="100" max="10000" step="100" value="1000" id="b-income" oninput="updateBudget()" />
+      </div>
+
+      <div class="budget-rule" id="budget-rule-display">
+        <div class="budget-slice needs">
+          <div class="budget-slice-pct">50%</div>
+          <div class="budget-slice-label">Needs</div>
+          <div class="budget-slice-amt" id="b-needs-amt">₹500</div>
+        </div>
+        <div class="budget-slice wants">
+          <div class="budget-slice-pct">30%</div>
+          <div class="budget-slice-label">Wants</div>
+          <div class="budget-slice-amt" id="b-wants-amt">₹300</div>
+        </div>
+        <div class="budget-slice savings">
+          <div class="budget-slice-pct">20%</div>
+          <div class="budget-slice-label">Savings</div>
+          <div class="budget-slice-amt" id="b-savings-amt">₹200</div>
+        </div>
+      </div>
+
+      <p style="font-size:14px; font-weight:600; color:var(--blue); margin-bottom:14px;">Now plan your spending — does it fit the recipe?</p>
+
+      <div class="budget-items" id="budget-items">
+        <!-- JS rendered -->
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-top:2px solid var(--blue-light); margin-bottom:12px;">
+        <span style="font-size:14px; font-weight:700; color:var(--blue);">Total spent</span>
+        <span style="font-size:16px; font-weight:800; color:var(--blue);" id="b-total-spent">₹0</span>
+      </div>
+
+      <div class="budget-warning" id="b-warning">⚠️ Oops! You're spending more than you have. A Money Smarty always spends less than they earn!</div>
+      <div class="budget-ok" id="b-ok">🎉 Great budgeting, Money Smarty! You have <strong id="b-leftover">₹0</strong> left over — put it in savings!</div>
+
+      <div style="position:relative; width:100%; height:220px; margin-top:20px;">
+        <canvas id="budget-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       TAB 3: EARLY BIRD RACE (Grade 8 — Compounding)
+  ══════════════════════════════════════════════ -->
+  <div class="tab-panel" id="panel-race">
+    <div class="card">
+      <div class="card-title">The Early Bird Race 🏁</div>
+      <div class="card-subtitle">From Grade 8 — The Power of Compounding! Three Rupee Rockstars save the same amount monthly but start at different ages. See who wins at age 35!</div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-label">Monthly savings (all three rockstars)</span>
+          <span class="slider-val" id="r-lbl-monthly">₹1,000</span>
+        </div>
+        <input type="range" min="100" max="10000" step="100" value="1000" id="r-monthly" oninput="updateRace()" />
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span class="slider-label">Annual interest rate</span>
+          <span class="slider-val" id="r-lbl-rate">7%</span>
+        </div>
+        <input type="range" min="1" max="15" step="0.5" value="7" id="r-rate" oninput="updateRace()" />
+      </div>
+
+      <div class="race-cards" id="race-cards"></div>
+
+      <div style="background:var(--yellow-light); border:2px solid var(--yellow); border-radius:var(--radius-md); padding:14px 16px; font-size:13px; font-weight:500; color:var(--blue-dark); margin-bottom:20px;" id="race-insight">
+        <!-- JS rendered insight -->
+      </div>
+
+      <div style="position:relative; width:100%; height:250px;">
+        <canvas id="race-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       TAB 4: MONEY SMARTIES QUIZ (All Grades)
+  ══════════════════════════════════════════════ -->
+  <div class="tab-panel" id="panel-quiz">
+    <div class="card">
+
+      <div id="quiz-main">
+        <div class="quiz-progress" id="quiz-pips"></div>
+
+        <div class="quiz-grade-tag" id="quiz-grade-tag">⭐ Grade 6 — Money Smarties</div>
+        <div class="quiz-q" id="quiz-question"></div>
+        <div class="quiz-context" id="quiz-context"></div>
+        <div class="quiz-options" id="quiz-opts"></div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+        <button class="quiz-next-btn" id="quiz-next" onclick="nextQuestion()">Next question →</button>
+      </div>
+
+      <div id="quiz-score" style="display:none;">
+        <div class="quiz-score-screen">
+          <span class="score-trophy" id="score-trophy">🏆</span>
+          <div class="quiz-score-big" id="score-big">0/6</div>
+          <div class="quiz-score-label" id="score-label">Loading...</div>
+
+          <div class="quiz-result-grid">
+            <div class="quiz-result-item">
+              <div class="qr-val" id="score-correct" style="color:var(--success);">0</div>
+              <div class="qr-lbl">Correct</div>
+            </div>
+            <div class="quiz-result-item">
+              <div class="qr-val" id="score-wrong" style="color:var(--danger);">0</div>
+              <div class="qr-lbl">Incorrect</div>
+            </div>
+            <div class="quiz-result-item">
+              <div class="qr-val" id="score-pct" style="color:var(--blue);">0%</div>
+              <div class="qr-lbl">Score</div>
+            </div>
+          </div>
+
+          <p style="font-size:14px; color:var(--muted); margin-bottom:24px; line-height:1.6;" id="score-msg"></p>
+          <button class="restart-btn" onclick="restartQuiz()">Try again 🔄</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer tagline -->
+  <div class="pe-tagline"><span>PocketEd</span> — Financial learning, reimagined!</div>
+
+</section>
+
+<script>
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function inr(n) {
+  n = Math.round(n);
+  if (n >= 10000000) return '₹' + (n/10000000).toFixed(2) + ' Cr';
+  if (n >= 100000)   return '₹' + (n/100000).toFixed(1) + ' L';
+  if (n >= 1000)     return '₹' + (n/1000).toFixed(1) + 'K';
+  return '₹' + n.toLocaleString('en-IN');
+}
+function inrFull(n) {
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+function compound(start, monthly, annualRate, years) {
+  const r = annualRate / 100 / 12;
+  let bal = start;
+  for (let m = 0; m < years * 12; m++) bal = bal * (1 + r) + monthly;
+  return bal;
+}
+
+/* ═══════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════ */
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   TAB 1: SAVINGS GROWTH
+═══════════════════════════════════════════ */
+let growthChart = null;
+
+function updateGrowth() {
+  const start   = +document.getElementById('g-start').value;
+  const monthly = +document.getElementById('g-monthly').value;
+  const rate    = +document.getElementById('g-rate').value;
+
+  document.getElementById('g-lbl-start').textContent   = inrFull(start);
+  document.getElementById('g-lbl-monthly').textContent = inrFull(monthly);
+  document.getElementById('g-lbl-rate').textContent    = rate.toFixed(1) + '%';
+
+  const r = rate / 100 / 12;
+  const labels = [], balances = [], deps = [], ints = [];
+  let bal = start, dep = start;
+
+  for (let age = 12; age <= 25; age++) {
+    labels.push('Age ' + age);
+    balances.push(Math.round(bal));
+    deps.push(Math.round(dep));
+    ints.push(Math.round(bal - dep));
+    for (let m = 0; m < 12; m++) { bal = bal*(1+r)+monthly; dep+=monthly; }
+  }
+
+  const at18 = balances[6], at25 = balances[balances.length-1];
+  const totalDep = deps[deps.length-1];
+  document.getElementById('g-at18').textContent     = inr(at18);
+  document.getElementById('g-at25').textContent     = inr(at25);
+  document.getElementById('g-interest').textContent = inr(at25-totalDep);
+  document.getElementById('g-mult').textContent     = totalDep > 0 ? (at25/totalDep).toFixed(2)+'x' : '—';
+
+  if (growthChart) {
+    growthChart.data.labels = labels;
+    growthChart.data.datasets[0].data = balances;
+    growthChart.data.datasets[1].data = ints;
+    growthChart.data.datasets[2].data = deps;
+    growthChart.update('none');
+  } else {
+    growthChart = new Chart(document.getElementById('growth-chart'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Total balance',    data: balances, backgroundColor: '#014AAC', borderRadius: 4 },
+          { label: 'Interest earned',  data: ints,     backgroundColor: '#FFD21F', borderRadius: 4 },
+          { label: 'Deposited',        data: deps,     backgroundColor: '#C2D4F5', borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + inrFull(c.raw) } } },
+        scales: {
+          x: { ticks: { font: { size: 11, family: 'Poppins' }, autoSkip: false, maxRotation: 45 }, grid: { display: false } },
+          y: { ticks: { font: { size: 11, family: 'Poppins' }, callback: v => inr(v) }, grid: { color: 'rgba(0,0,0,0.04)' } }
+        }
+      }
+    });
+  }
+}
+
+updateGrowth();
+
+/* ═══════════════════════════════════════════
+   TAB 2: 50-30-20 BUDGET
+═══════════════════════════════════════════ */
+let budgetChart = null;
+
+const BUDGET_ITEMS = [
+  { id: 'school',   label: '📚 School supplies (Need)',   cat: 'needs',   default: 200 },
+  { id: 'food',     label: '🍱 Food & snacks (Need)',     cat: 'needs',   default: 250 },
+  { id: 'games',    label: '🎮 Games & entertainment (Want)', cat: 'wants', default: 150 },
+  { id: 'clothes',  label: '👕 Clothes / accessories (Want)', cat: 'wants', default: 100 },
+  { id: 'savings',  label: '🐷 Savings jar (Savings)',    cat: 'savings', default: 200 },
+  { id: 'other',    label: '✨ Other wants',              cat: 'wants',   default: 50 },
+];
+
+function renderBudgetItems() {
+  const container = document.getElementById('budget-items');
+  container.innerHTML = BUDGET_ITEMS.map(item => `
+    <div class="budget-item-row">
+      <div class="budget-item-dot" style="background:${item.cat==='needs'?'#014AAC':item.cat==='wants'?'#FFD21F':'#00A86B'};"></div>
+      <span class="budget-item-label">${item.label}</span>
+      <input type="number" class="budget-input" id="bi-${item.id}" value="${item.default}" min="0" oninput="updateBudget()" />
+    </div>
+  `).join('');
+}
+
+function updateBudget() {
+  const income = +document.getElementById('b-income').value;
+  document.getElementById('b-lbl-income').textContent = inrFull(income);
+  document.getElementById('b-needs-amt').textContent   = inrFull(income * 0.5);
+  document.getElementById('b-wants-amt').textContent   = inrFull(income * 0.3);
+  document.getElementById('b-savings-amt').textContent = inrFull(income * 0.2);
+
+  let total = 0;
+  BUDGET_ITEMS.forEach(item => {
+    const val = +document.getElementById('bi-' + item.id)?.value || 0;
+    total += val;
+  });
+
+  document.getElementById('b-total-spent').textContent = inrFull(total);
+
+  const leftover = income - total;
+  const warn = document.getElementById('b-warning');
+  const ok   = document.getElementById('b-ok');
+
+  if (total > income) {
+    warn.classList.add('show'); ok.classList.remove('show');
+  } else {
+    warn.classList.remove('show'); ok.classList.add('show');
+    document.getElementById('b-leftover').textContent = inrFull(leftover);
+  }
+
+  // Pie chart
+  const needsTotal   = BUDGET_ITEMS.filter(i=>i.cat==='needs').reduce((s,i)=>s+(+document.getElementById('bi-'+i.id)?.value||0),0);
+  const wantsTotal   = BUDGET_ITEMS.filter(i=>i.cat==='wants').reduce((s,i)=>s+(+document.getElementById('bi-'+i.id)?.value||0),0);
+  const savingsTotal = BUDGET_ITEMS.filter(i=>i.cat==='savings').reduce((s,i)=>s+(+document.getElementById('bi-'+i.id)?.value||0),0);
+
+  if (budgetChart) {
+    budgetChart.data.datasets[0].data = [needsTotal, wantsTotal, savingsTotal];
+    budgetChart.update('none');
+  } else {
+    budgetChart = new Chart(document.getElementById('budget-chart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Needs', 'Wants', 'Savings'],
+        datasets: [{ data: [needsTotal, wantsTotal, savingsTotal], backgroundColor: ['#014AAC','#FFD21F','#00A86B'], borderWidth: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { font: { size: 12, family: 'Poppins', weight: '600' }, padding: 16, boxWidth: 14 } },
+          tooltip: { callbacks: { label: c => ' ' + inrFull(c.raw) + ' (' + Math.round(c.raw/income*100||0) + '%)' } }
+        }
+      }
+    });
+  }
+}
+
+renderBudgetItems();
+updateBudget();
+
+/* ═══════════════════════════════════════════
+   TAB 3: AGE RACE
+═══════════════════════════════════════════ */
+let raceChart = null;
+
+function updateRace() {
+  const monthly = +document.getElementById('r-monthly').value;
+  const rate    = +document.getElementById('r-rate').value;
+
+  document.getElementById('r-lbl-monthly').textContent = inrFull(monthly);
+  document.getElementById('r-lbl-rate').textContent    = rate.toFixed(1) + '%';
+
+  const starters = [
+    { age: 12, name: 'Priya starts at 12', color: '#014AAC', textColor: '#014AAC' },
+    { age: 18, name: 'Ravi starts at 18',  color: '#FFD21F', textColor: '#8B6F00' },
+    { age: 25, name: 'Amit starts at 25',  color: '#C2D4F5', textColor: '#5A78B0' }
+  ];
+
+  const compareAt = 35;
+  const finalVals = starters.map(s => compound(0, monthly, rate, compareAt - s.age));
+  const deposited = starters.map(s => monthly * 12 * (compareAt - s.age));
+  const maxVal = Math.max(...finalVals);
+
+  const container = document.getElementById('race-cards');
+  container.innerHTML = starters.map((s, i) => {
+    const isWinner = finalVals[i] === maxVal;
+    const gain = finalVals[i] - deposited[i];
+    return `
+      <div class="race-card ${isWinner ? 'winner' : ''}">
+        ${isWinner ? '<span class="winner-tag">🏆 Best start!</span><br>' : ''}
+        <div class="race-card-age" style="color:${s.textColor}">${s.name}</div>
+        <div class="race-card-total" style="color:${s.textColor}">${inr(finalVals[i])}</div>
+        <div class="race-card-sub">at age ${compareAt}</div>
+        <div class="race-card-gain" style="color:${s.textColor}">+${inr(gain)} free interest</div>
+      </div>
+    `;
+  }).join('');
+
+  const diff = finalVals[0] - finalVals[2];
+  document.getElementById('race-insight').innerHTML =
+    `💡 <strong>Rupee Rockstar insight:</strong> Priya started 13 years earlier than Amit. That head start is worth <strong>${inr(diff)}</strong> extra at age 35 — even though they saved the same ₹${monthly.toLocaleString('en-IN')}/month! This is the magic of compounding (Grade 8, Chapter 3).`;
+
+  const raceLabels = [];
+  for (let a = 12; a <= compareAt; a++) raceLabels.push('Age ' + a);
+
+  const datasets = starters.map(s => ({
+    label: s.name,
+    data: raceLabels.map((_, i) => {
+      const age = 12 + i;
+      return age < s.age ? null : Math.round(compound(0, monthly, rate, age - s.age));
+    }),
+    borderColor: s.color,
+    backgroundColor: s.color + '22',
+    fill: true,
+    tension: 0.4,
+    pointRadius: 0,
+    borderWidth: 2.5
+  }));
+
+  if (raceChart) {
+    raceChart.data.labels = raceLabels;
+    raceChart.data.datasets = datasets;
+    raceChart.update('none');
+  } else {
+    raceChart = new Chart(document.getElementById('race-chart'), {
+      type: 'line',
+      data: { labels: raceLabels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: true, position: 'top', labels: { font: { size: 12, family: 'Poppins', weight: '600' }, boxWidth: 14, padding: 16 } }, tooltip: { callbacks: { label: c => ' ' + inrFull(c.raw) } } },
+        scales: {
+          x: { ticks: { font: { size: 11, family: 'Poppins' }, maxTicksLimit: 9 }, grid: { display: false } },
+          y: { ticks: { font: { size: 11, family: 'Poppins' }, callback: v => inr(v) }, grid: { color: 'rgba(0,0,0,0.04)' } }
+        }
+      }
+    });
+  }
+}
+
+updateRace();
+
+/* ═══════════════════════════════════════════
+   TAB 4: QUIZ — curriculum-aligned questions
+═══════════════════════════════════════════ */
+const QUESTIONS = [
+  {
+    grade: 'Grade 6 — Money Smarties',
+    q: 'Arjun gets ₹500 pocket money. His school fee is a ___ and a new video game is a ___.',
+    ctx: 'From Chapter 2: Needs vs. Wants — The Smarties\' Choice.',
+    opts: [
+      { t: 'Need / Want',    s: 'School fee = must-have, game = nice-to-have', correct: true },
+      { t: 'Want / Need',    s: 'The other way around?', correct: false },
+      { t: 'Both are Needs', s: 'Are both truly must-haves?', correct: false },
+      { t: 'Both are Wants', s: 'Can you go to school without paying the fee?', correct: false }
+    ],
+    right: 'Correct! School fee is a NEED — you must pay it. The video game is a WANT — it\'s nice to have but not essential. Recognising this helps you spend wisely!',
+    wrong: 'The school fee is a NEED (must-have to attend school) and the video game is a WANT (nice-to-have). This is the heart of Chapter 2!'
+  },
+  {
+    grade: 'Grade 6 — Money Smarties',
+    q: 'Using the 50-30-20 Rule on ₹1,000 — how much should go into SAVINGS?',
+    ctx: 'From Chapter 3: My Rupee Recipe — The 50-30-20 Rule.',
+    opts: [
+      { t: '₹500',  s: 'That\'s the Needs bucket.', correct: false },
+      { t: '₹300',  s: 'That\'s the Wants bucket.', correct: false },
+      { t: '₹200',  s: '20% of ₹1,000 = ₹200!', correct: true },
+      { t: '₹100',  s: 'That\'s only 10%.', correct: false }
+    ],
+    right: 'Spot on! The 50-30-20 Rule says: 50% for Needs (₹500), 30% for Wants (₹300), 20% for Savings (₹200). Save first, spend second!',
+    wrong: '20% of ₹1,000 = ₹200 for savings. Remember: 50% Needs, 30% Wants, 20% Savings — that\'s your Rupee Recipe!'
+  },
+  {
+    grade: 'Grade 7 — Finance Explorers',
+    q: 'Meera borrows ₹10,000 from a bank. The original amount she borrowed is called the ___.',
+    ctx: 'From Chapter 3: Borrowing Basics — The Loan Compass.',
+    opts: [
+      { t: 'Interest',   s: 'Interest is the extra you pay.', correct: false },
+      { t: 'EMI',        s: 'EMI is the monthly repayment.', correct: false },
+      { t: 'Principal',  s: 'The original amount borrowed.', correct: true },
+      { t: 'Premium',    s: 'Premium is used in insurance.', correct: false }
+    ],
+    right: 'Brilliant! The ₹10,000 is called the PRINCIPAL — the original amount borrowed. You also pay INTEREST on top. Principal + Interest = total you repay!',
+    wrong: 'The original amount borrowed is called the PRINCIPAL. You then pay INTEREST on it. Principal + Interest = total repayment. (Chapter 3 — The Loan Compass!)'
+  },
+  {
+    grade: 'Grade 7 — Finance Explorers',
+    q: 'You use your DEBIT card at a shop. Where does the money come FROM?',
+    ctx: 'From Chapter 4: Credit vs. Debit — The Card Duel.',
+    opts: [
+      { t: 'The bank lends it to you',  s: 'That\'s a credit card!', correct: false },
+      { t: 'Your own bank account',     s: 'Debit = your own money!', correct: true },
+      { t: 'A loan from the shop',      s: 'Shops don\'t usually give loans.', correct: false },
+      { t: 'Thin air — you pay later',  s: 'That\'s a credit card feature.', correct: false }
+    ],
+    right: 'Correct! A DEBIT card uses YOUR OWN money from your bank account — deducted immediately. A CREDIT card means the bank pays first and you repay them later.',
+    wrong: 'DEBIT = your OWN money. When you swipe, the money leaves your account instantly. CREDIT = bank\'s money, you repay later. (Chapter 4 — The Card Duel!)'
+  },
+  {
+    grade: 'Grade 8 — Rupee Rockstars',
+    q: 'Which organisation is known as the "banker\'s bank" and controls India\'s money supply?',
+    ctx: 'From Chapter 1: RBI Ranger — India\'s Money Makers.',
+    opts: [
+      { t: 'State Bank of India (SBI)', s: 'SBI is a commercial bank.', correct: false },
+      { t: 'Reserve Bank of India (RBI)', s: 'The guardian of India\'s economy!', correct: true },
+      { t: 'SEBI',   s: 'SEBI regulates the stock market.', correct: false },
+      { t: 'NABARD', s: 'NABARD supports agriculture finance.', correct: false }
+    ],
+    right: 'Absolutely correct! The RBI is India\'s central bank — it prints currency, controls interest rates, and supervises all other banks. Every rupee note says "Reserve Bank of India"!',
+    wrong: 'The RBI (Reserve Bank of India) is the central bank — it\'s the banker\'s bank! It controls money supply and keeps India\'s economy stable. (Chapter 1 — RBI Ranger!)'
+  },
+  {
+    grade: 'Grade 8 — Rupee Rockstars',
+    q: 'You invest ₹1,000 at 10% interest. Year 1 earns ₹100. Year 2 earns MORE than ₹100. Why?',
+    ctx: 'From Chapter 3: Investor Impulse — The Power of Compounding.',
+    opts: [
+      { t: 'The bank made a mistake', s: 'No, this is intentional!', correct: false },
+      { t: 'Simple interest increased', s: 'Simple interest stays the same.', correct: false },
+      { t: 'You earned interest on your interest', s: 'That\'s compounding!', correct: true },
+      { t: 'Inflation raised all returns', s: 'Inflation affects prices, not this.', correct: false }
+    ],
+    right: 'Yes! That\'s COMPOUNDING — you earn interest on your original ₹1,000 AND on the ₹100 you earned last year. Over decades, this becomes incredibly powerful. Einstein called it the "8th Wonder of the World"!',
+    wrong: 'It\'s COMPOUNDING — earning interest on your interest! In Year 2, your balance is ₹1,100, so you earn 10% of ₹1,100 = ₹110. The snowball keeps growing! (Chapter 3 — Investor Impulse!)'
+  }
+];
+
+let quizState = { current: 0, score: 0, answered: false };
+
+function renderQuiz() {
+  const q = QUESTIONS[quizState.current];
+
+  const pips = document.getElementById('quiz-pips');
+  pips.innerHTML = QUESTIONS.map((_, i) => {
+    const cls = i < quizState.current ? 'done' : i === quizState.current ? 'current' : '';
+    return `<div class="quiz-pip ${cls}"></div>`;
+  }).join('');
+
+  document.getElementById('quiz-grade-tag').textContent = '⭐ ' + q.grade;
+  document.getElementById('quiz-question').textContent  = q.q;
+  document.getElementById('quiz-context').textContent   = q.ctx;
+  document.getElementById('quiz-feedback').className    = 'quiz-feedback';
+  document.getElementById('quiz-feedback').textContent  = '';
+  document.getElementById('quiz-next').className        = 'quiz-next-btn';
+
+  const optsEl = document.getElementById('quiz-opts');
+  optsEl.innerHTML = q.opts.map((o, i) => `
+    <button class="quiz-opt" onclick="selectOpt(${i})">
+      <div class="quiz-opt-title">${o.t}</div>
+      <div class="quiz-opt-sub">${o.s}</div>
+    </button>
+  `).join('');
+
+  quizState.answered = false;
+}
+
+function selectOpt(idx) {
+  if (quizState.answered) return;
+  quizState.answered = true;
+
+  const q = QUESTIONS[quizState.current];
+  const opts = document.querySelectorAll('.quiz-opt');
+  const isCorrect = q.opts[idx].correct;
+
+  opts[idx].classList.add(isCorrect ? 'correct' : 'wrong');
+  q.opts.forEach((o, i) => { if (o.correct) opts[i].classList.add('correct'); });
+
+  if (isCorrect) quizState.score++;
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.textContent = isCorrect ? '✅ ' + q.right : '❌ ' + q.wrong;
+  fb.className = 'quiz-feedback show ' + (isCorrect ? 'good' : 'bad');
+
+  const nxt = document.getElementById('quiz-next');
+  nxt.textContent = quizState.current < QUESTIONS.length - 1 ? 'Next question →' : 'See my results 🎉';
+  nxt.className = 'quiz-next-btn show';
+}
+
+function nextQuestion() {
+  if (quizState.current < QUESTIONS.length - 1) {
+    quizState.current++;
+    renderQuiz();
+  } else {
+    showScore();
+  }
+}
+
+function showScore() {
+  document.getElementById('quiz-main').style.display  = 'none';
+  document.getElementById('quiz-score').style.display = 'block';
+
+  const s = quizState.score, total = QUESTIONS.length;
+  const pct = Math.round(s / total * 100);
+
+  document.getElementById('score-big').textContent     = s + '/' + total;
+  document.getElementById('score-correct').textContent = s;
+  document.getElementById('score-wrong').textContent   = total - s;
+  document.getElementById('score-pct').textContent     = pct + '%';
+
+  const trophies = ['😅','🤔','🙂','😊','🌟','🏆'];
+  const labels   = ['Keep going!', 'Getting there!', 'Nice try!', 'Well done!', 'Brilliant!', 'Rupee Rockstar!'];
+  const msgs     = [
+    'Don\'t worry! Every Money Smarty needs practice. Go back to the chapters and try again!',
+    'You\'re on your way! Review Grades 6 & 7 chapters and you\'ll nail it next time.',
+    'Decent effort! A few more rounds and you\'ll be a Finance Explorer for sure.',
+    'Strong performance! You clearly understand most of your PocketEd curriculum.',
+    'Outstanding! You\'re nearly a Rupee Rockstar — just one more round to be perfect!',
+    'PERFECT SCORE! You are a true Rupee Rockstar! Financial literacy fully unlocked! 🎓'
+  ];
+
+  const idx = Math.min(s, 5);
+  document.getElementById('score-trophy').textContent  = trophies[idx];
+  document.getElementById('score-label').textContent   = labels[idx];
+  document.getElementById('score-msg').textContent     = msgs[idx];
+}
+
+function restartQuiz() {
+  quizState = { current: 0, score: 0, answered: false };
+  document.getElementById('quiz-main').style.display  = 'block';
+  document.getElementById('quiz-score').style.display = 'none';
+  renderQuiz();
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
