@@ -829,7 +829,7 @@ export default function Home() {
             </div>
             <header
               ref={navRef}
-              className="top-nav relative z-10 shrink-0 px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.35rem,1vw,0.65rem)] will-change-[opacity,transform]"
+              className="top-nav max-md:!hidden relative z-10 shrink-0 px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.35rem,1vw,0.65rem)] will-change-[opacity,transform]"
             >
               <div className="nav-shell">
                 <a className="nav-brand !items-start" href="#" aria-label="PocketEd home">
@@ -848,9 +848,12 @@ export default function Home() {
             <section className="hero-section relative z-10 mx-auto grid min-h-0 w-full max-w-[1240px] grid-cols-1 place-content-start items-start justify-items-center gap-y-8 px-[clamp(1rem,3.2vw,2.6rem)] pt-0 pb-[clamp(3rem,10vh,6.5rem)] text-center md:grid-cols-[minmax(0,1fr)_minmax(0,560px)] md:items-start md:gap-x-[clamp(2rem,5vw,5.5rem)] md:gap-y-0 md:place-content-start md:text-left md:justify-items-stretch">
               <div
                 ref={heroCopyRef}
-                className="relative z-20 justify-self-center text-left will-change-[opacity,transform] md:justify-self-start md:pt-[clamp(0.75rem,2.5vw,2.5rem)]"
+                className="relative z-20 justify-self-center text-left max-md:flex max-md:flex-col max-md:items-center max-md:text-center will-change-[opacity,transform] md:justify-self-start md:pt-[clamp(0.75rem,2.5vw,2.5rem)]"
               >
-                <h1 className="m-0 flex flex-col text-[clamp(2.2rem,10.8vw,5.45rem)] font-bold leading-[0.98] tracking-[-0.03em] md:text-[clamp(2.45rem,7.2vw,5.45rem)]">
+                <div className="md:hidden mt-8 mb-6 flex justify-center w-full">
+                  <Image src="/pocketed_complete_logo.png" alt="PocketEd complete logo" width={220} height={70} className="h-auto w-[clamp(160px,50vw,220px)] object-contain" priority />
+                </div>
+                <h1 className="m-0 flex flex-col max-md:items-center text-[clamp(2.2rem,10.8vw,5.45rem)] font-bold leading-[0.98] tracking-[-0.03em] md:text-[clamp(2.45rem,7.2vw,5.45rem)]">
                   <span className="text-[var(--primary-blue)]">Learn Smarter.</span>
                   <span className="mt-[0.2rem] text-[var(--primary-yellow)]">Achieve More.</span>
                 </h1>
@@ -867,12 +870,12 @@ export default function Home() {
               </div>
 
               <div
-                className="relative z-10 flex w-full max-md:max-w-[420px] items-center justify-center justify-self-center overflow-visible p-[clamp(0.75rem,2.5vw,2.5rem)] md:w-auto md:justify-self-end"
+                className="relative z-10 flex w-full max-md:max-w-[420px] items-center justify-center justify-self-center overflow-visible p-[clamp(0.75rem,2.5vw,2.5rem)] max-md:mx-auto max-md:flex max-md:justify-center md:w-auto md:justify-self-end"
                 aria-hidden="true"
               >
                 <div
                   ref={phoneMoveRef}
-                  className="relative isolate inline-flex flex-col items-center will-change-transform md:flex-row md:items-start md:gap-[clamp(0.6rem,1.6vw,1.15rem)]"
+                  className="relative isolate inline-flex flex-col items-center will-change-transform max-md:w-full max-md:flex max-md:justify-center max-md:items-center max-md:mx-auto md:flex-row md:items-start md:gap-[clamp(0.6rem,1.6vw,1.15rem)]"
                 >
                   <div className="hidden flex-col gap-[4.5rem] md:absolute md:right-full md:mr-[clamp(0.6rem,1.6vw,1.15rem)] md:top-0 md:flex md:pt-[clamp(1rem,3vh,2rem)] md:w-[22rem] md:items-end">
                     <div
@@ -948,13 +951,13 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div ref={phoneMockRef} className="phone-mock relative z-20 shrink-0">
+                  <div ref={phoneMockRef} className="phone-mock relative z-20 shrink-0 max-md:mx-auto max-md:flex max-md:justify-center">
                     <Image
                       src="/mobile.png"
                       alt="PocketEd mobile interface"
                       width={1000}
                       height={1035}
-                      className="h-auto w-[clamp(200px,46vw,222px)] max-w-none md:w-[clamp(214px,22vw,236px)]"
+                      className="h-auto w-[clamp(200px,46vw,222px)] max-w-none md:w-[clamp(214px,22vw,236px)] max-md:mx-auto"
                       priority
                     />
                   </div>
