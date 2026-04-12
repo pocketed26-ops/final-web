@@ -1182,10 +1182,14 @@ export default function Home() {
               aria-hidden="true"
             >
               <defs>
-                <clipPath id="neoLeafTextClip">
-                  <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" className="logo-text">
-                    PocketEd
-                  </text>
+                <clipPath id="waveClip">
+                  <rect
+                    x={-EDGE_OVERDRAW}
+                    y={fillTop}
+                    width={SVG_WIDTH + EDGE_OVERDRAW * 2}
+                    height={SVG_HEIGHT - fillTop}
+                  />
+                  <path d={wavePath} />
                 </clipPath>
               </defs>
 
@@ -1193,19 +1197,13 @@ export default function Home() {
                 PocketEd
               </text>
 
-              <g clipPath="url(#neoLeafTextClip)">
-                <rect
-                  x={-EDGE_OVERDRAW}
-                  y={fillTop}
-                  width={SVG_WIDTH + EDGE_OVERDRAW * 2}
-                  height={SVG_HEIGHT - fillTop}
-                  className="fill-body"
-                />
-                <path d={wavePath} className="fill-wave" />
-              </g>
+              <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" className="logo-text" clipPath="url(#waveClip)">
+                <tspan fill="#014aac">Pocket</tspan>
+                <tspan fill="#ffd21f">Ed</tspan>
+              </text>
             </svg>
 
-            <p className="loading-label">loading... {progress}%</p>
+            {/* <p className="loading-label">loading... {progress}%</p> */}
           </div>
         </div>
       ) : null}
