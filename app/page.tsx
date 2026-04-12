@@ -832,8 +832,9 @@ export default function Home() {
               className="top-nav relative z-10 shrink-0 px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.35rem,1vw,0.65rem)] will-change-[opacity,transform]"
             >
               <div className="nav-shell">
-                <a className="nav-brand" href="#" aria-label="PocketEd home">
+                <a className="nav-brand !items-start" href="#" aria-label="PocketEd home">
                   <Image src="/nav-logo.png" alt="PocketEd logo" width={86} height={18} priority />
+                  <span className="text-[9px] font-bold text-[var(--primary-blue)] ml-0.5 leading-none mt-[-1px]">TM</span>
                 </a>
                 <nav className="nav-menu" aria-label="Main navigation">
                   <a href="#">Home</a>
