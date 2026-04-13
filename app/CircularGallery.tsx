@@ -450,8 +450,11 @@ class App {
       dpr: Math.min(window.devicePixelRatio || 1, 2)
     });
     this.gl = this.renderer.gl;
+    if (!this.gl) {
+      throw new Error('WebGL context not supported or exhausted');
+    }
     this.gl.clearColor(0, 0, 0, 0);
-    this.container.appendChild(this.renderer.gl.canvas as HTMLCanvasElement);
+    this.container.appendChild(this.gl.canvas as HTMLCanvasElement);
   }
 
   createCamera() {
@@ -640,8 +643,15 @@ class App {
     window.removeEventListener('touchstart', this.boundOnTouchDown);
     window.removeEventListener('touchmove', this.boundOnTouchMove);
     window.removeEventListener('touchend', this.boundOnTouchUp);
-    if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
-      this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas as HTMLCanvasElement);
+    if (this.renderer && this.renderer.gl) {
+      const gl = this.renderer.gl;
+      if (gl.canvas && gl.canvas.parentNode) {
+        gl.canvas.parentNode.removeChild(gl.canvas as HTMLCanvasElement);
+      }
+      const extension = gl.getExtension('WEBGL_lose_context');
+      if (extension) {
+        extension.loseContext();
+      }
     }
   }
 }
