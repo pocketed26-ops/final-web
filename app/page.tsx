@@ -635,9 +635,11 @@ export default function Home() {
 
           const tZoomEndMobile = ZOOM_SCROLL_DURATION;
 
+          gsap.set(videoRef.current, { scale: 0.4, borderRadius: "50px" });
+
           tl.to(
             videoRef.current,
-            { autoAlpha: 1, ease: "power1.inOut", duration: ZOOM_SCROLL_DURATION * 0.6 },
+            { scale: 1, autoAlpha: 1, borderRadius: "0px", ease: "power2.inOut", duration: ZOOM_SCROLL_DURATION * 0.6 },
             tZoomEndMobile * 0.4
           );
 
@@ -663,6 +665,7 @@ export default function Home() {
             tVisionInMob
           );
 
+          let isSeeking = false;
           tl.to(
             {},
             {
@@ -671,7 +674,14 @@ export default function Home() {
               onUpdate: function () {
                 const vid = videoRef.current;
                 if (vid && vid.readyState >= 1) {
-                  vid.currentTime = this.progress() * vid.duration;
+                  if (!isSeeking) {
+                    isSeeking = true;
+                    vid.currentTime = this.progress() * vid.duration;
+                    vid.addEventListener("seeked", function onSeeked() {
+                      isSeeking = false;
+                      vid.removeEventListener("seeked", onSeeked);
+                    });
+                  }
                 }
               },
             },
@@ -786,16 +796,16 @@ export default function Home() {
             <video
               ref={videoRef}
               src="/new_updated_explaination_video.mp4"
-              className="pointer-events-none absolute inset-0 z-[100] h-full w-full object-cover opacity-0"
+              className="pointer-events-none absolute inset-0 z-[100] h-full w-full object-cover opacity-0 max-md:top-auto max-md:bottom-0 max-md:h-[100vh]"
               playsInline
               muted
               loop
             />
             <div
-              className="pointer-events-none absolute inset-0 z-[110] flex h-full w-full items-center justify-center sm:justify-end px-[5%] sm:pr-[8%] md:pr-[12%]"
+              className="pointer-events-none absolute inset-0 z-[110] flex h-full w-full items-center justify-center sm:justify-end px-[5%] sm:pr-[8%] md:pr-[12%] max-md:top-auto max-md:bottom-0 max-md:h-[100vh]"
             >
               <div className="relative w-full max-w-[480px]">
-                <div className="absolute left-0 bottom-[60%] w-full -translate-y-1/2 grid">
+                <div className="absolute left-0 bottom-[60%] w-full -translate-y-1/2 grid max-md:bottom-[50%]">
                   <div ref={visionMissionOneRef} className="col-start-1 row-start-1 w-full text-white opacity-0">
                     <h2 className="mb-3 text-[clamp(2rem,6vw,3.5rem)] font-bold tracking-tight">The Mission.</h2>
                     <p className="text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed text-[#f4f4f4]">
