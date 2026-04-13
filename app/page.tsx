@@ -594,66 +594,51 @@ export default function Home() {
         });
 
         mm.add("(max-width: 767px)", () => {
+          const featuresToAnimate = [
+            featureLeftOneRef.current,
+            featureLeftTwoRef.current,
+            featureLeftThreeRef.current,
+            featureRightOneRef.current,
+            featureRightTwoRef.current,
+            featureRightThreeRef.current,
+          ];
+
+          featuresToAnimate.forEach((feature) => {
+            if (feature) {
+              gsap.set(feature, { x: -100, autoAlpha: 0 });
+              ScrollTrigger.create({
+                trigger: feature,
+                start: "top 90%",
+                end: "bottom 10%",
+                onEnter: () => gsap.to(feature, { x: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out", overwrite: "auto" }),
+                onLeave: () => gsap.to(feature, { x: -100, autoAlpha: 0, duration: 1.0, ease: "power2.in", overwrite: "auto" }),
+                onEnterBack: () => gsap.to(feature, { x: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out", overwrite: "auto" }),
+                onLeaveBack: () => gsap.to(feature, { x: -100, autoAlpha: 0, duration: 1.0, ease: "power2.in", overwrite: "auto" }),
+              });
+            }
+          });
+
           const tl = gsap.timeline({
             scrollTrigger: {
-              trigger: stage,
+              trigger: pinInner,
               pin: pinInner,
               pinType: "fixed",
-              start: "top top",
-              end: "bottom bottom",
+              start: "bottom bottom",
+              end: "+=4000",
               scrub: 2,
               anticipatePin: 1,
               invalidateOnRefresh: true,
-              onUpdate(self) {
-                const done = self.progress >= 0.985;
-                nav.toggleAttribute("inert", done);
-                heroCopy.toggleAttribute("inert", done);
-                if (done) {
-                  nav.style.visibility = "hidden";
-                  heroCopy.style.visibility = "hidden";
-                } else {
-                  nav.style.removeProperty("visibility");
-                  heroCopy.style.removeProperty("visibility");
-                }
-              },
             },
           });
 
-          tl.to(nav, { autoAlpha: 0, ease: "none", duration: PHONE_SCROLL_DURATION }, PHONE_SCROLL_START)
-            .to(heroCopy, { autoAlpha: 0, ease: "none", duration: PHONE_SCROLL_DURATION }, PHONE_SCROLL_START)
-            .fromTo(
-              phone,
-              { scale: 1, y: 0 },
-              {
-                scale: 1.18,
-                y: -4,
-                transformOrigin: "50% 55%",
-                ease: "none",
-                duration: PHONE_SCROLL_DURATION,
-              },
-              PHONE_SCROLL_START,
-            )
-            .to({}, { duration: TOTAL_FEATURE_SCROLL_DURATION, ease: "none" }, PHONE_SCROLL_END);
+          tl.to({}, { duration: ZOOM_SCROLL_DURATION });
 
-          const tFeaturesEndMobile = PHONE_SCROLL_END + TOTAL_FEATURE_SCROLL_DURATION;
-
-          tl.to(
-            phone,
-            {
-              scale: 140,
-              transformOrigin: "24% 68%",
-              ease: "power2.inOut",
-              duration: ZOOM_SCROLL_DURATION,
-            },
-            tFeaturesEndMobile
-          );
-
-          const tZoomEndMobile = tFeaturesEndMobile + ZOOM_SCROLL_DURATION;
+          const tZoomEndMobile = ZOOM_SCROLL_DURATION;
 
           tl.to(
             videoRef.current,
             { autoAlpha: 1, ease: "power1.inOut", duration: ZOOM_SCROLL_DURATION * 0.6 },
-            tFeaturesEndMobile + ZOOM_SCROLL_DURATION * 0.4
+            tZoomEndMobile * 0.4
           );
 
           const tMissionInMob = tZoomEndMobile + VIDEO_SCROLL_DURATION * 0.15;
@@ -693,7 +678,6 @@ export default function Home() {
             tZoomEndMobile
           );
 
-          // Hold the "Our Vision" screen for a bit before unpinning to scroll the white section up
           tl.to({}, { duration: 1 });
         });
         if (gamesSectionRef.current) {
@@ -793,7 +777,7 @@ export default function Home() {
       <main className="main-content" aria-hidden={showLoader}>
         <section
           ref={scrollStageRef}
-          className="relative h-[min(1400vh,10000px)] w-full"
+          className="relative h-[min(1400vh,10000px)] w-full max-md:h-auto"
         >
           <div
             ref={pinInnerRef}
@@ -877,12 +861,12 @@ export default function Home() {
                   ref={phoneMoveRef}
                   className="relative isolate inline-flex flex-col items-center will-change-transform max-md:w-full max-md:flex max-md:justify-center max-md:items-center max-md:mx-auto md:flex-row md:items-start md:gap-[clamp(0.6rem,1.6vw,1.15rem)]"
                 >
-                  <div className="hidden flex-col gap-[4.5rem] md:absolute md:right-full md:mr-[clamp(0.6rem,1.6vw,1.15rem)] md:top-0 md:flex md:pt-[clamp(1rem,3vh,2rem)] md:w-[22rem] md:items-end">
+                  <div className="flex flex-col max-md:mt-8 max-md:gap-6 max-md:w-full max-md:max-w-full max-md:px-4 max-md:order-2 md:absolute md:right-full md:mr-[clamp(0.6rem,1.6vw,1.15rem)] md:top-0 md:gap-[4.5rem] md:w-[22rem] md:items-end">
                     <div
                       ref={featureLeftOneRef}
-                      className="feature-left-one-panel pointer-events-none relative z-0 flex max-w-[20rem] w-auto shrink-0 md:pointer-events-auto md:flex-row md:items-center md:gap-3 md:text-right"
+                      className="feature-left-one-panel pointer-events-none relative z-0 flex max-md:flex-row max-md:items-center max-md:text-left max-md:gap-4 max-w-[20rem] w-auto shrink-0 md:pointer-events-auto md:flex-row md:items-center md:gap-3 md:text-right"
                     >
-                      <div className="flex min-w-0 flex-col gap-1 md:order-1">
+                      <div className="flex min-w-0 flex-col gap-1 md:order-1 max-md:order-2">
                         <h2 className="m-0 text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-[#141414]">
                           Smart habits
                         </h2>
@@ -904,9 +888,9 @@ export default function Home() {
 
                     <div
                       ref={featureLeftTwoRef}
-                      className="feature-left-two-panel pointer-events-none relative z-0 mr-[25px] flex max-w-[20rem] w-auto shrink-0 md:pointer-events-auto md:flex-row md:items-center md:gap-3 md:text-right"
+                      className="feature-left-two-panel pointer-events-none relative z-0 max-md:mr-0 mr-[25px] flex max-md:flex-row max-md:items-center max-md:text-left max-md:gap-4 max-w-[20rem] w-auto shrink-0 md:pointer-events-auto md:flex-row md:items-center md:gap-3 md:text-right"
                     >
-                      <div className="flex min-w-0 flex-col gap-1 md:order-1">
+                      <div className="flex min-w-0 flex-col gap-1 md:order-1 max-md:order-2">
                         <h2 className="m-0 text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-[#141414]">
                           Financial foundations
                         </h2>
@@ -928,9 +912,9 @@ export default function Home() {
 
                     <div
                       ref={featureLeftThreeRef}
-                      className="feature-left-three-panel pointer-events-none relative z-0 flex max-w-[20rem] w-auto shrink-0 md:pointer-events-auto md:flex-row md:items-center md:gap-3 md:text-right"
+                      className="feature-left-three-panel pointer-events-none relative z-0 flex max-md:flex-row max-md:items-center max-md:text-left max-md:gap-4 max-w-[20rem] w-auto shrink-0 md:pointer-events-auto md:flex-row md:items-center md:gap-3 md:text-right"
                     >
-                      <div className="flex min-w-0 flex-col gap-1 md:order-1">
+                      <div className="flex min-w-0 flex-col gap-1 md:order-1 max-md:order-2">
                         <h2 className="m-0 text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-[#141414]">
                           Critical thinking
                         </h2>
@@ -951,21 +935,21 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div ref={phoneMockRef} className="phone-mock relative z-20 shrink-0 max-md:mx-auto max-md:flex max-md:justify-center">
+                  <div ref={phoneMockRef} className="phone-mock relative z-20 shrink-0 max-md:mx-auto max-md:flex max-md:justify-center max-md:w-full max-md:order-1 max-md:mb-6">
                     <Image
                       src="/mobile.png"
                       alt="PocketEd mobile interface"
                       width={1000}
                       height={1035}
-                      className="h-auto w-[clamp(200px,46vw,222px)] max-w-none md:w-[clamp(214px,22vw,236px)] max-md:mx-auto"
+                      className="h-auto w-[clamp(200px,46vw,222px)] max-w-none md:w-[clamp(214px,22vw,236px)] max-md:w-[85%] max-md:max-w-[280px] max-md:mx-auto object-contain"
                       priority
                     />
                   </div>
 
-                  <div className="hidden flex-col gap-[6rem] md:absolute md:left-full md:ml-[clamp(0.6rem,1.6vw,1.15rem)] md:top-0 md:flex md:pt-[clamp(1rem,3vh,2rem)] md:w-[22rem] md:items-start">
+                  <div className="flex flex-col max-md:mt-0 max-md:gap-6 max-md:w-full max-md:max-w-full max-md:px-4 max-md:order-3 md:gap-[6rem] md:absolute md:left-full md:ml-[clamp(0.6rem,1.6vw,1.15rem)] md:top-0 md:pt-[clamp(1rem,3vh,2rem)] md:w-[22rem] md:items-start">
                     <div
                       ref={featureRightOneRef}
-                      className="feature-right-one-panel  pointer-events-none relative z-0 flex max-w-[20rem] w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                      className="feature-right-one-panel pointer-events-none relative z-0 flex max-md:flex-row max-md:items-center max-md:gap-4 max-w-[20rem] w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
                     >
                       <div className="shrink-0">
                         <Image
@@ -990,7 +974,7 @@ export default function Home() {
 
                     <div
                       ref={featureRightTwoRef}
-                      className="feature-right-two-panel pointer-events-none ml-[25px] relative z-0 flex max-w-[20rem] w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                      className="feature-right-two-panel pointer-events-none max-md:ml-0 ml-[25px] relative z-0 flex max-md:flex-row max-md:items-center max-md:gap-4 max-w-[20rem] w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
                     >
                       <div className="shrink-0">
                         <Image
@@ -1015,7 +999,7 @@ export default function Home() {
 
                     <div
                       ref={featureRightThreeRef}
-                      className="feature-right-three-panel pointer-events-none relative z-0 flex max-w-[20rem] w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
+                      className="feature-right-three-panel pointer-events-none relative z-0 flex max-md:flex-row max-md:items-center max-md:gap-4 max-w-[20rem] w-auto shrink-0 text-left md:pointer-events-auto md:flex-row md:items-center md:gap-3"
                     >
                       <div className="shrink-0">
                         <Image

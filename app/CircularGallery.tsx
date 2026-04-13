@@ -668,17 +668,24 @@ export default function CircularGallery({
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
-    const app = new App(containerRef.current, {
-      items,
-      bend,
-      textColor,
-      borderRadius,
-      font,
-      scrollSpeed,
-      scrollEase
-    });
+    let app: App | undefined;
+    try {
+      app = new App(containerRef.current, {
+        items,
+        bend,
+        textColor,
+        borderRadius,
+        font,
+        scrollSpeed,
+        scrollEase
+      });
+    } catch (error) {
+      console.warn('WebGL initialization failed:', error);
+    }
     return () => {
-      app.destroy();
+      if (app) {
+        app.destroy();
+      }
     };
   }, [items, bend, textColor, borderRadius, font, scrollSpeed, scrollEase]);
   return <div className="w-full h-full overflow-hidden cursor-grab active:cursor-grabbing" ref={containerRef} />;
