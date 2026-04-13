@@ -1125,37 +1125,37 @@ export default function Home() {
             </div>
 
             {/* Right side: Contact & Download */}
-            <div className="ending-contact-panel flex-1 flex flex-col items-center text-center px-4 xl:pl-8 py-8">
-              <div className="flex items-center justify-center gap-4 mb-8 w-full">
-                <Image src="/pocketed_icon.png" alt="PocketEd" width={60} height={60} className="object-contain" />
-                <span className="text-5xl font-extrabold tracking-tight text-[var(--primary-blue)]">
+            <div className="ending-contact-panel flex-1 flex flex-col items-center text-center px-4 xl:pl-8 py-8 md:py-12">
+              <div className="flex items-center justify-center gap-3 md:gap-4 mb-6 md:mb-8 w-full">
+                <Image src="/pocketed_icon.png" alt="PocketEd" width={60} height={60} className="w-10 h-10 md:w-[60px] md:h-[60px] object-contain" />
+                <span className="text-3xl md:text-5xl font-extrabold tracking-tight text-[var(--primary-blue)]">
                   Pocket<span className="text-[var(--primary-yellow)]">Ed</span>
                 </span>
               </div>
               
-              <h2 className="text-4xl font-extrabold text-black mb-8">
+              <h2 className="text-2xl md:text-4xl font-extrabold text-black mb-6 md:mb-8">
                 Contact Us Now
               </h2>
               
-              <div className="relative mb-14">
-                <div className="bg-[#b2c8fb] text-black font-semibold rounded-full px-10 py-5 text-xl shadow-sm whitespace-nowrap z-10 relative">
+              <div className="relative mb-8 md:mb-14">
+                <div className="bg-[#b2c8fb] text-black font-semibold rounded-full px-6 py-3 md:px-10 md:py-5 text-base md:text-xl shadow-sm whitespace-nowrap z-10 relative">
                   pocketed@gmail.com
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-5 items-center justify-center w-full">
-                <button className="flex items-center gap-4 bg-white border border-gray-200 rounded-2xl px-6 py-3 hover:bg-gray-50 transition-colors shadow-sm min-w-[220px]">
-                  <Image src="/google-icon.png" alt="Google Play" width={40} height={40} className="w-10 h-10 flex-shrink-0 object-contain" />
+              <div className="flex flex-col sm:flex-row gap-4 md:gap-5 items-center justify-center w-full">
+                <button className="flex items-center gap-3 md:gap-4 bg-white border border-gray-200 rounded-2xl px-5 py-2.5 md:px-6 md:py-3 hover:bg-gray-50 transition-colors shadow-sm min-w-[200px] md:min-w-[220px]">
+                  <Image src="/google-icon.png" alt="Google Play" width={40} height={40} className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 object-contain" />
                   <div className="flex flex-col items-start px-1">
-                    <span className="text-[11px] text-gray-500 font-medium leading-[1] mb-1">GET IT ON</span>
-                    <span className="text-[17px] font-extrabold text-black leading-[1]">Google Play</span>
+                    <span className="text-[9px] md:text-[11px] text-gray-500 font-medium leading-[1] mb-1">GET IT ON</span>
+                    <span className="text-[14px] md:text-[17px] font-extrabold text-black leading-[1]">Google Play</span>
                   </div>
                 </button>
-                <button className="flex items-center gap-4 bg-white border border-gray-200 rounded-2xl px-6 py-3 hover:bg-gray-50 transition-colors shadow-sm min-w-[220px]">
-                  <Image src="/apple-icon.png" alt="App Store" width={40} height={40} className="w-10 h-10 flex-shrink-0 object-contain" />
+                <button className="flex items-center gap-3 md:gap-4 bg-white border border-gray-200 rounded-2xl px-5 py-2.5 md:px-6 md:py-3 hover:bg-gray-50 transition-colors shadow-sm min-w-[200px] md:min-w-[220px]">
+                  <Image src="/apple-icon.png" alt="App Store" width={40} height={40} className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 object-contain" />
                   <div className="flex flex-col items-start px-1">
-                    <span className="text-[11px] text-gray-500 font-medium leading-[1] mb-1">Download on the</span>
-                    <span className="text-[17px] font-extrabold text-black leading-[1]">App Store</span>
+                    <span className="text-[9px] md:text-[11px] text-gray-500 font-medium leading-[1] mb-1">Download on the</span>
+                    <span className="text-[14px] md:text-[17px] font-extrabold text-black leading-[1]">App Store</span>
                   </div>
                 </button>
               </div>
