@@ -164,6 +164,7 @@ export default function Home() {
   const [isZooming, setIsZooming] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
   const [playingGame, setPlayingGame] = useState<typeof GAMES[0] | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!showLoader && gamesScrollRef.current) {
@@ -844,8 +845,27 @@ export default function Home() {
                 ref={heroCopyRef}
                 className="relative z-20 justify-self-center text-left max-md:flex max-md:flex-col max-md:items-center max-md:text-center will-change-[opacity,transform] md:justify-self-start md:pt-[clamp(0.75rem,2.5vw,2.5rem)]"
               >
-                <div className="md:hidden mt-8 mb-6 flex justify-center w-full">
+                <div className="md:hidden mt-8 mb-6 flex justify-center items-center w-full relative">
                   <Image src="/pocketed_complete_logo.png" alt="PocketEd complete logo" width={220} height={70} className="h-auto w-[clamp(160px,50vw,220px)] object-contain" priority />
+                  <button 
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="absolute right-0 p-2 text-gray-800 hover:text-[var(--primary-blue)] transition-colors"
+                    aria-label="Toggle mobile menu"
+                  >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                      <circle cx="5" cy="12" r="2.5"/>
+                      <circle cx="12" cy="12" r="2.5"/>
+                      <circle cx="19" cy="12" r="2.5"/>
+                    </svg>
+                  </button>
+                  {isMobileMenuOpen && (
+                    <div className="absolute top-full right-0 mt-2 bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4 z-50 text-left min-w-[180px] border border-gray-100">
+                      <a href="#" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Home</a>
+                      <a href="#" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">About</a>
+                      <a href="#" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Courses</a>
+                      <a href="#" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Contact</a>
+                    </div>
+                  )}
                 </div>
                 <h1 className="m-0 flex flex-col max-md:items-center text-[clamp(2.2rem,10.8vw,5.45rem)] font-bold leading-[0.98] tracking-[-0.03em] md:text-[clamp(2.45rem,7.2vw,5.45rem)]">
                   <span className="text-[var(--primary-blue)]">Learn Smarter.</span>
