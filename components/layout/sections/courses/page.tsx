@@ -1,8 +1,29 @@
-import React from "react";
+"use client";
+
+import React, { useLayoutEffect, useRef } from "react";
 import { Timeline } from "@/components/ui/timeline";
 import Image from "next/image";
+import gsap from "gsap";
 
 export function Courses() {
+    const headerRef = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(() => {
+        let ctx = gsap.context(() => {
+            if (headerRef.current) {
+                gsap.from(headerRef.current.children, {
+                    y: 30,
+                    autoAlpha: 0,
+                    duration: 1.2,
+                    stagger: 0.2,
+                    ease: "power3.out",
+                    delay: 0.2
+                });
+            }
+        });
+        return () => ctx.revert();
+    }, []);
+
     const data = [
         {
             title: "MODULE 1",
@@ -142,20 +163,20 @@ export function Courses() {
     ];
 
     return (
-        <main className="min-h-screen">
-            <div className="pt-24 pb-8 text-center">
-                <div className="text-center mb-2">
-                    <span className="inline-block px-3 py-1 bg-accent rounded-full text-primary-accent font-semibold tracking-wider text-sm">
-                        <span className="bg-gradient-to-r from-primary to-primary-accent bg-clip-text text-transparent">
-                            Courses
-                        </span>
-                    </span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Our Courses</h2>
+        <div className="w-full">
+            <div ref={headerRef} className="pt-24 md:pt-32 pb-16 w-full max-w-4xl mx-auto px-6 text-center">
+                <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold tracking-tight text-black mb-6 leading-[1.1] will-change-[opacity,transform]">
+                    Master Your Money with <span className="text-[var(--primary-blue)]">PocketEd</span>
+                </h1>
+                <p className="text-[clamp(1.1rem,2vw,1.4rem)] text-[#5a5a5a] max-w-[700px] mx-auto leading-relaxed will-change-[opacity,transform]">
+                    Step-by-step interactive modules designed to turn complex financial concepts into practical, real-world skills.
+                </p>
             </div>
             <div className="relative w-full overflow-clip">
                 <Timeline data={data} />
             </div>
-        </main>
+        </div>
     );
 }
+
+

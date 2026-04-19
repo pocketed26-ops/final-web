@@ -18,12 +18,12 @@ const Navbar = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ cla
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     let observer: MutationObserver;
-    
+
     if (typeof window !== 'undefined') {
       // Use a custom window property to track if we've already popped up in this session
       if (!(window as any).__has_popped_up_this_load) {
         (window as any).__has_popped_up_this_load = true;
-        
+
         const triggerPopup = () => {
           timer = setTimeout(() => {
             setIsContactModalOpen(true);
@@ -44,7 +44,7 @@ const Navbar = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ cla
         }
       }
     }
-    
+
     return () => {
       if (timer) clearTimeout(timer);
       if (observer) observer.disconnect();
@@ -68,7 +68,7 @@ const Navbar = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ cla
           </Link>
           <nav className="nav-menu" aria-label="Main navigation">
             <Link href="/">Home</Link>
-            <Link href="/#courses">Courses</Link>
+            <Link href="/courses">Courses</Link>
             <Link href="/blog">Blogs</Link>
             <Link href="/community">Community</Link>
             <button onClick={openContactModal} className="font-medium cursor-pointer">Contact</button>
@@ -102,17 +102,17 @@ const Navbar = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ cla
         {isMobileMenuOpen && (
           <div className="absolute top-[85%] right-4 mt-2 bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4 z-50 text-left min-w-[180px] border border-gray-100">
             <Link href="/" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Home</Link>
-            <Link href="/#courses" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Courses</Link>
+            <Link href="/courses" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Courses</Link>
             <Link href="/blog" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Blogs</Link>
             <Link href="/community" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Community</Link>
             <button onClick={openContactModal} className="text-left text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Contact</button>
           </div>
         )}
       </div>
-      
-      <ContactModal 
-        isOpen={isContactModalOpen} 
-        onClose={() => setIsContactModalOpen(false)} 
+
+      <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
       />
     </header>
   );
