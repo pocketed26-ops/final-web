@@ -613,6 +613,7 @@ export default function Home() {
             tVisionInDesk
           );
 
+          let isSeekingDesktop = false;
           tl.to(
             {},
             {
@@ -621,7 +622,14 @@ export default function Home() {
               onUpdate: function () {
                 const vid = videoRef.current;
                 if (vid && vid.readyState >= 1) {
-                  vid.currentTime = this.progress() * vid.duration;
+                  if (!isSeekingDesktop) {
+                    isSeekingDesktop = true;
+                    vid.currentTime = this.progress() * vid.duration;
+                    vid.addEventListener("seeked", function onSeeked() {
+                      isSeekingDesktop = false;
+                      vid.removeEventListener("seeked", onSeeked);
+                    });
+                  }
                 }
               },
             },
@@ -1201,24 +1209,25 @@ export default function Home() {
               aria-hidden="true"
             >
               <defs>
-                <clipPath id="waveClip">
+                <mask id="waveMask">
+                  <rect x="0" y="0" width="100%" height="100%" fill="black" />
                   <rect
                     x={-EDGE_OVERDRAW}
                     y={fillTop}
                     width={SVG_WIDTH + EDGE_OVERDRAW * 2}
                     height={SVG_HEIGHT - fillTop}
+                    fill="white"
                   />
-                  <path d={wavePath} />
-                </clipPath>
+                  <path d={wavePath} fill="white" />
+                </mask>
               </defs>
 
-              <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" className="logo-text logo-base-svg">
-                PocketEd
+              <text x="50%" y="50%" dy="0.32em" textAnchor="middle" className="logo-text logo-base-svg">
+                <tspan fill="#9fbce4">Pocket</tspan><tspan fill="#9fbce4">Ed</tspan>
               </text>
 
-              <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle" className="logo-text" clipPath="url(#waveClip)">
-                <tspan fill="#014aac">Pocket</tspan>
-                <tspan fill="#ffd21f">Ed</tspan>
+              <text x="50%" y="50%" dy="0.32em" textAnchor="middle" className="logo-text" mask="url(#waveMask)">
+                <tspan fill="#014aac">Pocket</tspan><tspan fill="#ffd21f">Ed</tspan>
               </text>
             </svg>
 
@@ -1229,7 +1238,10 @@ export default function Home() {
 
       {/* Game Player Modal */}
       {playingGame && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8">
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8"
+          style={{ WebkitBackdropFilter: 'blur(4px)' }}
+        >
           <div className="bg-white w-full h-full max-w-7xl max-h-[95vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white">
               <h2 className="text-xl font-bold flex items-center gap-2 text-black">

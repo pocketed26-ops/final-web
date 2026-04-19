@@ -16,6 +16,17 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "PocketEd",
   description: "PocketEd Interactive Learning Platform",
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "32x32" },
+      { url: "/icon-192.png", sizes: "192x192" },
+      { url: "/icon-512.png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: ["/favicon.png"],
+  },
 };
 
 export default function RootLayout({
