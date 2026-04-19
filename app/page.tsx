@@ -4,7 +4,10 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import CircularGallery from './CircularGallery';
+import Navbar from '../components/Navbar';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const PHONE_SCROLL_START = 1;
 const PHONE_SCROLL_DURATION = 6;
@@ -134,7 +137,7 @@ const GAMES = [
   },
 ];
 
-const INFINITE_GAMES = Array.from({ length: 40 }).flatMap((_, i) => GAMES.map(g => ({...g, uniqueId: `${g.id}-${i}`})));
+const INFINITE_GAMES = Array.from({ length: 40 }).flatMap((_, i) => GAMES.map(g => ({ ...g, uniqueId: `${g.id}-${i}` })));
 
 export default function Home() {
   const scrollStageRef = useRef<HTMLElement>(null);
@@ -162,9 +165,14 @@ export default function Home() {
   const [phase, setPhase] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
-  const [showLoader, setShowLoader] = useState(true);
+  const [showLoader, setShowLoader] = useState(() => {
+    if (typeof window !== "undefined") {
+      // @ts-ignore
+      return !window.__POCKETED_HAS_VISITED;
+    }
+    return true;
+  });
   const [playingGame, setPlayingGame] = useState<typeof GAMES[0] | null>(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!showLoader && gamesScrollRef.current) {
@@ -196,7 +204,23 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
+    if (typeof window !== "undefined") {
+      // Use window object instead of sessionStorage.
+      // This ensures it resets on a hard refresh (F5), but persists during internal routing (Next.js Link navigation).
+      // @ts-ignore
+      if (window.__POCKETED_HAS_VISITED) {
+        document.documentElement.classList.add("has-visited");
+        setProgress(100);
+        setIsComplete(true);
+        setIsZooming(true);
+        setShowLoader(false);
+        return;
+      }
+      // @ts-ignore
+      window.__POCKETED_HAS_VISITED = true;
+    }
+
     const durationMs = 6000;
     const holdAtFullMs = 320;
     const zoomOutMs = 900;
@@ -223,6 +247,9 @@ export default function Home() {
 
       hideTimeoutId = window.setTimeout(() => {
         setShowLoader(false);
+        if (typeof window !== "undefined") {
+          document.documentElement.classList.add("has-visited");
+        }
       }, holdAtFullMs + zoomOutMs);
     };
 
@@ -276,9 +303,20 @@ export default function Home() {
       gsap.set(nav, { autoAlpha: 1, scale: 1 });
       gsap.set(heroCopy, { autoAlpha: 1, scale: 1 });
       ctx = gsap.context(() => {
-        gsap.from(nav, { autoAlpha: 0, y: -20, duration: 1.2, ease: "power3.out" });
-        gsap.from(heroCopy, { autoAlpha: 0, y: 30, duration: 1.4, ease: "power3.out", delay: 0.2 });
-        gsap.from(phone, { autoAlpha: 0, y: 40, duration: 1.6, ease: "power3.out", delay: 0.4 });
+        // @ts-ignore
+        if (window.__POCKETED_GSAP_INTRO_DONE) {
+          // Returning from another page — show elements instantly, no entrance animation
+          gsap.set(nav, { autoAlpha: 1, y: 0 });
+          gsap.set(heroCopy, { autoAlpha: 1, y: 0 });
+          gsap.set(phone, { autoAlpha: 1, y: 0 });
+        } else {
+          // First visit — play the full entrance animations
+          gsap.from(nav, { autoAlpha: 0, y: -20, duration: 1.2, ease: "power3.out" });
+          gsap.from(heroCopy, { autoAlpha: 0, y: 30, duration: 1.4, ease: "power3.out", delay: 0.2 });
+          gsap.from(phone, { autoAlpha: 0, y: 40, duration: 1.6, ease: "power3.out", delay: 0.4 });
+          // @ts-ignore
+          window.__POCKETED_GSAP_INTRO_DONE = true;
+        }
 
         const mm = gsap.matchMedia();
 
@@ -744,7 +782,7 @@ export default function Home() {
             duration: 1.5,
             ease: "power3.out",
             onComplete: () => {
-              video.play().catch(() => {});
+              video.play().catch(() => { });
             }
           });
 
@@ -822,51 +860,14 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <header
-              ref={navRef}
-              className="top-nav max-md:!hidden relative z-10 shrink-0 px-[clamp(1rem,3.2vw,2.6rem)] pt-[clamp(0.35rem,1vw,0.65rem)] will-change-[opacity,transform]"
-            >
-              <div className="nav-shell">
-                <a className="nav-brand !items-start" href="#" aria-label="PocketEd home">
-                  <Image src="/nav-logo.png" alt="PocketEd logo" width={86} height={18} priority />
-                  <span className="text-[9px] font-bold text-[var(--primary-blue)] ml-0.5 leading-none mt-[-1px]">TM</span>
-                </a>
-                <nav className="nav-menu" aria-label="Main navigation">
-                  <a href="#">Home</a>
-                  <a href="#">About</a>
-                  <a href="#">Courses</a>
-                  <a href="#">Contact</a>
-                </nav>
-              </div>
-            </header>
+            <Navbar ref={navRef} className="will-change-[opacity,transform]" />
 
             <section className="hero-section relative z-10 mx-auto grid min-h-0 w-full max-w-[1240px] grid-cols-1 place-content-start items-start justify-items-center gap-y-8 px-[clamp(1rem,3.2vw,2.6rem)] pt-0 pb-[clamp(3rem,10vh,6.5rem)] text-center md:grid-cols-[minmax(0,1fr)_minmax(0,560px)] md:items-start md:gap-x-[clamp(2rem,5vw,5.5rem)] md:gap-y-0 md:place-content-start md:text-left md:justify-items-stretch">
               <div
                 ref={heroCopyRef}
                 className="relative z-20 justify-self-center text-left max-md:flex max-md:flex-col max-md:items-center max-md:text-center will-change-[opacity,transform] md:justify-self-start md:pt-[clamp(0.75rem,2.5vw,2.5rem)]"
               >
-                <div className="md:hidden mt-8 mb-6 flex justify-center items-center w-full relative">
-                  <Image src="/pocketed_complete_logo.png" alt="PocketEd complete logo" width={220} height={70} className="h-auto w-[clamp(160px,50vw,220px)] object-contain" priority />
-                  <button 
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="absolute right-0 p-2 text-gray-800 hover:text-[var(--primary-blue)] transition-colors"
-                    aria-label="Toggle mobile menu"
-                  >
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                      <circle cx="5" cy="12" r="2.5"/>
-                      <circle cx="12" cy="12" r="2.5"/>
-                      <circle cx="19" cy="12" r="2.5"/>
-                    </svg>
-                  </button>
-                  {isMobileMenuOpen && (
-                    <div className="absolute top-full right-0 mt-2 bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4 z-50 text-left min-w-[180px] border border-gray-100">
-                      <a href="#" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Home</a>
-                      <a href="#" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">About</a>
-                      <a href="#" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Courses</a>
-                      <a href="#" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Contact</a>
-                    </div>
-                  )}
-                </div>
+
                 <h1 className="m-0 flex flex-col max-md:items-center text-[clamp(2.2rem,10.8vw,5.45rem)] font-bold leading-[0.98] tracking-[-0.03em] md:text-[clamp(2.45rem,7.2vw,5.45rem)]">
                   <span className="text-[var(--primary-blue)]">Learn Smarter.</span>
                   <span className="mt-[0.2rem] text-[var(--primary-yellow)]">Achieve More.</span>
@@ -1057,7 +1058,7 @@ export default function Home() {
             </section>
           </div>
         </section>
-        
+
         {/* Complete White Screen Section below the pinned video */}
         <section ref={gamesSectionRef} className="w-full bg-[#f9fafb] relative z-20 flex flex-col items-center pt-[15vh] pb-32 px-6 text-center">
           <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold text-black mb-4">
@@ -1069,25 +1070,25 @@ export default function Home() {
 
           {/* Games Carousel */}
           <div className="w-full max-w-6xl relative flex items-center justify-center">
-            <button 
+            <button
               onClick={() => scrollGames('left')}
               className="hidden md:flex absolute -left-12 z-10 p-3 bg-white hover:bg-gray-50 rounded-full shadow-md text-gray-700 transition-colors"
               aria-label="Previous games"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m15 18-6-6 6-6"/>
+                <path d="m15 18-6-6 6-6" />
               </svg>
             </button>
 
-            <div 
+            <div
               ref={gamesScrollRef}
               onScroll={handleGamesScroll}
               className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide py-4 px-4 w-full"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {INFINITE_GAMES.map((game) => (
-                <div 
-                  key={game.uniqueId} 
+                <div
+                  key={game.uniqueId}
                   className="flex-none w-[280px] md:w-[320px] lg:w-[340px] snap-center bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-md"
                 >
                   <div className="relative h-48 w-full">
@@ -1095,7 +1096,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center justify-between p-5 bg-white">
                     <h3 className="font-bold text-lg text-gray-900 tracking-tight">{game.title}</h3>
-                    <button 
+                    <button
                       onClick={() => setPlayingGame(game)}
                       className="px-5 py-2 bg-[#e5faed] text-[#1aa053] font-bold rounded-full hover:bg-[#d1f5df] transition-colors text-sm tracking-wide"
                     >
@@ -1106,18 +1107,18 @@ export default function Home() {
               ))}
             </div>
 
-            <button 
+            <button
               onClick={() => scrollGames('right')}
               className="hidden md:flex absolute -right-12 z-10 p-3 bg-white hover:bg-gray-50 rounded-full shadow-md text-gray-700 transition-colors"
               aria-label="Next games"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m9 18 6-6-6-6"/>
+                <path d="m9 18 6-6-6-6" />
               </svg>
             </button>
           </div>
         </section>
-        
+
         <section ref={gallerySectionRef} className="pt-32 pb-20 w-full max-w-full flex flex-col items-center bg-white relative z-20">
           <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-bold text-black mb-4 text-center">
             How We Teach Financial Literacy
@@ -1134,12 +1135,12 @@ export default function Home() {
           <div className="w-full flex flex-col xl:flex-row items-center justify-start px-6 gap-8">
             {/* Left side: Animation Video */}
             <div className="ending-video-container w-full md:w-auto flex-shrink-0 flex justify-center md:justify-start overflow-hidden">
-              <video 
+              <video
                 ref={endingVideoRef}
-                src="/ending_animation.mp4" 
-                loop 
-                muted 
-                playsInline 
+                src="/ending_animation.mp4"
+                loop
+                muted
+                playsInline
                 className="w-[850px] max-w-full mix-blend-multiply [clip-path:inset(2px)] border-none outline-none"
               />
             </div>
@@ -1152,17 +1153,17 @@ export default function Home() {
                   Pocket<span className="text-[var(--primary-yellow)]">Ed</span>
                 </span>
               </div>
-              
+
               <h2 className="text-2xl md:text-4xl font-extrabold text-black mb-6 md:mb-8">
                 Contact Us Now
               </h2>
-              
+
               <div className="relative mb-8 md:mb-14">
                 <div className="bg-[#b2c8fb] text-black font-semibold rounded-full px-6 py-3 md:px-10 md:py-5 text-base md:text-xl shadow-sm whitespace-nowrap z-10 relative">
                   pocketed@gmail.com
                 </div>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 md:gap-5 items-center justify-center w-full">
                 <button className="flex items-center gap-3 md:gap-4 bg-white border border-gray-200 rounded-2xl px-5 py-2.5 md:px-6 md:py-3 hover:bg-gray-50 transition-colors shadow-sm min-w-[200px] md:min-w-[220px]">
                   <Image src="/google-icon.png" alt="Google Play" width={40} height={40} className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 object-contain" />
@@ -1225,7 +1226,7 @@ export default function Home() {
           </div>
         </div>
       ) : null}
-      
+
       {/* Game Player Modal */}
       {playingGame && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8">
@@ -1234,8 +1235,8 @@ export default function Home() {
               <h2 className="text-xl font-bold flex items-center gap-2 text-black">
                 <span className="text-purple-600">🎮</span> Now Playing
               </h2>
-              <button 
-                onClick={() => setPlayingGame(null)} 
+              <button
+                onClick={() => setPlayingGame(null)}
                 className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"
                 aria-label="Close game"
               >
@@ -1245,8 +1246,8 @@ export default function Home() {
               </button>
             </div>
             <div className="flex-1 w-full relative bg-gray-50">
-              <iframe 
-                src={playingGame.htmlSrc} 
+              <iframe
+                src={playingGame.htmlSrc}
                 className="absolute inset-0 w-full h-full border-0"
                 allow="autoplay; fullscreen"
               />

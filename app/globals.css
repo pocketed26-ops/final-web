@@ -72,6 +72,7 @@ body {
 }
 
 @media (min-width: 768px) {
+
   /* Feature columns sit beside the phone and can extend past the grid cell; clip only on small screens. */
   .hero-section {
     overflow-x: visible;
@@ -162,6 +163,10 @@ body {
     radial-gradient(120% 120% at 86% 78%, rgba(255, 210, 31, 0.22) 0%, rgba(255, 210, 31, 0.06) 36%, rgba(255, 255, 255, 0) 66%),
     #ffffff;
   z-index: 50;
+}
+
+html.has-visited .loader-overlay {
+  display: none !important;
 }
 
 .loader-stage {
