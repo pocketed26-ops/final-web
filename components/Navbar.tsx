@@ -1,11 +1,55 @@
 "use client";
 
-import React, { useState, forwardRef } from "react";
+import React, { useState, forwardRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import ContactModal from "./ContactModal";
 
 const Navbar = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ className = "", ...props }, ref) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  const openContactModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsContactModalOpen(true);
+    if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+  };
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    let observer: MutationObserver;
+    
+    if (typeof window !== 'undefined') {
+      // Use a custom window property to track if we've already popped up in this session
+      if (!(window as any).__has_popped_up_this_load) {
+        (window as any).__has_popped_up_this_load = true;
+        
+        const triggerPopup = () => {
+          timer = setTimeout(() => {
+            setIsContactModalOpen(true);
+          }, 1500);
+        };
+
+        // Wait for the loader to finish on the Home page
+        if (window.location.pathname === '/' && !document.documentElement.classList.contains('has-visited')) {
+          observer = new MutationObserver(() => {
+            if (document.documentElement.classList.contains('has-visited')) {
+              observer.disconnect();
+              triggerPopup();
+            }
+          });
+          observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        } else {
+          triggerPopup();
+        }
+      }
+    }
+    
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (observer) observer.disconnect();
+    };
+  }, []);
 
   return (
     <header
@@ -27,7 +71,7 @@ const Navbar = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ cla
             <Link href="/#courses">Courses</Link>
             <Link href="/blog">Blogs</Link>
             <Link href="/community">Community</Link>
-            <Link href="/#contact">Contact</Link>
+            <button onClick={openContactModal} className="font-medium cursor-pointer">Contact</button>
           </nav>
         </div>
       </div>
@@ -61,10 +105,15 @@ const Navbar = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ cla
             <Link href="/#courses" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Courses</Link>
             <Link href="/blog" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Blogs</Link>
             <Link href="/community" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Community</Link>
-            <Link href="/#contact" className="text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Contact</Link>
+            <button onClick={openContactModal} className="text-left text-gray-800 font-bold text-lg hover:text-[var(--primary-blue)] transition-colors">Contact</button>
           </div>
         )}
       </div>
+      
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)} 
+      />
     </header>
   );
 });
