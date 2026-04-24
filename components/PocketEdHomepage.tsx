@@ -338,6 +338,7 @@ function IconCircle({ glyph, size = 56, variant = 'blueOnWhite' }: { glyph: Reac
   const glyphSize = Math.round(size * 0.52);
   return (
     <div
+      className="icon-circle"
       style={{
         width: size,
         height: size,
@@ -958,9 +959,9 @@ function ProblemSection() {
             </p>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 48, alignItems: 'flex-start' }}>
+        <div className="mobile-square-carousel" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 48, alignItems: 'flex-start' }}>
           {points.map((p, i) => (
-            <div key={i} className="responsive-grid" style={{ display: 'flex', flexDirection: 'column', gap: 20, transform: `translateY(${p.offsetY}px)` }}>
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 20, transform: `translateY(${p.offsetY}px)` }}>
               <IconCircle glyph={p.glyph} size={64} variant="blueOnWhite" />
               <h3 style={{ ...h3Style, margin: 0 }}>{p.title}</h3>
               <p style={{ ...bodyStyle, margin: 0, maxWidth: 320 }}>{p.body}</p>
@@ -1014,7 +1015,7 @@ function ProgrammeSection() {
           </p>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+      <div className="mobile-square-carousel" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
         {grades.map((g, i) => <GradeCard key={i} {...g} />)}
       </div>
     </Section>
@@ -1313,7 +1314,7 @@ function CurriculumCredibilitySection() {
             The curriculum is mapped session-by-session to India's national education
             and financial literacy frameworks.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div className="mobile-square-carousel" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             {points.map((p, i) => (
               <div key={i} className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: '48px 1fr', gap: 18, alignItems: 'flex-start' }}>
                 <IconCircle glyph={p.glyph} size={44} variant="blueOnWhite" />
@@ -1391,7 +1392,7 @@ function TeacherSupportSection() {
         <Character name="mr_neutral" height={140} style={{ position: 'relative', zIndex: 1, marginRight: -14 }} />
         <Character name="mrs_confident" height={130} style={{ position: 'relative', zIndex: 2 }} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+      <div className="mobile-square-carousel" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
         {cards.map((c, i) => (
           <div key={i} style={{
             background: '#ffffff',

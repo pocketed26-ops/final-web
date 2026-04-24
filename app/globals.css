@@ -337,13 +337,27 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
     padding-right: 24px !important;
   }
   
+  /* Ensure characters/images inside stacked grids don't explode in size, but leave circles alone */
+  .responsive-landing .responsive-grid img:not([style*="border-radius: 999"]) {
+    margin: 0 auto !important;
+    max-width: 75% !important;
+    height: auto !important;
+  }
+
   /* Best-in-Class Mobile Components */
   .responsive-landing .responsive-grid {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
     gap: 48px !important;
     text-align: center !important;
+  }
+
+  .responsive-landing .responsive-grid > div {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   /* Guru Switcher - Horizontal Scroll on Mobile */
@@ -352,6 +366,42 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
   }
   .responsive-landing .mobile-pills-row::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Square Card Carousel on Mobile */
+  .responsive-landing .mobile-square-carousel {
+    display: flex !important;
+    overflow-x: auto !important;
+    padding: 20px 24px 40px 24px !important;
+    margin: 0 -24px !important;
+    gap: 20px !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .responsive-landing .mobile-square-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .responsive-landing .mobile-square-carousel > div {
+    flex: 0 0 260px !important;
+    min-height: 280px !important;
+    max-height: 480px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    text-align: left !important;
+    padding: 24px !important;
+    gap: 12px !important;
+  }
+  .responsive-landing .mobile-square-carousel > div h3 {
+    font-size: 18px !important;
+  }
+  .responsive-landing .mobile-square-carousel > div p {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+  }
+  .responsive-landing .mobile-square-carousel > div [style*="IconCircle"] {
+    margin: 0 !important;
+    transform: scale(0.8);
+    transform-origin: left center;
   }
 
   /* CTA Buttons - Full Width Stacking */
@@ -418,5 +468,10 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
     transform: scale(0.9) !important;
     margin-top: 20px !important;
     margin-bottom: -10% !important;
+  }
+  /* Ensure UI Circles are never distorted */
+  .responsive-landing .icon-circle {
+    aspect-ratio: 1 / 1 !important;
+    flex-shrink: 0 !important;
   }
 }
