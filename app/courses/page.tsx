@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-
 import Navbar from "@/components/Navbar";
 
 const Courses = dynamic(() =>
@@ -17,7 +16,7 @@ const Courses = dynamic(() =>
 export default function CoursesPage() {
     return (
         <div className="min-h-screen bg-white flex flex-col font-sans">
-            <Navbar className="w-full bg-white border-b border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] sticky top-0 shrink-0 z-50 font-sans" />
+            <Navbar className="w-full bg-white border-b border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] sticky top-0 shrink-0 z-50" />
             
             <main className="flex-1 w-full">
                 <Courses />
@@ -28,4 +27,4 @@ export default function CoursesPage() {
             </footer>
         </div>
     );
-}
+}

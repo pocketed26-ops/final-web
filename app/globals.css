@@ -318,3 +318,105 @@ html.no-scrollbar *::-webkit-scrollbar-track,
 html.no-scrollbar *::-webkit-scrollbar-corner {
   background: transparent !important;
 }
+/* Responsive Landing Page Overrides */
+.nav-mobile {
+  display: none !important;
+}
+
+@media (max-width: 1024px) {
+  .nav-desktop {
+    display: none !important;
+  }
+  .nav-mobile {
+    display: flex !important;
+  }
+
+  .responsive-landing section > div,
+  .responsive-landing [data-screen-label="01 Hero"] > div:not([aria-hidden]) {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  
+  /* Specific Responsive Grid Fixes */
+  .responsive-landing .responsive-grid,
+  .responsive-landing .footer-grid,
+  .responsive-landing .testimonial-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 40px !important;
+    text-align: center !important;
+  }
+
+  .responsive-landing .testimonial-grid div {
+    justify-content: center !important;
+    margin: 0 auto !important;
+  }
+
+  .responsive-landing .responsive-grid > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure characters/images inside stacked grids don't explode in size */
+  .responsive-landing .responsive-grid img,
+  .responsive-landing .responsive-grid [style*="height"] {
+    margin: 0 auto !important;
+    max-width: 75% !important;
+    height: auto !important;
+  }
+
+  /* Reset any grid forced to horizontal scroll by earlier broad rules */
+  .responsive-landing div[style*="repeat"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 32px !important;
+  }
+
+  /* Standard Typographic Scaling for Professional Look */
+  .responsive-landing h1 {
+    font-size: 30px !important;
+    line-height: 1.15 !important;
+    text-wrap: balance !important;
+  }
+  
+  .responsive-landing h2 {
+    font-size: 24px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .responsive-landing h3 {
+    font-size: 19px !important;
+  }
+
+  .responsive-landing .testimonial-quote-mark {
+    font-size: 64px !important;
+    line-height: 1 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .responsive-landing p,
+  .responsive-landing [style*="fontSize: 18"],
+  .responsive-landing [style*="fontSize: 16"] {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    opacity: 0.85 !important;
+  }
+
+  /* Footer adjustments */
+  .responsive-landing footer > div > div {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 32px !important;
+  }
+
+  /* Scale the Hero mockup slightly */
+  .responsive-landing [data-screen-label="01 Hero"] > div > div:nth-child(2) {
+    transform: scale(0.85);
+    transform-origin: top center;
+    margin-bottom: -15%;
+  }
+}

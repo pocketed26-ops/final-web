@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import LoaderGuard from "../components/LoaderGuard";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -11,6 +10,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -37,21 +43,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} no-scrollbar antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} no-scrollbar antialiased`}
     >
-      <head>
-        {/* Blocking script: runs synchronously before first paint.
-            If the user has already seen the loader during this window session,
-            stamp the <html> element immediately so CSS hides the loader
-            before the browser ever paints it. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(window.__POCKETED_HAS_VISITED){document.documentElement.classList.add("has-visited")}}catch(e){}})();`,
-          }}
-        />
-      </head>
-      <body className="min-h-full overflow-x-hidden overflow-y-hidden bg-[var(--background)] antialiased">
-        <LoaderGuard />
+      <body className="min-h-full overflow-x-hidden bg-[var(--background)] antialiased">
         <div className="site-root">{children}</div>
       </body>
     </html>
