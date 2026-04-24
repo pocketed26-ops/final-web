@@ -337,86 +337,86 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
     padding-right: 24px !important;
   }
   
-  /* Specific Responsive Grid Fixes */
-  .responsive-landing .responsive-grid,
-  .responsive-landing .footer-grid,
-  .responsive-landing .testimonial-grid {
+  /* Best-in-Class Mobile Components */
+  .responsive-landing .responsive-grid {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 40px !important;
+    gap: 48px !important;
     text-align: center !important;
   }
 
-  .responsive-landing .testimonial-grid div {
-    justify-content: center !important;
-    margin: 0 auto !important;
+  /* Guru Switcher - Horizontal Scroll on Mobile */
+  .responsive-landing .mobile-pills-row {
+    scrollbar-width: none;
+  }
+  .responsive-landing .mobile-pills-row::-webkit-scrollbar {
+    display: none;
   }
 
-  .responsive-landing .responsive-grid > div {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  /* Ensure characters/images inside stacked grids don't explode in size */
-  .responsive-landing .responsive-grid img,
-  .responsive-landing .responsive-grid [style*="height"] {
-    margin: 0 auto !important;
-    max-width: 75% !important;
-    height: auto !important;
-  }
-
-  /* Reset any grid forced to horizontal scroll by earlier broad rules */
-  .responsive-landing div[style*="repeat"] {
+  /* CTA Buttons - Full Width Stacking */
+  .responsive-landing .cta-button-group {
     display: flex !important;
     flex-direction: column !important;
-    gap: 32px !important;
+    width: 100% !important;
+    gap: 12px !important;
+  }
+  .responsive-landing .cta-button-group > button,
+  .responsive-landing .cta-button-group > a {
+    width: 100% !important;
+    justify-content: center !important;
   }
 
-  /* Standard Typographic Scaling for Professional Look */
+  /* Methodology Guru Polish */
+  .responsive-landing #gurus .responsive-grid > div:first-child {
+    max-width: 320px !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Typography Refinement */
   .responsive-landing h1 {
-    font-size: 30px !important;
-    line-height: 1.15 !important;
-    text-wrap: balance !important;
+    font-size: 32px !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.02em !important;
   }
   
   .responsive-landing h2 {
     font-size: 24px !important;
     line-height: 1.2 !important;
     margin-bottom: 16px !important;
-  }
-  
-  .responsive-landing h3 {
-    font-size: 19px !important;
+    letter-spacing: -0.01em !important;
   }
 
-  .responsive-landing .testimonial-quote-mark {
-    font-size: 64px !important;
-    line-height: 1 !important;
-    margin-bottom: 0 !important;
-  }
-
-  .responsive-landing p,
-  .responsive-landing [style*="fontSize: 18"],
-  .responsive-landing [style*="fontSize: 16"] {
-    font-size: 14px !important;
+  .responsive-landing p {
+    font-size: 15px !important;
     line-height: 1.6 !important;
-    opacity: 0.85 !important;
+    opacity: 0.9 !important;
   }
 
-  /* Footer adjustments */
-  .responsive-landing footer > div > div {
+  /* Section Spacing */
+  .responsive-landing section {
+    padding-top: 80px !important;
+    padding-bottom: 80px !important;
+  }
+
+  /* Footer Polish */
+  .responsive-landing .footer-grid {
     display: flex !important;
     flex-direction: column !important;
-    gap: 32px !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 48px !important;
+  }
+  .responsive-landing .footer-grid > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
 
-  /* Scale the Hero mockup slightly */
+  /* Hero Mockup Balance */
   .responsive-landing [data-screen-label="01 Hero"] > div > div:nth-child(2) {
-    transform: scale(0.85);
-    transform-origin: top center;
-    margin-bottom: -15%;
+    transform: scale(0.9) !important;
+    margin-top: 20px !important;
+    margin-bottom: -10% !important;
   }
 }
