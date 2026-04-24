@@ -32,7 +32,7 @@ export function Courses() {
                 <div className="space-y-2">
                     <p className="text-sm text-black">
                         <b className="text-xl">Money: More Than Coins</b><br />
-                        Mr. PocketEd discovers money is not just cash. He learns where it comes from, its forms, and how it powers the world.
+                        Mr. <span style={{ color: '#014AAC' }}>Pocket</span><span style={{ color: '#FFD21F' }}>Ed</span> discovers money is not just cash. He learns where it comes from, its forms, and how it powers the world.
                     </p>
                     <ul className="list-disc list-inside text-sm text-black">
                         <li>History of money & the barter system</li>
@@ -59,7 +59,7 @@ export function Courses() {
                 <div className="space-y-2">
                     <p className="text-sm text-black">
                         <b className="text-xl">Piggy Bank to Power Bank</b><br />
-                        Mrs. PocketEd opens her first digital wallet, explores saving habits, and moves to smart saving apps.
+                        Mrs. <span style={{ color: '#014AAC' }}>Pocket</span><span style={{ color: '#FFD21F' }}>Ed</span> opens her first digital wallet, explores saving habits, and moves to smart saving apps.
                     </p>
                     <ul className="list-disc list-inside text-sm text-black">
                         <li>The power of saving early</li>
@@ -166,7 +166,7 @@ export function Courses() {
         <div className="w-full">
             <div ref={headerRef} className="pt-24 md:pt-32 pb-16 w-full max-w-4xl mx-auto px-6 text-center">
                 <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold tracking-tight text-black mb-6 leading-[1.1] will-change-[opacity,transform]">
-                    Master Your Money with <span className="text-[var(--primary-blue)]">PocketEd</span>
+                    Master Your Money with <span style={{ color: '#014AAC' }}>Pocket</span><span style={{ color: '#FFD21F' }}>Ed</span>
                 </h1>
                 <p className="text-[clamp(1.1rem,2vw,1.4rem)] text-[#5a5a5a] max-w-[700px] mx-auto leading-relaxed will-change-[opacity,transform]">
                     Step-by-step interactive modules designed to turn complex financial concepts into practical, real-world skills.

@@ -318,6 +318,48 @@ html.no-scrollbar *::-webkit-scrollbar-track,
 html.no-scrollbar *::-webkit-scrollbar-corner {
   background: transparent !important;
 }
+/* ── Hero heading brush highlight ── */
+@keyframes brushReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 -10% 0 0); }
+}
+
+.hero-highlight {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.hero-brush-svg {
+  position: absolute;
+  left: -5%;
+  top: -12%;
+  width: 110%;
+  height: 148%;
+  z-index: -1;
+  clip-path: inset(0 100% 0 0);
+  animation: brushReveal 1s cubic-bezier(0.23, 1, 0.32, 1) 0.5s forwards;
+  overflow: visible;
+}
+
+/* ── Read-more button (works on all screen sizes) ── */
+.read-more-btn {
+  display: block;
+  background: none;
+  border: none;
+  color: #014AAC;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0 0 24px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.7;
+  transition: opacity 150ms ease;
+}
+.read-more-btn:hover { opacity: 1; }
+
 /* Responsive Landing Page Overrides */
 .nav-mobile {
   display: none !important;
@@ -332,14 +374,14 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
   }
 
   .responsive-landing section > div,
-  .responsive-landing [data-screen-label="01 Hero"] > div:not([aria-hidden]) {
+  .responsive-landing [data-screen-label] > div:not([aria-hidden]) {
     padding-left: 24px !important;
     padding-right: 24px !important;
   }
   
   /* Ensure characters/images inside stacked grids don't explode in size, but leave circles alone */
   .responsive-landing .responsive-grid img:not([style*="border-radius: 999"]) {
-    margin: 0 auto !important;
+    margin: 0 !important;
     max-width: 75% !important;
     height: auto !important;
   }
@@ -348,16 +390,17 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
   .responsive-landing .responsive-grid {
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
+    align-items: flex-start !important;
     width: 100% !important;
     max-width: 100% !important;
     gap: 48px !important;
-    text-align: center !important;
+    text-align: left !important;
   }
 
   .responsive-landing .responsive-grid > div {
     width: 100% !important;
     max-width: 100% !important;
+    min-height: 0 !important;
   }
 
   /* Guru Switcher - Horizontal Scroll on Mobile */
@@ -372,11 +415,16 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
   .responsive-landing .mobile-square-carousel {
     display: flex !important;
     overflow-x: auto !important;
-    padding: 20px 24px 40px 24px !important;
+    padding: 20px 24px 12px 24px !important;
     margin: 0 -24px !important;
     gap: 20px !important;
     scrollbar-width: none;
     -ms-overflow-style: none;
+  }
+
+  /* Sections whose last child is a carousel don't need full bottom padding */
+  .responsive-landing section:has(> div > .mobile-square-carousel:last-child) {
+    padding-bottom: 40px !important;
   }
   .responsive-landing .mobile-square-carousel::-webkit-scrollbar {
     display: none;
@@ -414,7 +462,7 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
   .responsive-landing .cta-button-group > button,
   .responsive-landing .cta-button-group > a {
     width: 100% !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
   }
 
   /* Methodology Guru Polish */
@@ -453,25 +501,150 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
   .responsive-landing .footer-grid {
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
+    align-items: flex-start !important;
+    text-align: left !important;
     gap: 48px !important;
   }
   .responsive-landing .footer-grid > div {
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
+    align-items: flex-start !important;
   }
 
   /* Hero Mockup Balance */
   .responsive-landing [data-screen-label="01 Hero"] > div > div:nth-child(2) {
-    transform: scale(0.9) !important;
-    margin-top: 20px !important;
-    margin-bottom: -10% !important;
+    margin-top: 24px !important;
   }
   /* Ensure UI Circles are never distorted */
   .responsive-landing .icon-circle {
     aspect-ratio: 1 / 1 !important;
     flex-shrink: 0 !important;
   }
+
+  /* ── Curriculum credibility points — always horizontal icon + text, never carousel ── */
+  .responsive-landing .cred-points-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    overflow-x: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .responsive-landing .cred-point {
+    display: grid !important;
+    grid-template-columns: 44px 1fr !important;
+    gap: 14px !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+  }
+
+  .responsive-landing .cred-point > .icon-circle {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* ── CredentialsStrip (div, not Section) ── */
+  .responsive-landing [data-screen-label="02 Credentials"] > div {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    gap: 20px !important;
+  }
+
+  /* ── Footer (footer element, not section) ── */
+  .responsive-landing footer > div {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* ── CTABand heading & button ── */
+  .responsive-landing [data-screen-label="08 CTA"] h2 {
+    font-size: 32px !important;
+    line-height: 1.2 !important;
+  }
+  .responsive-landing [data-screen-label="08 CTA"] > div > button {
+    font-size: 15px !important;
+    padding: 15px 28px !important;
+    white-space: normal !important;
+    text-align: center !important;
+    max-width: 360px !important;
+  }
+
+  /* ── Hero visual: centered, width chosen so phone overflow stays on-screen ── */
+  .responsive-landing .hero-visual-wrap {
+    max-width: 270px !important;
+    margin: 0 auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* ── Hero character row: center on mobile ── */
+  .responsive-landing .hero-char-row {
+    justify-content: center !important;
+    padding-left: 0 !important;
+  }
+
+  /* ── Character images — cap height on mobile ── */
+  .responsive-landing img[alt=""][aria-hidden="true"] {
+    max-height: 85px !important;
+    height: auto !important;
+    width: auto !important;
+  }
+
+  /* ── Guru image: don't let the responsive-grid rule break the circular frame ── */
+  .responsive-landing #gurus .responsive-grid img {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+  }
 }
+
+/* ── Small phone (≤ 640 px) ── */
+@media (max-width: 640px) {
+  .responsive-landing section > div,
+  .responsive-landing [data-screen-label="01 Hero"] > div:not([aria-hidden]) {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .responsive-landing [data-screen-label="02 Credentials"] > div,
+  .responsive-landing footer > div {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .responsive-landing h1 { font-size: 26px !important; }
+  .responsive-landing h2 { font-size: 20px !important; }
+
+  .responsive-landing [data-screen-label="08 CTA"] h2 {
+    font-size: 24px !important;
+  }
+
+  .responsive-landing section {
+    padding-top: 56px !important;
+    padding-bottom: 56px !important;
+  }
+
+  .responsive-landing .mobile-square-carousel > div {
+    flex: 0 0 220px !important;
+  }
+
+  /* Even smaller characters on small phones */
+  .responsive-landing img[alt=""][aria-hidden="true"] {
+    max-height: 70px !important;
+  }
+
+  .responsive-landing .hero-visual-wrap {
+    max-width: 240px !important;
+  }
+
+  /* Remove the negative bottom margin that can cause section overlap */
+  .responsive-landing [data-screen-label="01 Hero"] > div > div:nth-child(2) {
+    margin-bottom: 0 !important;
+    transform: none !important;
+  }
+}
+
