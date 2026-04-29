@@ -212,6 +212,8 @@ export default function CommunityPage() {
                     src={moment.image}
                     alt={moment.title}
                     fill
+                    priority={moment.id <= 4}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     className={`object-cover transition-transform duration-700 ${moment.video ? 'group-hover:opacity-0' : 'group-hover:scale-105'}`}
                   />
                 )}
@@ -221,6 +223,7 @@ export default function CommunityPage() {
                     loop
                     muted
                     playsInline
+                    preload={moment.image ? "none" : "auto"}
                     autoPlay={!moment.image}
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${moment.image ? 'opacity-0 group-hover:opacity-100' : 'opacity-100 group-hover:scale-105 transition-transform'}`}
                   />
