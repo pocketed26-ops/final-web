@@ -2,9 +2,10 @@
 
 import Navbar from "../../components/Navbar";
 import { Users, Calendar, Heart, Plane, Trophy, LayoutGrid, List } from "lucide-react";
-import { useState } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import gsap from "gsap";
 
 // Mock Data
 const MOCK_MOMENTS = [
@@ -99,6 +100,23 @@ const MOCK_MOMENTS = [
 export default function CommunityPage() {
   const [visiblePosts, setVisiblePosts] = useState(6);
   const [activeTab, setActiveTab] = useState("All");
+  const headerRef = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
+      if (headerRef.current) {
+        gsap.from(headerRef.current.children, {
+          y: 30,
+          autoAlpha: 0,
+          duration: 1.2,
+          stagger: 0.2,
+          ease: "power3.out",
+          delay: 0.1,
+        });
+      }
+    });
+    return () => ctx.revert();
+  }, []);
 
   const loadMore = () => {
     setVisiblePosts((prev) => Math.min(prev + 6, MOCK_MOMENTS.length));
@@ -115,15 +133,15 @@ export default function CommunityPage() {
 
       <main className="flex-1 w-full flex flex-col items-center pb-20">
         {/* Header Section */}
-        <section className="pt-20 pb-12 w-full flex flex-col items-center text-center px-6">
-          <div className="flex items-center text-sm font-semibold text-[#5a5a5a] mb-4 uppercase tracking-wider">
+        <section ref={headerRef} className="pt-20 pb-12 w-full flex flex-col items-center text-center px-6">
+          <div className="flex items-center text-sm font-semibold text-[#5a5a5a] mb-4 uppercase tracking-wider will-change-[opacity,transform]">
             <Users className="w-4 h-4 mr-2 text-[#014AAC]" />
             OUR COMMUNITY
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-black mb-4 tracking-tight will-change-[opacity,transform]">
             Community Moments
           </h1>
-          <p className="text-lg text-gray-500 max-w-2xl">
+          <p className="text-lg text-[#5a5a5a] max-w-2xl will-change-[opacity,transform]">
             Real moments. Real people. Real connections.
           </p>
         </section>
