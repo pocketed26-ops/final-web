@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
-const TEAM_EMAIL = 'pocketed26@gmail.com';
+const TEAM_EMAIL = 'siddharthgadhia@pocketed.in';
 
 export async function POST(request: Request) {
   try {
@@ -13,10 +13,12 @@ export async function POST(request: Request) {
     }
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtppro.zoho.in',
+      port: 465,
+      secure: true, // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_USER || TEAM_EMAIL,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.ZOHO_EMAIL_USER || TEAM_EMAIL,
+        pass: process.env.ZOHO_EMAIL_PASS,
       },
     });
 
@@ -33,7 +35,7 @@ export async function POST(request: Request) {
     const roleStyle = roleColors[role] || { bg: '#f3f4f6', text: '#374151', border: '#d1d5db' };
 
     const internalMail = {
-      from: `"PocketEd Website" <${process.env.EMAIL_USER || TEAM_EMAIL}>`,
+      from: `"PocketEd Website" <${process.env.ZOHO_EMAIL_USER || TEAM_EMAIL}>`,
       to: TEAM_EMAIL,
       subject: `📬 New Enquiry from ${fullName} (${roleLabel})`,
       html: `
@@ -137,7 +139,7 @@ export async function POST(request: Request) {
 
     // ── 2. Warm acknowledgment email back to the user ──
     const acknowledgmentMail = {
-      from: `"Team PocketEd" <${process.env.EMAIL_USER || TEAM_EMAIL}>`,
+      from: `"Team PocketEd" <${process.env.ZOHO_EMAIL_USER || TEAM_EMAIL}>`,
       to: email,
       subject: `Thanks for reaching out, ${firstName}! 👋`,
       html: `
