@@ -638,7 +638,7 @@ function Hero({ onContactClick }: { onContactClick: () => void }) {
             </Button>
             <Button variant="secondary" icon={<svg width="14" height="14" viewBox="0 0 24 24">{GlyphDownload}</svg>} onClick={() => {
               const link = document.createElement('a');
-              link.href = '/Programme Overview.pdf';
+              link.href = '/programme-overview.pdf';
               link.download = 'PocketEd_Programme_Overview.pdf';
               document.body.appendChild(link);
               link.click();
