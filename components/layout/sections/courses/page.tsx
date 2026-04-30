@@ -32,13 +32,13 @@ export function Courses() {
                 <div className="space-y-2">
                     <p className="text-sm text-black">
                         <b className="text-xl">Money: More Than Coins</b><br />
-                        Mr. <span style={{ color: '#014AAC' }}>Pocket</span><span style={{ color: '#FFD21F' }}>Ed</span> discovers money is not just cash. He learns where it comes from, its forms, and how it powers the world.
+                        Mr. <span style={{ color: '#014AAC', fontWeight: 'bold' }}>Pocket</span><span style={{ color: '#FFD21F', fontWeight: 'bold' }}>Ed</span> discovers that money is more than just cash and coins. From barter systems to digital payments, he learns how money is created, exchanged, and used to power economies around the world.
                     </p>
-                    <ul className="list-disc list-inside text-sm text-black">
+                    {/* <ul className="list-disc list-inside text-sm text-black">
                         <li>History of money & the barter system</li>
                         <li>Understanding currency notes and coins</li>
                         <li>Digital money: Cards, UPI, and wallets</li>
-                    </ul>
+                    </ul> */}
                     <div className="pt-2 md:max-w-[80%] lg:max-w-[70%]">
                         <Image
                             src="https://i.postimg.cc/bJW7sYT5/b053dcd9-654b-4a25-8c69-d5e32a6aa2db.jpg"
@@ -59,13 +59,13 @@ export function Courses() {
                 <div className="space-y-2">
                     <p className="text-sm text-black">
                         <b className="text-xl">Piggy Bank to Power Bank</b><br />
-                        Mrs. <span style={{ color: '#014AAC' }}>Pocket</span><span style={{ color: '#FFD21F' }}>Ed</span> opens her first digital wallet, explores saving habits, and moves to smart saving apps.
+                        Mrs. <span style={{ color: '#014AAC', fontWeight: 'bold' }}>Pocket</span><span style={{ color: '#FFD21F', fontWeight: 'bold' }}>Ed</span> opens her first digital wallet, explores saving habits, and moves to smart saving apps. Along the way, she learns how technology is transforming the way people save, spend, and manage money in everyday life.
                     </p>
-                    <ul className="list-disc list-inside text-sm text-black">
+                    {/* <ul className="list-disc list-inside text-sm text-black">
                         <li>The power of saving early</li>
                         <li>Different types of bank accounts</li>
                         <li>Introduction to saving apps and tools</li>
-                    </ul>
+                    </ul> */}
                     <div className="pt-2 md:max-w-[80%] lg:max-w-[70%]">
                         <Image
                             src="https://i.postimg.cc/rsGfMqYx/0a07074c-cf65-4fdd-a430-b25c49b393af.jpg"
@@ -86,13 +86,13 @@ export function Courses() {
                 <div className="space-y-2">
                     <p className="text-sm text-black">
                         <b className="text-xl">The Magic of Small Steps</b><br />
-                        They start a 7-day budgeting challenge, planning their snacks, school expenses, and Diwali gifting!
+                        They start a 7-day budgeting challenge, planning their snacks, school expenses, and Diwali gifting! Through small daily decisions, they discover how smart planning and saving can help achieve bigger goals.
                     </p>
-                    <ul className="list-disc list-inside text-sm text-black">
+                    {/* <ul className="list-disc list-inside text-sm text-black">
                         <li>Creating a personal budget</li>
                         <li>Tracking income and expenses</li>
                         <li>Setting and achieving financial goals</li>
-                    </ul>
+                    </ul> */}
                     <div className="pt-2 md:max-w-[80%] lg:max-w-[70%]">
                         <Image
                             src="https://i.postimg.cc/XqDpZChb/25c18107-27d6-412a-aa34-0b5f576ea18d.jpg"
@@ -113,13 +113,13 @@ export function Courses() {
                 <div className="space-y-2">
                     <p className="text-sm text-black">
                         <b className="text-xl">The Money Parking Lot</b><br />
-                        Mr. PocketEd learns about savings accounts, UPI, ATMs, and online banking safety.
+                        Mr. <span style={{ color: '#014AAC', fontWeight: 'bold' }}>Pocket</span><span style={{ color: '#FFD21F', fontWeight: 'bold' }}>Ed</span> learns about savings accounts, UPI, ATMs, and online banking safety. As he explores the world of digital banking, he discovers how banks protect money, enable secure transactions, and help people manage their finances conveniently.
                     </p>
-                    <ul className="list-disc list-inside text-sm text-black">
+                    {/* <ul className="list-disc list-inside text-sm text-black">
                         <li>How banks work</li>
                         <li>Staying safe from online scams</li>
                         <li>The role of the RBI</li>
-                    </ul>
+                    </ul> */}
                     <div className="pt-2 md:max-w-[80%] lg:max-w-[70%]">
                         <Image
                             src="https://i.postimg.cc/SKj1CFJb/0f44c496-0465-4794-bb36-d6334a289263.jpg"
@@ -140,13 +140,13 @@ export function Courses() {
                 <div className="space-y-2">
                     <p className="text-sm text-black">
                         <b className="text-xl">Marketplace: The Kurukshetra</b><br />
-                        Mr. PocketEd enters the market with ₹100, comparing needs vs. wants to understand true value.
+                        Mr. <span style={{ color: '#014AAC', fontWeight: 'bold' }}>Pocket</span><span style={{ color: '#FFD21F', fontWeight: 'bold' }}>Ed</span>  enters the market with ₹100, comparing needs vs. wants to understand true value. As he makes choices between essentials and temptations, he learns the importance of smart spending, budgeting, and decision-making.
                     </p>
-                    <ul className="list-disc list-inside text-sm text-black">
+                    {/* <ul className="list-disc list-inside text-sm text-black">
                         <li>Needs vs. Wants</li>
                         <li>Smart shopping and consumer rights</li>
                         <li>Introduction to investing concepts</li>
-                    </ul>
+                    </ul> */}
                     <div className="pt-2 md:max-w-[80%] lg:max-w-[70%]">
                         <Image
                             src="https://i.postimg.cc/Z5Xs8s39/86420464-45f1-4664-b5b9-c5aeccc06026.jpg"
