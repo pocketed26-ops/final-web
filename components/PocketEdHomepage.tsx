@@ -7,6 +7,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import ContactModal from './ContactModal';
+import FaqModal from './FaqModal';
 import Navbar from './Navbar';
 import { useState } from 'react';
 
@@ -1692,7 +1693,7 @@ function CTABand({ onContactClick }: { onContactClick: () => void }) {
   );
 }
 
-function Footer() {
+function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onContactClick?: () => void }) {
   const columns = [
     {
       title: 'Programme',
@@ -1727,8 +1728,8 @@ function Footer() {
       links: [
         // { label: 'Sample lessons', href: '#' },
         // { label: 'Parent guide', href: '#' },
-        { label: 'FAQ', href: '#' },
-        { label: 'Contact', href: '#' },
+        { label: 'FAQ', href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); onFaqClick?.(); } },
+        { label: 'Contact', href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); onContactClick?.(); } },
       ],
     },
   ];
@@ -1784,7 +1785,7 @@ function Footer() {
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {col.links.map((l, j) => (
                   <li key={j}>
-                    <Link href={l.href} style={{
+                    <Link href={l.href} onClick={'onClick' in l ? (l.onClick as any) : undefined} style={{
                       fontFamily: 'Poppins, sans-serif', fontSize: 15, color: '#ffffff',
                       textDecoration: 'none', opacity: 0.85,
                     }}>{l.label}</Link>
@@ -1858,6 +1859,7 @@ const footerLinkMini: CSSProperties = {
 
 export default function PocketEdHomepage() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
 
   return (
     <div className="responsive-landing" style={{ background: '#ffffff', overflow: 'hidden' }}>
@@ -1872,7 +1874,12 @@ export default function PocketEdHomepage() {
       <GurusSection />
 
       <CTABand onContactClick={() => setIsContactModalOpen(true)} />
-      <Footer />
+      <Footer onFaqClick={() => setIsFaqModalOpen(true)} onContactClick={() => setIsContactModalOpen(true)} />
+
+      <FaqModal
+        isOpen={isFaqModalOpen}
+        onClose={() => setIsFaqModalOpen(false)}
+      />
 
       <ContactModal
         isOpen={isContactModalOpen}
