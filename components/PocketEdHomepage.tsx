@@ -1698,20 +1698,20 @@ function Footer() {
         { label: 'Community', href: '/community' },
       ],
     },
-    {
-      title: 'About',
-      links: [
-        { label: 'Our story', href: '#' },
-        { label: 'Team', href: '#' },
-        { label: 'Press', href: '#' },
-        { label: 'Careers', href: '#' },
-      ],
-    },
+    // {
+    //   title: 'About',
+    //   links: [
+    //     { label: 'Our story', href: '#' },
+    //     { label: 'Team', href: '#' },
+    //     { label: 'Press', href: '#' },
+    //     { label: 'Careers', href: '#' },
+    //   ],
+    // },
     {
       title: 'Resources',
       links: [
-        { label: 'Sample lessons', href: '#' },
-        { label: 'Parent guide', href: '#' },
+        // { label: 'Sample lessons', href: '#' },
+        // { label: 'Parent guide', href: '#' },
         { label: 'FAQ', href: '#' },
         { label: 'Contact', href: '#' },
       ],
