@@ -13,7 +13,6 @@ const MOCK_MOMENTS = [
     id: 1,
     title: "Mindful Living Workshop",
     category: "Workshop",
-    // date: "May 20, 2024",
     image: "/comm_4.png",
     video: "/comm_1_video.mp4",
     attendees: [
@@ -28,7 +27,6 @@ const MOCK_MOMENTS = [
     id: 2,
     title: "Building Better Habits",
     category: "Talk Session",
-    // date: "May 18, 2024",
     image: "/comm_2.png",
     attendees: [
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces",
@@ -42,7 +40,6 @@ const MOCK_MOMENTS = [
     id: 3,
     title: "Creative Ideas Flow",
     category: "Brainstorm",
-    // date: "May 16, 2024",
     video: "/comm_3_video.mp4",
     attendees: [
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
@@ -56,7 +53,6 @@ const MOCK_MOMENTS = [
     id: 4,
     title: "Morning Yoga Flow",
     category: "Wellness",
-    // date: "May 19, 2024",
     image: "/comm_1.png",
     attendees: [
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces",
@@ -70,7 +66,6 @@ const MOCK_MOMENTS = [
     id: 5,
     title: "Open Talk Circle",
     category: "Discussion",
-    // date: "May 17, 2024",
     video: "/comm_2_video.mp4",
     attendees: [
       "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=faces",
@@ -84,7 +79,6 @@ const MOCK_MOMENTS = [
     id: 6,
     title: "Design Thinking 101",
     category: "Guest Session",
-    // date: "May 15, 2024",
     image: "/comm_3.png",
     video: "/comm_4_video.mp4",
     attendees: [
@@ -286,9 +280,6 @@ export default function CommunityPage() {
                     <h3 className="text-white text-xl font-bold mb-1 drop-shadow-md">
                       {moment.title}
                     </h3>
-                    <span className="text-white/80 text-sm font-medium drop-shadow-sm">
-                      {moment.date}
-                    </span>
                   </div>
                 </div>
               </div>
