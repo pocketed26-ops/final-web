@@ -636,7 +636,14 @@ function Hero({ onContactClick }: { onContactClick: () => void }) {
             <Button variant="primary" icon={<svg width="14" height="14" viewBox="0 0 24 24">{GlyphArrow}</svg>} onClick={onContactClick}>
               Book a School Demo
             </Button>
-            <Button variant="secondary" icon={<svg width="14" height="14" viewBox="0 0 24 24">{GlyphDownload}</svg>}>
+            <Button variant="secondary" icon={<svg width="14" height="14" viewBox="0 0 24 24">{GlyphDownload}</svg>} onClick={() => {
+              const link = document.createElement('a');
+              link.href = '/Programme Overview.pdf';
+              link.download = 'PocketEd_Programme_Overview.pdf';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}>
               Download Programme Overview
             </Button>
           </div>
