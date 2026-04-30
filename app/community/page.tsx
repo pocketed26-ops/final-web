@@ -11,7 +11,7 @@ import gsap from "gsap";
 const MOCK_MOMENTS = [
   {
     id: 1,
-    title: "Mindful Living Workshop",
+    title: "Think Before You Spend",
     category: "Workshop",
     image: "/comm_4.png",
     video: "/comm_1_video.mp4",
@@ -25,7 +25,7 @@ const MOCK_MOMENTS = [
   },
   {
     id: 2,
-    title: "Building Better Habits",
+    title: "Building Money Habits",
     category: "Talk Session",
     image: "/comm_2.png",
     attendees: [
@@ -38,7 +38,7 @@ const MOCK_MOMENTS = [
   },
   {
     id: 3,
-    title: "Creative Ideas Flow",
+    title: "Big Ideas, Bigger Goals — Brainstorm",
     category: "Brainstorm",
     video: "/comm_3_video.mp4",
     attendees: [
@@ -51,7 +51,7 @@ const MOCK_MOMENTS = [
   },
   {
     id: 4,
-    title: "Morning Yoga Flow",
+    title: "Grow Beyond the Classroom",
     category: "Wellness",
     image: "/comm_1.png",
     attendees: [
@@ -64,7 +64,7 @@ const MOCK_MOMENTS = [
   },
   {
     id: 5,
-    title: "Open Talk Circle",
+    title: "Money Talk Open Circle",
     category: "Discussion",
     video: "/comm_2_video.mp4",
     attendees: [
@@ -77,7 +77,7 @@ const MOCK_MOMENTS = [
   },
   {
     id: 6,
-    title: "Design Thinking 101",
+    title: "Entrepreneurship Guest Session",
     category: "Guest Session",
     image: "/comm_3.png",
     video: "/comm_4_video.mp4",
