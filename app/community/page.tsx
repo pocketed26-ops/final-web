@@ -184,17 +184,6 @@ export default function CommunityPage() {
                 Highlights from our recent sessions
               </p>
             </div>
-
-            <div className="flex items-center bg-gray-50 p-1 rounded-xl border border-gray-100">
-              <button className="flex items-center px-4 py-2 bg-white text-[#014AAC] rounded-lg shadow-sm text-sm font-medium border border-[#014AAC]/10">
-                <LayoutGrid className="w-4 h-4 mr-2" />
-                Masonry
-              </button>
-              <button className="flex items-center px-4 py-2 text-gray-500 hover:text-gray-900 rounded-lg text-sm font-medium transition-colors">
-                <List className="w-4 h-4 mr-2" />
-                List view
-              </button>
-            </div>
           </div>
 
           {/* Grid Layout */}
