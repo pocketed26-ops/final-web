@@ -615,7 +615,12 @@ function Hero({ onContactClick }: { onContactClick: () => void }) {
             }}
           >
             A full-year classroom programme for Grades 6 – 8
-            {!isExpanded ? '...' : ', mapped to NEP 2020 and the national financial education framework — board-agnostic, teacher-led, and ready to run from the first bell.'}
+            {/* Short suffix: hidden on desktop via CSS, shown on mobile when collapsed */}
+            <span className="hero-subtext-short">{!isExpanded ? '...' : ''}</span>
+            {/* Full suffix: always visible on desktop (CSS), visible on mobile only when expanded */}
+            <span className={`hero-subtext-full${isExpanded ? ' is-expanded' : ''}`}>
+              , mapped to NEP 2020 and the national financial education framework — board-agnostic, teacher-led, and ready to run from the first bell.
+            </span>
           </p>
 
           {!isExpanded && (
@@ -1373,17 +1378,17 @@ function TeacherSupportSection() {
     {
       glyph: GlyphCap,
       title: 'Teacher Development Session',
-      body: 'A 2-hour onboarding plus session playbooks for every lesson. No prior finance background required.',
+      body: 'A focused 45–60 minute onboarding session with our curriculum developer — no finance background needed, just a willingness to make learning stick.',
     },
     {
       glyph: GlyphBook,
       title: 'Full Teacher Manual',
-      body: 'Scripted lessons, activity sheets, assessment rubrics. Everything printable and ready to use.',
+      body: 'Scripted lessons, activity sheets, and the curriculum — handed to you before day one, so you walk in prepared, not guessing.',
     },
     {
       glyph: GlyphBell,
       title: 'Ongoing Support',
-      body: 'WhatsApp helpline for teachers, monthly content refreshes, a student-progress dashboard.',
+      body: 'WhatsApp or on-call support whenever you need it. Our team stays with you through every session, not just the first one.',
     },
   ];
   return (
@@ -1577,24 +1582,22 @@ function GurusSection() {
               love to carry the ideas they need — compound interest as a seed that grows,
               saving as a granary that keeps a village fed.
             </p>
-            {isTextExpanded && (
-              <>
-                <p style={{
-                  fontFamily: 'Poppins, sans-serif', fontSize: 18, lineHeight: 1.6,
-                  color: '#ffffff', opacity: 0.92, margin: '0 0 18px 0', maxWidth: 560,
-                }}>
-                  Every concept is vetted by teachers and aligned to the national framework.
-                  The warmth is cultural; the rigour is institutional.
-                </p>
-                <p style={{
-                  fontFamily: 'Poppins, sans-serif', fontSize: 18, lineHeight: 1.6,
-                  color: '#ffffff', opacity: 0.92, margin: '0 0 18px 0', maxWidth: 560,
-                }}>
-                  Four gurus. One shared classroom. Four angles on the same question: what does
-                  it mean to be smart with money in India today?
-                </p>
-              </>
-            )}
+            <div className={`gurus-extra-text${isTextExpanded ? ' is-expanded' : ''}`}>
+              <p style={{
+                fontFamily: 'Poppins, sans-serif', fontSize: 18, lineHeight: 1.6,
+                color: '#ffffff', opacity: 0.92, margin: '0 0 18px 0', maxWidth: 560,
+              }}>
+                Every concept is vetted by teachers and aligned to the national framework.
+                The warmth is cultural; the rigour is institutional.
+              </p>
+              <p style={{
+                fontFamily: 'Poppins, sans-serif', fontSize: 18, lineHeight: 1.6,
+                color: '#ffffff', opacity: 0.92, margin: '0 0 18px 0', maxWidth: 560,
+              }}>
+                Four gurus. One shared classroom. Four angles on the same question: what does
+                it mean to be smart with money in India today?
+              </p>
+            </div>
             {!isTextExpanded && (
               <button
                 className="read-more-btn"

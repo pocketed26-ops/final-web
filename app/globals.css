@@ -342,7 +342,7 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
   overflow: visible;
 }
 
-/* ── Read-more button (works on all screen sizes) ── */
+/* ── Read-more button — mobile & tablet only ── */
 .read-more-btn {
   display: block;
   background: none;
@@ -359,6 +359,27 @@ html.no-scrollbar *::-webkit-scrollbar-corner {
   transition: opacity 150ms ease;
 }
 .read-more-btn:hover { opacity: 1; }
+
+/* On laptop and above, always hide the "Read more" button
+   and always show the full hero subtext */
+@media (min-width: 1025px) {
+  .read-more-btn {
+    display: none !important;
+  }
+  .hero-subtext-short { display: none !important; }
+  .hero-subtext-full  { display: inline !important; }
+  .gurus-extra-text   { display: block !important; }
+}
+
+/* On mobile / tablet, the JS state drives visibility —
+   but ensure the CSS helper classes default correctly */
+@media (max-width: 1024px) {
+  .hero-subtext-full  { display: none; }
+  .hero-subtext-full.is-expanded { display: inline; }
+  /* Gurus section extra paragraphs: hidden until expanded */
+  .gurus-extra-text { display: none; }
+  .gurus-extra-text.is-expanded { display: block; }
+}
 
 /* Responsive Landing Page Overrides */
 .nav-mobile {
