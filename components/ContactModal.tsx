@@ -104,7 +104,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
           style={{ WebkitBackdropFilter: 'blur(4px)' }}
         >
@@ -236,7 +236,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                         type="text" id="fullName" name="fullName"
                         value={formData.fullName} onChange={handleChange}
                         className={`w-full px-4 py-3 bg-gray-50 border rounded-2xl focus:ring-2 focus:ring-[var(--primary-blue)] focus:border-transparent outline-none transition-all ${errors.fullName ? 'border-red-500 bg-red-50/50' : 'border-gray-200'}`}
-                        placeholder="John Doe" disabled={isSubmitting}
+                        placeholder="Atharva Shewale" disabled={isSubmitting}
                       />
                       {errors.fullName && <p className="text-red-500 text-xs mt-1.5 ml-1 font-medium">{errors.fullName}</p>}
                     </div>
@@ -247,7 +247,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                         type="email" id="email" name="email"
                         value={formData.email} onChange={handleChange}
                         className={`w-full px-4 py-3 bg-gray-50 border rounded-2xl focus:ring-2 focus:ring-[var(--primary-blue)] focus:border-transparent outline-none transition-all ${errors.email ? 'border-red-500 bg-red-50/50' : 'border-gray-200'}`}
-                        placeholder="john@example.com" disabled={isSubmitting}
+                        placeholder="atharvashewale@example.com" disabled={isSubmitting}
                       />
                       {errors.email && <p className="text-red-500 text-xs mt-1.5 ml-1 font-medium">{errors.email}</p>}
                     </div>

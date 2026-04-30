@@ -144,9 +144,9 @@ export async function POST(request: Request) {
       subject: `Thanks for reaching out, ${firstName}! 👋`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;">
-          <div style="background:linear-gradient(135deg,#014aac 0%,#0369d1 100%);padding:36px 32px;text-align:center;">
-            <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50%;width:64px;height:64px;line-height:64px;font-size:28px;margin-bottom:12px;">✉️</div>
-            <h1 style="color:#ffffff;margin:0;font-size:24px;font-weight:700;letter-spacing:-0.4px;">We got your message!</h1>
+          <div style="background:#f8fafc;padding:40px 32px 32px;text-align:center;border-bottom:1px solid #e5e7eb;">
+            <img src="https://pocketed.in/pocketed_complete_logo.png" alt="PocketEd" style="height:36px;display:inline-block;margin-bottom:24px;" />
+            <h1 style="color:#014aac;margin:0;font-size:26px;font-weight:800;letter-spacing:-0.5px;">We got your message!</h1>
           </div>
           <div style="padding:36px 32px;">
             <p style="margin:0 0 16px;font-size:16px;color:#111827;line-height:1.7;">Hi <strong>${firstName}</strong>,</p>
