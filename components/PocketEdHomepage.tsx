@@ -317,6 +317,11 @@ const LineLinkedin = (
     <path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 1 1 4 0v4M12 10v7" />
   </g>
 );
+const LineSubstack = (
+  <g fill="currentColor" stroke="none">
+    <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11L22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/>
+  </g>
+);
 
 // ========== CONTAINER ==========
 
@@ -1806,13 +1811,23 @@ function Footer() {
             <a href="#" style={footerLinkMini}>Privacy</a>
             <a href="#" style={footerLinkMini}>Terms</a>
             <a href="#" style={footerLinkMini}>Data Policy</a>
-            <a href="#" aria-label="LinkedIn" style={{
+            <a href="https://www.linkedin.com/company/pocketedco/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{
               width: 34, height: 34, borderRadius: 999,
               border: '1px solid rgba(255,255,255,0.3)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               marginLeft: 8,
-            }}>
+              transition: 'background-color 0.2s',
+            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
               <svg width="16" height="16" viewBox="0 0 24 24" style={{ color: '#ffffff' }}>{LineLinkedin}</svg>
+            </a>
+            <a href="https://substack.com/@siddharthgadhia" target="_blank" rel="noopener noreferrer" aria-label="Substack" style={{
+              width: 34, height: 34, borderRadius: 999,
+              border: '1px solid rgba(255,255,255,0.3)',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              marginLeft: 8,
+              transition: 'background-color 0.2s',
+            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+              <svg width="14" height="14" viewBox="0 0 24 24" style={{ color: '#ffffff' }}>{LineSubstack}</svg>
             </a>
           </div>
         </div>
