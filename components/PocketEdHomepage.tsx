@@ -1372,17 +1372,17 @@ function TeacherSupportSection() {
   const cards = [
     {
       glyph: GlyphCap,
-      title: 'Teacher training included',
+      title: 'Teacher Development Session',
       body: 'A 2-hour onboarding plus session playbooks for every lesson. No prior finance background required.',
     },
     {
       glyph: GlyphBook,
-      title: 'Full teacher manual',
+      title: 'Full Teacher Manual',
       body: 'Scripted lessons, activity sheets, assessment rubrics. Everything printable and ready to use.',
     },
     {
       glyph: GlyphBell,
-      title: 'Ongoing support',
+      title: 'Ongoing Support',
       body: 'WhatsApp helpline for teachers, monthly content refreshes, a student-progress dashboard.',
     },
   ];
