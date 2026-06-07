@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import { Gamepad } from "lucide-react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -47,6 +48,15 @@ export default function RootLayout({
     >
       <body className="min-h-full overflow-x-hidden bg-[var(--background)] antialiased">
         <div className="site-root">{children}</div>
+        
+        {/* Floating Game Button */}
+        <a
+          href="/website_games.html"
+          className="fixed bottom-6 right-6 z-[9999] flex items-center justify-center w-14 h-14 bg-[#FFD21F] text-[#014AAC] rounded-full shadow-[0_8px_24px_rgba(1,74,172,0.25)] hover:scale-110 hover:-translate-y-1 transition-all duration-200 border-2 border-white"
+          title="Play Financial Games"
+        >
+          <Gamepad size={28} strokeWidth={2.5} />
+        </a>
       </body>
     </html>
   );

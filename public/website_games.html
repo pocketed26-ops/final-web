@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PocketEd — Rupee Quest: The Money Adventure</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#014AAC;--blue-dark:#013480;--blue-light:#E8F0FB;--blue-mid:#C2D4F5;
+  --yellow:#FFD21F;--yellow-light:#FFF8D6;--yellow-dark:#C9A300;
+  --white:#FFFFFF;--bg:#F4F7FF;--text:#012A65;--muted:#5A78B0;--border:#D0DDEF;
+  --success:#00A651;--success-bg:#E0F7EF;--danger:#E63946;--danger-bg:#FDEAEA;
+  --orange:#FF6B35;
+  --radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:24px;--radius-pill:999px;
+  --font:'Poppins',sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* NAVBAR */
+.nav{background:var(--blue);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(1,52,128,.2)}
+.nav-brand{font-size:22px;font-weight:900;letter-spacing:-.5px}
+.nav-brand .pocket{color:#fff}.nav-brand .ed{color:var(--yellow)}
+.nav-tag{background:var(--yellow);color:var(--blue-dark);font-size:11px;font-weight:800;padding:4px 12px;border-radius:var(--radius-pill);letter-spacing:.06em;text-transform:uppercase}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue) 60%,#1a5ec8 100%);padding:60px 32px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40%;left:-20%;width:80%;height:200%;background:radial-gradient(circle,rgba(255,210,31,.08) 0%,transparent 60%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:var(--radius-pill);padding:6px 16px;font-size:12px;font-weight:700;color:#fff;margin-bottom:18px}
+.hero h1{font-size:clamp(28px,5vw,52px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:14px}
+.hero h1 span{color:var(--yellow)}
+.hero p{font-size:16px;color:rgba(255,255,255,.85);max-width:520px;margin:0 auto 28px;line-height:1.65}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-hero-primary{background:var(--yellow);color:var(--blue-dark);font-family:var(--font);font-size:15px;font-weight:800;padding:14px 32px;border-radius:var(--radius-pill);border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-hero-primary:hover{background:var(--yellow-dark);color:#fff;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.btn-hero-secondary{background:transparent;color:#fff;font-family:var(--font);font-size:15px;font-weight:700;padding:14px 32px;border-radius:var(--radius-pill);border:2px solid rgba(255,255,255,.4);cursor:pointer;transition:all .2s}
+.btn-hero-secondary:hover{background:rgba(255,255,255,.1)}
+
+/* GAME SELECTOR */
+.game-selector{max-width:1100px;margin:0 auto;padding:60px 24px}
+.section-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px}
+.section-title{font-size:clamp(22px,3vw,32px);font-weight:800;color:var(--blue);margin-bottom:8px}
+.section-sub{font-size:15px;color:var(--muted);line-height:1.6;margin-bottom:36px}
+
+.game-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-bottom:48px}
+.game-card{background:var(--white);border-radius:var(--radius-xl);padding:28px;border:2px solid var(--border);box-shadow:0 4px 20px rgba(1,74,172,.06);cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.game-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.game-card.blue::before{background:linear-gradient(90deg,var(--blue),#4a90e2)}
+.game-card.yellow::before{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.game-card.green::before{background:linear-gradient(90deg,var(--success),#00c853)}
+.game-card.purple::before{background:linear-gradient(90deg,#7b1fa2,#e91e63)}
+.game-card:hover{border-color:var(--blue);transform:translateY(-4px);box-shadow:0 12px 40px rgba(1,74,172,.15)}
+.game-card-icon{font-size:40px;margin-bottom:14px}
+.game-card-guru{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+.game-card-title{font-size:18px;font-weight:800;color:var(--blue);margin-bottom:6px}
+.game-card-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.game-card-tags{display:flex;gap:6px;flex-wrap:wrap}
+.game-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-pill);background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-mid)}
+.game-tag.yellow{background:var(--yellow-light);color:var(--yellow-dark);border-color:var(--yellow)}
+.game-tag.green{background:var(--success-bg);color:#007a3d;border-color:var(--success)}
+
+.play-btn{position:absolute;bottom:20px;right:20px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-pill);padding:8px 18px;font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer;transition:all .18s;opacity:0}
+.game-card:hover .play-btn{opacity:1}
+
+/* GAME CONTAINER */
+.game-container{max-width:1000px;margin:0 auto;padding:0 24px 80px;display:none}
+.game-container.active{display:block}
+
+/* SHARED GAME ELEMENTS */
+.btn{font-family:var(--font);font-size:14px;font-weight:700;padding:11px 26px;border-radius:var(--radius-pill);border:none;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:8px}
+.btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{background:var(--blue-dark);transform:translateY(-1px)}
+.btn-yellow{background:var(--yellow);color:var(--blue-dark)}.btn-yellow:hover{background:var(--yellow-dark);color:#fff}
+.btn-outline{background:transparent;color:var(--blue);border:2px solid var(--blue)}.btn-outline:hover{background:var(--blue-light)}
+.btn-sm{padding:7px 16px;font-size:12px}
+.card{background:var(--white);border-radius:var(--radius-lg);padding:28px 32px;border:1.5px solid var(--border);box-shadow:0 4px 24px rgba(1,74,172,.06);margin-bottom:20px}
+.guru-banner{border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:20px;display:flex;align-items:flex-start;gap:16px}
+.guru-banner.blue{background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff}
+.guru-banner.yellow{background:linear-gradient(135deg,#7B4F00,#C9A300);color:#fff}
+.guru-banner.green{background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff}
+.guru-icon{font-size:42px;flex-shrink:0}
+.guru-name{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.7);margin-bottom:4px}
+.guru-quote{font-size:14px;font-weight:500;line-height:1.65;opacity:.92}
+
+/* QUIZ GAME STYLES */
+.quiz-hud{display:flex;gap:10px;flex-wrap:wrap;background:var(--blue-light);border-radius:var(--radius-md);padding:10px 16px;margin-bottom:18px}
+.quiz-pill{font-size:12px;font-weight:700;color:var(--blue);background:var(--white);border-radius:var(--radius-pill);padding:4px 14px;border:1.5px solid var(--blue-mid)}
+.quiz-pill.yellow{background:var(--yellow);border-color:var(--yellow-dark);color:var(--blue-dark)}
+.quiz-pill.green{background:var(--success-bg);border-color:var(--success);color:#007a3d}
+.quiz-pill.red{background:var(--danger-bg);border-color:var(--danger);color:var(--danger)}
+.progress-bar{height:8px;background:var(--border);border-radius:var(--radius-pill);margin-bottom:18px;overflow:hidden}
+.progress-fill{height:100%;background:var(--blue);border-radius:var(--radius-pill);transition:width .4s}
+
+.question-card{background:var(--white);border-radius:var(--radius-xl);padding:28px 32px;border:2px solid var(--border);margin-bottom:16px;box-shadow:0 4px 20px rgba(1,74,172,.06)}
+.question-text{font-size:18px;font-weight:700;color:var(--blue);line-height:1.5;margin-bottom:20px}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.options-grid{grid-template-columns:1fr}}
+.option-btn{font-family:var(--font);font-size:14px;font-weight:600;padding:14px 18px;border-radius:var(--radius-md);border:2px solid var(--border);background:var(--white);color:var(--text);cursor:pointer;transition:all .18s;text-align:left;line-height:1.4}
+.option-btn:hover:not(:disabled){border-color:var(--blue);background:var(--blue-light);color:var(--blue)}
+.option-btn.correct{border-color:var(--success);background:var(--success-bg);color:#007a3d;font-weight:700}
+.option-btn.wrong{border-color:var(--danger);background:var(--danger-bg);color:var(--danger)}
+.option-btn:disabled{cursor:not-allowed}
+.feedback-card{border-radius:var(--radius-md);padding:18px 22px;margin-top:6px;font-size:14px;line-height:1.6;display:none}
+.feedback-card.correct{background:var(--success-bg);border:1.5px solid var(--success);color:#007a3d}
+.feedback-card.wrong{background:var(--danger-bg);border:1.5px solid var(--danger);color:var(--danger)}
+.feedback-card.show{display:block}
+
+/* MYTH BUSTER GAME */
+.myth-card{border-radius:var(--radius-xl);border:3px solid var(--border);background:var(--white);padding:28px;margin-bottom:16px;transition:all .2s}
+.myth-statement{font-size:18px;font-weight:700;color:var(--blue);line-height:1.5;margin-bottom:6px}
+.myth-context{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.myth-btns{display:flex;gap:12px;flex-wrap:wrap}
+.myth-btn{font-family:var(--font);font-size:14px;font-weight:800;padding:12px 28px;border-radius:var(--radius-pill);border:none;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:8px}
+.myth-btn.true{background:var(--success);color:#fff}.myth-btn.true:hover{opacity:.88}
+.myth-btn.false{background:var(--danger);color:#fff}.myth-btn.false:hover{opacity:.88}
+.myth-btn:disabled{opacity:.5;cursor:not-allowed}
+.myth-result{border-radius:var(--radius-md);padding:16px 20px;margin-top:14px;font-size:14px;line-height:1.6;display:none}
+.myth-result.show{display:block}
+.myth-result.busted{background:var(--success-bg);border:2px solid var(--success);color:#007a3d}
+.myth-result.confirmed{background:var(--yellow-light);border:2px solid var(--yellow);color:var(--yellow-dark)}
+.myth-result.wrong{background:var(--danger-bg);border:2px solid var(--danger);color:var(--danger)}
+
+/* LIFETIME CALC */
+.calc-section{background:var(--white);border-radius:var(--radius-xl);padding:28px;border:2px solid var(--border);margin-bottom:16px}
+.calc-label{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px}
+.calc-input{width:100%;font-family:var(--font);font-size:16px;font-weight:700;padding:12px 16px;border-radius:var(--radius-md);border:2px solid var(--border);background:var(--bg);color:var(--blue);transition:border-color .2s}
+.calc-input:focus{outline:none;border-color:var(--blue)}
+.calc-result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:16px}
+.calc-result-cell{background:var(--bg);border-radius:var(--radius-md);padding:14px;border:1.5px solid var(--border);text-align:center}
+.calc-result-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+.calc-result-val{font-size:18px;font-weight:800;color:var(--blue)}
+.calc-result-val.highlight{color:var(--success);font-size:22px}
+
+/* FOOTER */
+.site-footer{background:var(--blue-dark);color:rgba(255,255,255,.7);text-align:center;padding:32px 24px;font-size:13px;line-height:1.65}
+.site-footer strong{color:#fff}
+
+.screen{display:none}.screen.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand"><span class="pocket">Pocket</span><span class="ed">Ed</span></div>
+  <span class="nav-tag">Free Financial Games</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="hero-section">
+  <div class="hero-tag">🎮 Free · No login · For everyone</div>
+  <h1>Learn Money.<br><span>While Having Fun.</span></h1>
+  <p>PocketEd's free interactive games teach real financial literacy through play. For students, parents, and anyone who wants to get smarter with money.</p>
+  <div class="hero-btns">
+    <button class="btn-hero-primary" onclick="scrollToGames()">▶ Play Free Games</button>
+    <button class="btn-hero-secondary" onclick="window.open('https://pocketed.in','_blank')">About PocketEd →</button>
+  </div>
+</div>
+
+<!-- GAME SELECTOR -->
+<div class="game-selector" id="games-section">
+  <div class="section-label">Interactive Activities</div>
+  <div class="section-title">Pick a Game — Learn Something Real</div>
+  <div class="section-sub">Three games, three gurus, three ways to understand money better. Each takes 5-10 minutes. Each teaches something you'll use for life.</div>
+
+  <div class="game-cards">
+    <div class="game-card blue" onclick="launchGame('quiz')">
+      <div class="game-card-icon">🧠</div>
+      <div class="game-card-guru">🪙 Kuber Chacha</div>
+      <div class="game-card-title">Money IQ Challenge</div>
+      <div class="game-card-desc">20 questions across 4 levels. From basic rupee facts to advanced investing concepts. How much do you actually know about money?</div>
+      <div class="game-card-tags">
+        <span class="game-tag">Quiz</span>
+        <span class="game-tag yellow">All Ages</span>
+        <span class="game-tag">5-8 mins</span>
+      </div>
+      <button class="play-btn">▶ Play</button>
+    </div>
+
+    <div class="game-card yellow" onclick="launchGame('myth')">
+      <div class="game-card-icon">💥</div>
+      <div class="game-card-guru">⚖ Eklavya Bhaiya</div>
+      <div class="game-card-title">Money Myth Buster</div>
+      <div class="game-card-desc">12 common beliefs about money. True or False? Many will surprise you — and some things "everyone knows" are completely wrong.</div>
+      <div class="game-card-tags">
+        <span class="game-tag">True/False</span>
+        <span class="game-tag yellow">Eye-opening</span>
+        <span class="game-tag">4-6 mins</span>
+      </div>
+      <button class="play-btn">▶ Play</button>
+    </div>
+
+    <div class="game-card green" onclick="launchGame('calc')">
+      <div class="game-card-icon">📊</div>
+      <div class="game-card-guru">🌟 Dhruv Tara</div>
+      <div class="game-card-title">Lifetime Money Simulator</div>
+      <div class="game-card-desc">Enter your age, income, and savings rate. See your wealth at 30, 40, 50, and 60. The power of compound interest, made personal.</div>
+      <div class="game-card-tags">
+        <span class="game-tag">Calculator</span>
+        <span class="game-tag green">Personalised</span>
+        <span class="game-tag">3-5 mins</span>
+      </div>
+      <button class="play-btn">▶ Play</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── QUIZ GAME ── -->
+<div class="game-container" id="game-quiz">
+  <div id="quiz-start" class="screen active">
+    <div class="guru-banner blue">
+      <div class="guru-icon">🪙</div>
+      <div>
+        <div class="guru-name">Kuber Chacha · The Wealth Keeper</div>
+        <div class="guru-quote">"Beta, before you earn your first crore, you must first understand your first rupee. This quiz will test what you know — and teach what you don't. No shame in learning. Shame only in not trying."</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:24px;font-weight:800;color:var(--blue);margin-bottom:8px">💰 Money IQ Challenge</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">20 questions · 4 difficulty levels · Every wrong answer comes with an explanation · Your score updates in real time.</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px">
+        <div style="background:var(--blue-light);border-radius:var(--radius-md);padding:12px;text-align:center;border:1.5px solid var(--blue-mid)"><div style="font-size:18px;margin-bottom:4px">📗</div><div style="font-size:11px;font-weight:700;color:var(--blue)">Level 1</div><div style="font-size:10px;color:var(--muted)">Basics</div></div>
+        <div style="background:var(--yellow-light);border-radius:var(--radius-md);padding:12px;text-align:center;border:1.5px solid var(--yellow)"><div style="font-size:18px;margin-bottom:4px">📙</div><div style="font-size:11px;font-weight:700;color:var(--blue)">Level 2</div><div style="font-size:10px;color:var(--muted)">Banking</div></div>
+        <div style="background:var(--orange-bg);border-radius:var(--radius-md);padding:12px;text-align:center;border:1.5px solid var(--orange)"><div style="font-size:18px;margin-bottom:4px">📕</div><div style="font-size:11px;font-weight:700;color:var(--blue)">Level 3</div><div style="font-size:10px;color:var(--muted)">Investing</div></div>
+        <div style="background:var(--danger-bg);border-radius:var(--radius-md);padding:12px;text-align:center;border:1.5px solid var(--danger)"><div style="font-size:18px;margin-bottom:4px">🔴</div><div style="font-size:11px;font-weight:700;color:var(--blue)">Level 4</div><div style="font-size:10px;color:var(--muted)">Advanced</div></div>
+      </div>
+      <button class="btn btn-yellow" onclick="startQuiz()">🧠 Test My Money IQ</button>
+    </div>
+  </div>
+
+  <div id="quiz-game" class="screen">
+    <div class="quiz-hud">
+      <span class="quiz-pill yellow" id="quiz-level-pill">Level 1</span>
+      <span class="quiz-pill" id="quiz-q-pill">Q 1/20</span>
+      <span class="quiz-pill green" id="quiz-correct-pill">✓ 0</span>
+      <span class="quiz-pill red" id="quiz-wrong-pill">✗ 0</span>
+      <span class="quiz-pill" id="quiz-score-pill">Score: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="quiz-progress" style="width:0%"></div></div>
+    <div class="question-card">
+      <div id="q-level-tag" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options-grid" id="q-options"></div>
+      <div class="feedback-card" id="q-feedback"></div>
+    </div>
+    <button class="btn btn-blue" id="btn-next-q" onclick="nextQuestion()" style="display:none">Next Question →</button>
+  </div>
+
+  <div id="quiz-final" class="screen">
+    <div class="card" style="text-align:center">
+      <div style="font-size:56px;margin-bottom:12px" id="quiz-final-icon"></div>
+      <div style="font-size:26px;font-weight:800;color:var(--blue);margin-bottom:6px" id="quiz-final-title"></div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:20px" id="quiz-final-sub"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:400px;margin:0 auto 20px" id="quiz-final-stats"></div>
+      <div id="quiz-final-verdict" style="background:var(--blue-light);border-radius:var(--radius-md);padding:16px 20px;font-size:14px;color:var(--blue);line-height:1.6;text-align:left;margin-bottom:20px"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-yellow" onclick="startQuiz()">↺ Try Again</button>
+        <button class="btn btn-outline btn-sm" onclick="backToSelector()">← All Games</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MYTH BUSTER ── -->
+<div class="game-container" id="game-myth">
+  <div id="myth-start" class="screen active">
+    <div class="guru-banner yellow">
+      <div class="guru-icon">⚖</div>
+      <div>
+        <div class="guru-name">Eklavya Bhaiya · The Debt Navigator</div>
+        <div class="guru-quote">"Many people carry beliefs about money their whole lives that are simply wrong. These beliefs cost them crores. Let us bust these myths — one by one — and replace them with truth."</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:24px;font-weight:800;color:var(--blue);margin-bottom:8px">💥 Money Myth Buster</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">12 things people commonly believe about money in India. For each one: is it TRUE or is it a MYTH? After you answer, find out what's really going on.</div>
+      <button class="btn btn-yellow" onclick="startMyth()">💥 Bust Some Myths</button>
+    </div>
+  </div>
+
+  <div id="myth-game" class="screen">
+    <div class="quiz-hud">
+      <span class="quiz-pill yellow" id="myth-q-pill">Myth 1/12</span>
+      <span class="quiz-pill green" id="myth-correct-pill">✓ Correct: 0</span>
+      <span class="quiz-pill red" id="myth-wrong-pill">✗ Wrong: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="myth-progress" style="width:0%"></div></div>
+    <div id="myth-card-area"></div>
+    <button class="btn btn-blue" id="btn-next-myth" onclick="nextMyth()" style="display:none">Next Myth →</button>
+  </div>
+
+  <div id="myth-final" class="screen">
+    <div class="card" style="text-align:center">
+      <div style="font-size:56px;margin-bottom:10px" id="myth-final-icon"></div>
+      <div style="font-size:24px;font-weight:800;color:var(--blue);margin-bottom:6px" id="myth-final-title"></div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:20px" id="myth-final-sub"></div>
+      <div id="myth-missed" style="text-align:left;margin-bottom:20px"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-yellow" onclick="startMyth()">↺ Play Again</button>
+        <button class="btn btn-outline btn-sm" onclick="backToSelector()">← All Games</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── LIFETIME CALC ── -->
+<div class="game-container" id="game-calc">
+  <div id="calc-main" class="screen active">
+    <div class="guru-banner green">
+      <div class="guru-icon">🌟</div>
+      <div>
+        <div class="guru-name">Dhruv Tara · The Steady Investor</div>
+        <div class="guru-quote">"The most powerful force in the universe is compound interest. Einstein may or may not have said this — but every rupee saved at age 20 is worth 8 rupees at age 60. Enter your numbers and see your future."</div>
+      </div>
+    </div>
+
+    <div class="calc-section">
+      <div style="font-size:20px;font-weight:800;color:var(--blue);margin-bottom:20px">📊 Your Lifetime Money Simulator</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div>
+          <div class="calc-label">Your current age</div>
+          <input class="calc-input" type="number" id="ci-age" value="20" min="10" max="60" oninput="calcUpdate()">
+        </div>
+        <div>
+          <div class="calc-label">Monthly income (₹)</div>
+          <input class="calc-input" type="number" id="ci-income" value="30000" min="1000" max="10000000" oninput="calcUpdate()">
+        </div>
+        <div>
+          <div class="calc-label">Monthly savings (₹)</div>
+          <input class="calc-input" type="number" id="ci-savings" value="5000" min="0" max="10000000" oninput="calcUpdate()">
+        </div>
+        <div>
+          <div class="calc-label">Expected return rate (%/year)</div>
+          <input class="calc-input" type="number" id="ci-rate" value="10" min="1" max="30" oninput="calcUpdate()">
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">FD: ~7% · Mutual Fund: ~12% · Equity: ~14%</div>
+        </div>
+      </div>
+
+      <div id="calc-results" class="calc-result-grid"></div>
+      <div id="calc-insight" style="background:var(--blue-light);border-radius:var(--radius-md);padding:16px 20px;margin-top:16px;font-size:13px;line-height:1.65;color:var(--blue)"></div>
+    </div>
+
+    <div class="calc-section">
+      <div style="font-size:16px;font-weight:800;color:var(--blue);margin-bottom:14px">💡 What if you saved more?</div>
+      <div id="comparison-table"></div>
+    </div>
+
+    <div class="card" style="background:var(--blue);border-color:var(--blue)">
+      <div style="font-size:14px;font-weight:800;color:var(--yellow);margin-bottom:10px">🌟 Dhruv Tara's Top 3 Rules</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.9);line-height:1.7">
+        <div style="margin-bottom:8px;padding-left:14px;border-left:3px solid var(--yellow)">1. Start early. Every decade you wait roughly halves your final wealth.</div>
+        <div style="margin-bottom:8px;padding-left:14px;border-left:3px solid var(--yellow)">2. Automate savings. Decide a fixed amount — transfer it before you spend.</div>
+        <div style="padding-left:14px;border-left:3px solid var(--yellow)">3. Increase savings rate by 1% every time you get a raise. Small increases compound dramatically.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <button class="btn btn-outline btn-sm" onclick="backToSelector()">← All Games</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <strong>PocketEd</strong> is a programme by Aura EduAid Private Limited · Mumbai, India<br>
+  DPIIT Recognised Startup · Building financial literacy for every Indian student · <a href="https://pocketed.in" style="color:var(--yellow)">pocketed.in</a>
+</footer>
+
+<script>
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+function scrollToGames(){
+  document.getElementById('games-section').scrollIntoView({behavior:'smooth'});
+}
+
+function launchGame(id){
+  document.getElementById('hero-section').style.display='none';
+  document.getElementById('games-section').style.display='none';
+  document.getElementById('game-quiz').style.display='none';
+  document.getElementById('game-myth').style.display='none';
+  document.getElementById('game-calc').style.display='none';
+  document.getElementById('game-'+id).style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='calc') calcUpdate();
+}
+
+function backToSelector(){
+  ['game-quiz','game-myth','game-calc'].forEach(function(g){document.getElementById(g).style.display='none';});
+  document.getElementById('hero-section').style.display='block';
+  document.getElementById('games-section').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── QUIZ DATA ──────────────────────────────────────────────────────────────
+var QUESTIONS = [
+  // Level 1 - Basics
+  {level:1,q:'What does RBI stand for?',options:['Royal Bank of India','Reserve Bank of India','Regional Bank of India','Rupee Bank of India'],answer:1,explanation:'RBI stands for Reserve Bank of India. It is the central bank of India, established in 1935. It controls money supply, prints currency, and regulates all banks.'},
+  {level:1,q:'What is the symbol for the Indian Rupee?',options:['₨','Rs','₹','ℜ'],answer:2,explanation:'The ₹ symbol was officially adopted in 2010, designed by D. Udaya Kumar. It represents the Roman letter R combined with the Devanagari ₨ (Ra).'},
+  {level:1,q:'If you save ₹100 every day, how much do you save in one year?',options:['₹3,600','₹36,500','₹3,65,000','₹36,000'],answer:1,explanation:'₹100 × 365 days = ₹36,500. This is why daily savings habits matter — ₹100/day becomes ₹36,500/year without any interest!'},
+  {level:1,q:'What is a "budget"?',options:['A type of bank account','A plan for how to spend and save money','A government tax','A type of loan'],answer:1,explanation:'A budget is a financial plan that tracks your income and planned expenses. A budget helps you spend intentionally and save consistently.'},
+  {level:1,q:'Which of these is a NEED, not a WANT?',options:['New smartphone','Movie ticket','Rice and vegetables','Cricket bat'],answer:2,explanation:'Rice and vegetables are needs — essential nutrition for survival. The others are wants — desirable but not survival essentials. Note: in some contexts, a phone can become a need!'},
+  // Level 2 - Banking
+  {level:2,q:'What is the full form of ATM?',options:['Automated Teller Machine','Automatic Transfer Machine','Any Time Money','All Time Machine'],answer:0,explanation:'ATM stands for Automated Teller Machine. India has over 2.5 lakh ATMs. The first ATM in India was installed by HSBC in Mumbai in 1987.'},
+  {level:2,q:'What does UPI stand for?',options:['Universal Payment Interface','Unified Payments Interface','United Payment Integration','Universal Payments India'],answer:1,explanation:'UPI stands for Unified Payments Interface. Launched in 2016 by NPCI, UPI has become one of the world\'s largest real-time payment systems with over 10 billion transactions per month.'},
+  {level:2,q:'What is "interest" in banking terms?',options:['Excitement about money','A fee charged for borrowing money, or earned for lending money','A type of bank account','The amount you deposit'],answer:1,explanation:'Interest is the price of money. When you borrow, you pay interest. When you save in a bank, the bank pays YOU interest because you\'re effectively lending your money to them.'},
+  {level:2,q:'What is a savings account?',options:['An account only for senior citizens','A bank account that earns interest on deposited money','An account that only allows withdrawals once a year','A type of loan'],answer:1,explanation:'A savings account holds your money safely and pays interest (typically 2.5-4% p.a. in India). Unlike a current account, it\'s designed for individuals to park savings.'},
+  {level:2,q:'What is GST?',options:['Goods and Services Tax','General Sales Tax','Government Standard Tax','Goods Storage Tax'],answer:0,explanation:'GST stands for Goods and Services Tax. Introduced in India in 2017, it replaced over 17 different taxes. GST has 5 slabs: 0%, 5%, 12%, 18%, and 28%. Basic food is 0%; luxury goods are 28%.'},
+  // Level 3 - Investing
+  {level:3,q:'What does "Sensex" track?',options:['The Indian rupee\'s value vs dollar','The top 30 companies on Bombay Stock Exchange','India\'s GDP growth','All Indian government bonds'],answer:1,explanation:'Sensex (Sensitive Index) tracks the performance of 30 financially sound companies on BSE (Bombay Stock Exchange). It\'s India\'s oldest and most widely followed stock market index.'},
+  {level:3,q:'What is a mutual fund?',options:['A charity that helps poor people','A pool of money from many investors managed by a professional','A type of bank account with high interest','A government savings scheme'],answer:1,explanation:'A mutual fund pools money from thousands of investors and invests it in stocks, bonds, or other assets. A professional fund manager makes the investment decisions. This allows small investors to access diversified portfolios.'},
+  {level:3,q:'What does "compound interest" mean?',options:['Interest paid on the original amount only','Interest earned on both the original amount AND on previously earned interest','A type of bank loan','Interest paid at the end of 5 years only'],answer:1,explanation:'Compound interest is interest on interest. ₹10,000 at 10% = ₹11,000 after year 1. In year 2, you earn 10% on ₹11,000 (not ₹10,000). Einstein called compound interest the eighth wonder of the world.'},
+  {level:3,q:'What is a "share" or "stock"?',options:['A type of bank account','A unit of ownership in a company','A government bond','A type of insurance'],answer:1,explanation:'A share (or stock) represents partial ownership of a company. If Tata Motors has 10 crore shares and you own 100, you own 0.000001% of Tata Motors. Your share value rises and falls with the company\'s fortunes.'},
+  {level:3,q:'What does "diversification" mean in investing?',options:['Investing all your money in the best-performing stock','Spreading investments across different assets to reduce risk','Selling all investments at once','Investing only in government bonds'],answer:1,explanation:'Diversification means "don\'t put all your eggs in one basket." By spreading investments across sectors, geographies, and asset types, a loss in one area doesn\'t destroy your entire portfolio.'},
+  // Level 4 - Advanced
+  {level:4,q:'What is CIBIL score?',options:['A type of insurance','A government tax number','A credit score (300-900) measuring creditworthiness','A savings scheme'],answer:2,explanation:'CIBIL (Credit Information Bureau India Limited) score ranges from 300-900. A score above 750 is considered good and helps you get loans at lower interest rates. It\'s built by paying EMIs and credit card bills on time.'},
+  {level:4,q:'What is "inflation"?',options:['The growth of the stock market','The general rise in prices over time, reducing purchasing power','A type of government bond','A bank\'s profit margin'],answer:1,explanation:'Inflation is the rate at which prices rise over time. India\'s RBI targets 4% inflation. At 7% inflation, something costing ₹100 today costs ₹197 in 10 years. This is why simply saving in a piggy bank is insufficient.'},
+  {level:4,q:'What is a "term insurance" policy?',options:['Insurance that covers you for a specific period and pays on death','Insurance that returns all premiums after 10 years','A type of savings account with insurance','A health insurance policy'],answer:0,explanation:'Term insurance is pure life insurance — you pay premiums for a defined period. If you die during the term, your family gets the sum assured. If you survive, no payout. It\'s the cheapest and purest form of life insurance.'},
+  {level:4,q:'What does "SIP" stand for in investing?',options:['Stock Investment Plan','Systematic Investment Plan','Standard Insurance Policy','Savings and Investment Plan'],answer:1,explanation:'SIP (Systematic Investment Plan) involves investing a fixed amount in a mutual fund every month. Starting a SIP of ₹2,000/month at age 22, at 12% returns, gives you ₹1 crore by age 55. Start early!'},
+  {level:4,q:'Under Section 80C of the Income Tax Act, what is the maximum deduction allowed per year?',options:['₹50,000','₹1,00,000','₹1,50,000','₹2,50,000'],answer:2,explanation:'Section 80C allows tax deductions up to ₹1.5 lakh per year for investments in PPF, ELSS mutual funds, NSC, life insurance premiums, and children\'s tuition fees. This reduces your taxable income by up to ₹1.5 lakh.'},
+];
+
+var QG = {idx:0,correct:0,wrong:0,score:0,queue:[]};
+
+function shuffle(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+function startQuiz(){
+  QG.queue=shuffle(QUESTIONS).slice(0,20);
+  QG.idx=0;QG.correct=0;QG.wrong=0;QG.score=0;
+  showQScreen('quiz-game');
+  showQuestion();
+}
+
+function showQuestion(){
+  var q=QG.queue[QG.idx];
+  var levelLabels={1:'Level 1 — Basics',2:'Level 2 — Banking',3:'Level 3 — Investing',4:'Level 4 — Advanced'};
+  document.getElementById('quiz-level-pill').textContent=levelLabels[q.level];
+  document.getElementById('quiz-q-pill').textContent='Q '+(QG.idx+1)+'/'+QG.queue.length;
+  document.getElementById('quiz-progress').style.width=(QG.idx/QG.queue.length*100)+'%';
+  document.getElementById('quiz-correct-pill').textContent='✓ '+QG.correct;
+  document.getElementById('quiz-wrong-pill').textContent='✗ '+QG.wrong;
+  document.getElementById('quiz-score-pill').textContent='Score: '+QG.score;
+  document.getElementById('q-level-tag').textContent=levelLabels[q.level];
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('q-options').innerHTML=q.options.map(function(opt,i){
+    return '<button class="option-btn" onclick="answerQuiz('+i+')" id="qopt-'+i+'">'+opt+'</button>';
+  }).join('');
+  document.getElementById('q-feedback').className='feedback-card';
+  document.getElementById('btn-next-q').style.display='none';
+}
+
+function answerQuiz(idx){
+  var q=QG.queue[QG.idx];
+  var correct=idx===q.answer;
+  document.querySelectorAll('.option-btn').forEach(function(el){el.disabled=true;});
+  document.getElementById('qopt-'+q.answer).classList.add('correct');
+  if(!correct) document.getElementById('qopt-'+idx).classList.add('wrong');
+  if(correct){QG.correct++;QG.score+=q.level*10;}else{QG.wrong++;}
+  var fb=document.getElementById('q-feedback');
+  fb.className='feedback-card '+(correct?'correct':'wrong')+' show';
+  fb.innerHTML=(correct?'✅ Correct! ':'❌ Wrong. ')+q.explanation;
+  document.getElementById('btn-next-q').style.display='inline-flex';
+  document.getElementById('quiz-correct-pill').textContent='✓ '+QG.correct;
+  document.getElementById('quiz-wrong-pill').textContent='✗ '+QG.wrong;
+  document.getElementById('quiz-score-pill').textContent='Score: '+QG.score;
+}
+
+function nextQuestion(){
+  QG.idx++;
+  if(QG.idx>=QG.queue.length){showQuizFinal();return;}
+  showQuestion();
+}
+
+function showQuizFinal(){
+  showQScreen('quiz-final');
+  var pct=Math.round(QG.correct/QG.queue.length*100);
+  var grade=pct>=90?'Money Genius':pct>=75?'Finance Pro':pct>=50?'Money Learner':'Needs Practice';
+  document.getElementById('quiz-final-icon').textContent=pct>=80?'🏆':pct>=60?'📈':'📚';
+  document.getElementById('quiz-final-title').textContent=grade;
+  document.getElementById('quiz-final-sub').textContent=QG.correct+'/'+QG.queue.length+' correct · Score: '+QG.score+' points';
+  document.getElementById('quiz-final-stats').innerHTML=[
+    {label:'Correct',val:QG.correct+''},
+    {label:'Wrong',val:QG.wrong+''},
+    {label:'Score',val:QG.score+''},
+  ].map(function(s){
+    return '<div style="background:var(--bg);border-radius:var(--radius-md);padding:12px;border:1.5px solid var(--border);text-align:center">'+
+      '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px">'+s.label+'</div>'+
+      '<div style="font-size:20px;font-weight:800;color:var(--blue)">'+s.val+'</div></div>';
+  }).join('');
+  document.getElementById('quiz-final-verdict').innerHTML=
+    pct>=80?'🌟 <strong>Excellent financial awareness!</strong> Kuber Chacha says: "You have the knowledge foundation. Now build the habits."':
+    pct>=60?'📈 <strong>Good base knowledge.</strong> Review the questions you missed — each one is a concept that affects real money decisions.':
+    '📚 <strong>Great starting point!</strong> Every question you got wrong is an opportunity to learn something that could save or grow your money. Read each explanation carefully.';
+}
+
+function showQScreen(id){
+  ['quiz-start','quiz-game','quiz-final'].forEach(function(s){
+    document.getElementById(s).className='screen'+(s===id?' active':'');
+  });
+}
+
+// ── MYTH BUSTER DATA ──────────────────────────────────────────────────────
+var MYTHS = [
+  {statement:'"Keeping cash at home is safer than keeping it in a bank."',context:'Many Indian families — especially older generations — prefer keeping savings in cash at home.',isTrue:false,
+   explanation:'MYTH. Bank deposits are insured up to ₹5 lakh by DICGC (a subsidiary of RBI). Cash at home can be stolen, damaged in fire, or lost in floods. Banks also pay interest, while cash at home loses value to inflation. The only advantage of home cash is speed of access in genuine emergencies.'},
+  {statement:'"Fixed Deposits (FDs) are always the safest investment for everyone."',context:'FDs are India\'s most popular savings instrument — nearly ₹100 lakh crore sits in bank FDs.',isTrue:false,
+   explanation:'PARTIALLY A MYTH. FDs are safe (principal protected, insured up to ₹5L), but they\'re not always the "best" for everyone. At ~6-7% p.a., they barely beat inflation (currently ~5%). For young people with a 10+ year horizon, equity mutual funds have historically given 12-14% — far outpacing FDs in wealth creation.'},
+  {statement:'"You need a lot of money to start investing."',context:'A common belief that prevents young people from starting early.',isTrue:false,
+   explanation:'MYTH. You can start a SIP (Systematic Investment Plan) in a mutual fund for as little as ₹100/month. The stock market allows buying shares worth ₹200-300. The real barrier is not money — it\'s knowledge and habit. Starting with ₹500/month at age 20 beats starting with ₹5,000/month at age 40.'},
+  {statement:'"Insurance is a waste of money if you don\'t make a claim."',context:'Many people cancel insurance policies because they haven\'t used them.',isTrue:false,
+   explanation:'MYTH. This logic is like saying "my seatbelt is a waste because I haven\'t had an accident." Insurance buys you financial security against catastrophic events. A ₹10 lakh health insurance premium of ₹8,000/year is "wasted" if you stay healthy — but if you need cancer treatment, it saves your family\'s life savings.'},
+  {statement:'"The Indian Rupee has been in existence since before independence."',context:'The Rupee was officially decimalised in 1957.',isTrue:true,
+   explanation:'TRUE. The Rupee dates to the 16th century under Sher Shah Suri\'s monetary reforms. The modern Rupee system was formalised under British India. After independence in 1947, the Reserve Bank of India took over. The decimal system (100 paise = ₹1) was adopted in 1957.'},
+  {statement:'"A high CIBIL score guarantees you\'ll get any loan you apply for."',context:'Lenders often cite CIBIL score as the key factor.',isTrue:false,
+   explanation:'MYTH. A good CIBIL score (750+) greatly improves your chances, but lenders also consider: your income, existing loan obligations (FOIR), employer stability, property value (for secured loans), and overall financial health. A low CIBIL score almost certainly means rejection. A high score is necessary but not sufficient.'},
+  {statement:'"Inflation only affects rich people and investors — not ordinary families."',context:'Inflation is often discussed in the context of stock markets and financial planning.',isTrue:false,
+   explanation:'MYTH. Inflation hits everyone, but hits the poor and middle class hardest. A ₹100 vegetable basket that costs ₹140 in 5 years represents a 40% increase. Wealthy households can adjust investments to beat inflation. Fixed-income households (salary workers) and those with cash savings bear the full brunt.'},
+  {statement:'"UPI transactions are irreversible — once sent, you cannot recover the money if sent to a wrong number."',context:'UPI has grown to over 10 billion transactions per month in India.',isTrue:false,
+   explanation:'PARTIALLY A MYTH. While UPI is designed for fast, near-instant settlement, you CAN file a dispute within 3 months with your bank. If the recipient\'s account is at the same bank, reversals are sometimes possible. However, recovery is not guaranteed — which is why you should always double-check the UPI ID before confirming any transaction.'},
+  {statement:'"Gold is always the best investment in India."',context:'India is the world\'s second-largest gold consumer. Many families treat gold as the default investment.',isTrue:false,
+   explanation:'MYTH. Gold is a store of value and a cultural asset — but it has significant drawbacks: making charges (10-25% when buying jewellery), storage risk, no income (unlike stocks which pay dividends), and returns that are typically lower than equity over 20+ year periods. Gold has a role in diversified portfolios — but "always the best" is false.'},
+  {statement:'"The RBI prints money whenever the government needs more funds."',context:'Many people believe the government can simply print money to solve budget deficits.',isTrue:false,
+   explanation:'MYTH (mostly). RBI operates independently under the RBI Act. Direct monetary financing of government deficits is restricted by law. Uncontrolled money printing causes hyperinflation (as seen in Zimbabwe and Venezuela). In practice, the government borrows through bonds. The RBI does conduct open market operations, but within controlled frameworks.'},
+  {statement:'"You must be 18 to have a bank account in India."',context:'Many children and teenagers assume they cannot access banking services.',isTrue:false,
+   explanation:'MYTH. RBI allows minors above 10 years old to independently operate savings and FD accounts. Banks like SBI, HDFC, and Axis offer special minor accounts. A child can operate the account independently (with withdrawal limits). This is actually an important financial literacy opportunity — starting early builds money habits.'},
+  {statement:'"Paying only the minimum due on a credit card is financially wise."',context:'Credit card statements show a "minimum amount due" which is often 5% of the outstanding balance.',isTrue:false,
+   explanation:'MYTH. This is one of the most expensive financial mistakes. Credit card interest in India is typically 36-48% per year (3-4% per month). If you owe ₹50,000 and pay only the ₹2,500 minimum, you will pay ₹18,000-24,000 in interest that year alone. Always pay the FULL statement amount before the due date.'},
+];
+
+var MG = {idx:0,correct:0,wrong:0,queue:[]};
+
+function startMyth(){
+  MG.queue=shuffle(MYTHS.slice());
+  MG.idx=0;MG.correct=0;MG.wrong=0;
+  showMythScreen('myth-game');
+  showMythCard();
+}
+
+function showMythCard(){
+  var m=MG.queue[MG.idx];
+  document.getElementById('myth-q-pill').textContent='Myth '+(MG.idx+1)+'/'+MG.queue.length;
+  document.getElementById('myth-correct-pill').textContent='✓ Correct: '+MG.correct;
+  document.getElementById('myth-wrong-pill').textContent='✗ Wrong: '+MG.wrong;
+  document.getElementById('myth-progress').style.width=(MG.idx/MG.queue.length*100)+'%';
+  document.getElementById('myth-card-area').innerHTML=
+    '<div class="myth-card" id="myth-main">'+
+      '<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">💬 Is this TRUE or a MYTH?</div>'+
+      '<div class="myth-statement">'+m.statement+'</div>'+
+      '<div class="myth-context">'+m.context+'</div>'+
+      '<div class="myth-btns">'+
+        '<button class="myth-btn true" onclick="answerMyth(true)" id="myth-btn-true">✅ TRUE</button>'+
+        '<button class="myth-btn false" onclick="answerMyth(false)" id="myth-btn-false">💥 MYTH/FALSE</button>'+
+      '</div>'+
+      '<div class="myth-result" id="myth-result"></div>'+
+    '</div>';
+  document.getElementById('btn-next-myth').style.display='none';
+}
+
+function answerMyth(answer){
+  var m=MG.queue[MG.idx];
+  var correct=answer===m.isTrue;
+  document.getElementById('myth-btn-true').disabled=true;
+  document.getElementById('myth-btn-false').disabled=true;
+  if(correct) MG.correct++; else MG.wrong++;
+  var res=document.getElementById('myth-result');
+  var verdict=m.isTrue?'✅ This is TRUE':'💥 This is a MYTH';
+  res.className='myth-result show '+(correct?'busted':'wrong');
+  res.innerHTML=(correct?'✓ You got it! ':'✗ Not quite. ')+
+    '<strong>'+verdict+'</strong><br><br>'+m.explanation;
+  document.getElementById('myth-btn-'+(!m.isTrue?'true':'false')).style.opacity='.4';
+  document.getElementById('btn-next-myth').style.display='inline-flex';
+}
+
+function nextMyth(){
+  MG.idx++;
+  if(MG.idx>=MG.queue.length){showMythFinal();return;}
+  showMythCard();
+}
+
+function showMythFinal(){
+  showMythScreen('myth-final');
+  var pct=Math.round(MG.correct/MG.queue.length*100);
+  document.getElementById('myth-final-icon').textContent=pct>=80?'💥':pct>=60?'📚':'🤔';
+  document.getElementById('myth-final-title').textContent=pct>=80?'Myth Destroyer! 💥':pct>=60?'Sharp Thinker':'Some Myths Fooled You';
+  document.getElementById('myth-final-sub').textContent=MG.correct+'/'+MG.queue.length+' myths correctly identified · '+MG.wrong+' slipped through';
+  document.getElementById('myth-missed').innerHTML=MG.wrong>0?
+    '<div style="font-size:14px;font-weight:700;color:var(--blue);margin-bottom:10px">Myths that tricked you:</div>'+
+    MG.queue.slice(0,MG.idx).filter(function(m,i){
+      return false; // Will show next time
+    }).join(''):
+    '<div style="background:var(--success-bg);border:1.5px solid var(--success);border-radius:var(--radius-md);padding:14px 18px;font-size:14px;color:#007a3d">🌟 Perfect score! Eklavya Bhaiya says: "You are well-equipped to make clear-headed financial decisions."</div>';
+}
+
+function showMythScreen(id){
+  ['myth-start','myth-game','myth-final'].forEach(function(s){
+    document.getElementById(s).className='screen'+(s===id?' active':'');
+  });
+}
+
+// ── LIFETIME CALCULATOR ────────────────────────────────────────────────────
+function calcUpdate(){
+  var age=parseInt(document.getElementById('ci-age').value)||20;
+  var income=parseInt(document.getElementById('ci-income').value)||30000;
+  var savingsPerMonth=parseInt(document.getElementById('ci-savings').value)||5000;
+  var rate=parseFloat(document.getElementById('ci-rate').value)||10;
+  var monthlyRate=rate/12/100;
+
+  function futureValue(months){
+    if(monthlyRate===0) return savingsPerMonth*months;
+    return savingsPerMonth*(Math.pow(1+monthlyRate,months)-1)/monthlyRate;
+  }
+
+  var milestones=[
+    {age:30,label:'At Age 30'},
+    {age:40,label:'At Age 40'},
+    {age:50,label:'At Age 50'},
+    {age:60,label:'At Age 60'},
+  ];
+
+  var resultsHtml=milestones.filter(function(m){return m.age>age;}).map(function(m){
+    var months=(m.age-age)*12;
+    var fv=Math.round(futureValue(months));
+    var highlight=m.age===60;
+    return '<div class="calc-result-cell">'+
+      '<div class="calc-result-label">'+m.label+'</div>'+
+      '<div class="calc-result-val'+(highlight?' highlight':'')+'">₹'+formatCr(fv)+'</div>'+
+    '</div>';
+  }).join('');
+  document.getElementById('calc-results').innerHTML=resultsHtml||'<div style="font-size:13px;color:var(--muted)">Enter an age below 60 to see projections.</div>';
+
+  var savingsPct=income>0?Math.round(savingsPerMonth/income*100):0;
+  var needed10Cr=Math.round(10000000*(monthlyRate)/( Math.pow(1+monthlyRate,(60-age)*12)-1 ));
+  document.getElementById('calc-insight').innerHTML=
+    '💡 <strong>You\'re saving '+(savingsPct)+'% of your income.</strong> '+
+    (savingsPct>=20?'Excellent savings discipline! The 20% rule says to save at least 20% of income.':
+     savingsPct>=10?'Good start! Financial advisors recommend saving at least 20% of income.':
+     'Consider increasing savings. Even ₹500 more/month compounds significantly.')+
+    ' To accumulate ₹1 crore by age 60 at '+rate+'% returns, you need approximately ₹'+formatCr(needed10Cr)+'/month.';
+
+  // Comparison table
+  var options=[0.5,1,1.5,2].map(function(mult){
+    var altSavings=Math.round(savingsPerMonth*mult);
+    var months=(60-age)*12;
+    var fv=Math.round(altSavings*(Math.pow(1+monthlyRate,months)-1)/(monthlyRate||0.001));
+    return '<tr>'+
+      '<td style="padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--blue)">₹'+altSavings.toLocaleString('en-IN')+'/month</td>'+
+      '<td style="padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted)">'+(savingsPct>0?Math.round(altSavings/income*100):'-')+'%</td>'+
+      '<td style="padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;font-weight:800;color:'+(mult>=1.5?'var(--success)':'var(--blue)')+'">₹'+formatCr(fv)+' at 60</td>'+
+    '</tr>';
+  });
+  document.getElementById('comparison-table').innerHTML=
+    '<table style="width:100%;border-collapse:collapse">'+
+      '<thead><tr>'+
+        '<th style="padding:10px 12px;background:var(--blue-light);text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);border-radius:var(--radius-sm) 0 0 0">Monthly Savings</th>'+
+        '<th style="padding:10px 12px;background:var(--blue-light);text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--blue)">% of Income</th>'+
+        '<th style="padding:10px 12px;background:var(--blue-light);text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);border-radius:0 var(--radius-sm) 0 0">Wealth at 60</th>'+
+      '</tr></thead>'+
+      '<tbody>'+options.join('')+'</tbody>'+
+    '</table>';
+}
+
+function formatCr(n){
+  if(n>=10000000) return (n/10000000).toFixed(2)+' Cr';
+  if(n>=100000) return (n/100000).toFixed(2)+' L';
+  return n.toLocaleString('en-IN');
+}
+</script>
+</body>
+</html>
