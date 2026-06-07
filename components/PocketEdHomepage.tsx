@@ -1738,8 +1738,8 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
       data-screen-label="09 Footer"
       style={{
         width: '100%',
-        background: 'linear-gradient(180deg, #014AAC 0%, #013788 100%)', // subtle same-hue wash
-        color: '#ffffff',
+        background: '#ffffff',
+        color: '#014AAC',
         padding: '96px 0 40px 0',
       }}
     >
@@ -1755,14 +1755,14 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
                 letterSpacing: '-0.01em',
                 lineHeight: 1,
               }}>
-                <span style={{ color: '#ffffff' }}>Pocket</span>
+                <span style={{ color: '#014AAC' }}>Pocket</span>
                 <span style={{ color: '#FFD21F' }}>Ed</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#ffffff', marginLeft: 4, transform: 'translateY(-10px)' }}>TM</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#014AAC', marginLeft: 4, display: 'inline-block', transform: 'translateY(-16px)' }}>TM</span>
               </div>
             </div>
             <p style={{
               fontFamily: 'Poppins, sans-serif', fontSize: 16, lineHeight: 1.6,
-              color: '#ffffff', opacity: 0.88, margin: '28px 0 0 0', maxWidth: 320,
+              color: '#014AAC', opacity: 0.88, margin: '28px 0 0 0', maxWidth: 320,
             }}>
               Financial literacy made simple, playful, and practical.
             </p>
@@ -1777,7 +1777,7 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
             <div key={i}>
               <div style={{
                 fontFamily: 'Poppins, sans-serif', fontSize: 13, fontWeight: 600,
-                letterSpacing: '0.12em', textTransform: 'uppercase', color: '#FFD21F',
+                letterSpacing: '0.12em', textTransform: 'uppercase', color: '#014AAC',
                 marginBottom: 20,
               }}>
                 {col.title}
@@ -1786,7 +1786,7 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
                 {col.links.map((l, j) => (
                   <li key={j}>
                     <Link href={l.href} onClick={'onClick' in l ? (l.onClick as any) : undefined} style={{
-                      fontFamily: 'Poppins, sans-serif', fontSize: 15, color: '#ffffff',
+                      fontFamily: 'Poppins, sans-serif', fontSize: 15, color: '#014AAC',
                       textDecoration: 'none', opacity: 0.85,
                     }}>{l.label}</Link>
                   </li>
@@ -1799,12 +1799,12 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
         <div style={{
           marginTop: 80,
           paddingTop: 28,
-          borderTop: '1px solid rgba(255,255,255,0.18)',
+          borderTop: '1px solid rgba(1,74,172,0.18)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           flexWrap: 'wrap', gap: 16,
         }}>
           <div style={{
-            fontFamily: 'Poppins, sans-serif', fontSize: 13, color: '#ffffff', opacity: 0.7,
+            fontFamily: 'Poppins, sans-serif', fontSize: 13, color: '#014AAC', opacity: 0.7,
           }}>
             MCA incorporated · DPIIT recognised · © 2026 PocketEd Education Pvt. Ltd.
           </div>
@@ -1814,21 +1814,21 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
             <a href="#" style={footerLinkMini}>Data Policy</a>
             <a href="https://www.linkedin.com/company/pocketedco/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{
               width: 34, height: 34, borderRadius: 999,
-              border: '1px solid rgba(255,255,255,0.3)',
+              border: '1px solid rgba(1,74,172,0.3)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               marginLeft: 8,
               transition: 'background-color 0.2s',
-            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-              <svg width="16" height="16" viewBox="0 0 24 24" style={{ color: '#ffffff' }}>{LineLinkedin}</svg>
+            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(1,74,172,0.1)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+              <svg width="16" height="16" viewBox="0 0 24 24" style={{ color: '#014AAC' }}>{LineLinkedin}</svg>
             </a>
             <a href="https://substack.com/@siddharthgadhia" target="_blank" rel="noopener noreferrer" aria-label="Substack" style={{
               width: 34, height: 34, borderRadius: 999,
-              border: '1px solid rgba(255,255,255,0.3)',
+              border: '1px solid rgba(1,74,172,0.3)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               marginLeft: 8,
               transition: 'background-color 0.2s',
-            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-              <svg width="14" height="14" viewBox="0 0 24 24" style={{ color: '#ffffff' }}>{LineSubstack}</svg>
+            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(1,74,172,0.1)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+              <svg width="14" height="14" viewBox="0 0 24 24" style={{ color: '#014AAC' }}>{LineSubstack}</svg>
             </a>
           </div>
         </div>
@@ -1840,8 +1840,8 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
 function FooterMeta({ glyph, children }: { glyph: ReactNode; children: ReactNode }) {
   return (
     <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-      <svg width="18" height="18" viewBox="0 0 24 24" style={{ color: '#FFD21F', flexShrink: 0, marginTop: 2 }}>{glyph}</svg>
-      <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: 14, color: '#ffffff', opacity: 0.88, lineHeight: 1.5 }}>
+      <svg width="18" height="18" viewBox="0 0 24 24" style={{ color: '#014AAC', flexShrink: 0, marginTop: 2 }}>{glyph}</svg>
+      <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: 14, color: '#014AAC', opacity: 0.88, lineHeight: 1.5 }}>
         {children}
       </span>
     </div>
@@ -1851,7 +1851,7 @@ function FooterMeta({ glyph, children }: { glyph: ReactNode; children: ReactNode
 const footerLinkMini: CSSProperties = {
   fontFamily: 'Poppins, sans-serif',
   fontSize: 13,
-  color: '#ffffff',
+  color: '#014AAC',
   opacity: 0.75,
   textDecoration: 'none',
 };
