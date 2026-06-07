@@ -1665,7 +1665,7 @@ function CTABand({ onContactClick }: { onContactClick: () => void }) {
           lineHeight: 1.15, color: '#014AAC', letterSpacing: '-0.01em',
           margin: '0 0 20px 0', maxWidth: 860, textWrap: 'pretty',
         }}>
-          Bring <span style={{ color: '#014AAC' }}>Pocket</span><span style={{ WebkitTextStroke: '1.5px #014AAC', color: 'transparent' }}>Ed</span> to your school.
+          Bring <span style={{ backgroundColor: '#ffffff', padding: '2px 14px', borderRadius: '12px', display: 'inline-block', margin: '0 4px', verticalAlign: 'middle', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}><span style={{ color: '#014AAC' }}>Pocket</span><span style={{ color: '#FFD21F' }}>Ed</span></span> to your school.
         </h2>
         <p style={{
           fontFamily: 'Poppins, sans-serif', fontSize: 18, lineHeight: 1.55,
