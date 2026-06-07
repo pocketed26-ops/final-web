@@ -1757,7 +1757,7 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
               }}>
                 <span style={{ color: '#ffffff' }}>Pocket</span>
                 <span style={{ color: '#FFD21F' }}>Ed</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#ffffff', marginLeft: 4, verticalAlign: 'top', position: 'relative', top: -4 }}>TM</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#ffffff', marginLeft: 4, transform: 'translateY(-10px)' }}>TM</span>
               </div>
             </div>
             <p style={{

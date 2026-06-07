@@ -93,7 +93,7 @@ const Navbar = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ cla
         >
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
             <Image src="/nav-logo.png" alt="PocketEd logo" width={160} height={36} priority style={{ width: 'auto', height: '36px' }} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#014AAC', marginLeft: 4, lineHeight: 1, marginTop: -4 }}>TM</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#014AAC', marginLeft: 4, lineHeight: 1, transform: 'translateY(-10px)' }}>TM</span>
           </Link>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: 36, marginLeft: 'auto', marginRight: 32 }}>
@@ -140,7 +140,7 @@ const Navbar = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ cla
         <div className="nav-mobile md:hidden" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', position: 'relative', zIndex: 50, padding: '16px 24px' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
             <Image src="/nav-logo.png" alt="PocketEd logo" width={140} height={32} priority style={{ width: 'auto', height: '32px' }} />
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#014AAC', marginLeft: 3, lineHeight: 1, marginTop: -3 }}>TM</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#014AAC', marginLeft: 3, lineHeight: 1, transform: 'translateY(-8px)' }}>TM</span>
           </Link>
           
           <button
