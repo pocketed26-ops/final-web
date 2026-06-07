@@ -320,7 +320,7 @@ const LineLinkedin = (
 );
 const LineSubstack = (
   <g fill="currentColor" stroke="none">
-    <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11L22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/>
+    <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11L22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z" />
   </g>
 );
 
@@ -1811,7 +1811,7 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
           <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
             <Link href="/privacy" style={footerLinkMini}>Privacy</Link>
             <Link href="/terms" style={footerLinkMini}>Terms</Link>
-            <a href="#" style={footerLinkMini}>Data Policy</a>
+            {/* <a href="#" style={footerLinkMini}>Data Policy</a> */}
             <a href="https://www.linkedin.com/company/pocketedco/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{
               width: 34, height: 34, borderRadius: 999,
               border: '1px solid rgba(1,74,172,0.3)',
