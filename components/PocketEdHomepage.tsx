@@ -1809,8 +1809,8 @@ function Footer({ onFaqClick, onContactClick }: { onFaqClick?: () => void, onCon
             MCA incorporated · DPIIT recognised · © 2026 PocketEd Education Pvt. Ltd.
           </div>
           <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-            <a href="#" style={footerLinkMini}>Privacy</a>
-            <a href="#" style={footerLinkMini}>Terms</a>
+            <Link href="/privacy" style={footerLinkMini}>Privacy</Link>
+            <Link href="/terms" style={footerLinkMini}>Terms</Link>
             <a href="#" style={footerLinkMini}>Data Policy</a>
             <a href="https://www.linkedin.com/company/pocketedco/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{
               width: 34, height: 34, borderRadius: 999,
